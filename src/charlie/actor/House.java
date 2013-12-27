@@ -4,7 +4,9 @@
  */
 package charlie.actor;
 
+import charlie.card.Hid;
 import charlie.controller.Dealer;
+import charlie.controller.IPlayer;
 import charlie.message.view.from.Arrival;
 import charlie.server.GameServer;
 import charlie.server.Ticket;
@@ -14,6 +16,7 @@ import com.googlecode.actorom.annotation.OnMessage;
 import com.googlecode.actorom.annotation.TopologyInstance;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import org.slf4j.Logger;
@@ -38,6 +41,7 @@ public class House implements Serializable {
     private final Properties props;
     private Address myAddress;
     private final GameServer server;
+    protected HashMap<IPlayer,Ticket> accounts = new HashMap<>();
 
     
     public House(GameServer server,Properties props) {    
@@ -59,8 +63,15 @@ public class House implements Serializable {
 
         LOG.info("validate ticket = "+ticket);
         
+        // Get a dealer for this player
+        // Note: if we were allocating dealers from a pool, this is the place
+        // to implement that logic. For now we'll just spawn dealers without
+        // restriction.
+        Dealer dealer = new Dealer(this);
+        
         // Spawn a player actor in server
-        RealPlayer player = new RealPlayer(new Dealer(this,ticket.getBankroll()), channelAddress);
+        RealPlayer player = new RealPlayer(dealer, channelAddress);
+        accounts.put(player,ticket);
         
         synchronized(this) {
             nextPlayerId++;
@@ -91,4 +102,19 @@ public class House implements Serializable {
         
         return false;
     }
+    /**
+     * Updates the bankroll
+     * @param hid Hand
+     * @param gain P&L
+     */
+    public void updateBankroll(IPlayer player,Double amt,Double gain) {      
+        if(player == null || !accounts.containsKey(player))
+            return;
+        
+        Ticket ticket = accounts.get(player);
+        
+        Double bankroll = ticket.getBankroll() + gain * amt;
+        
+        ticket.setBankroll(bankroll);
+    }    
 }

@@ -59,16 +59,13 @@ public class Dealer implements Serializable {
     protected Integer handSeqIndex = 0;
     protected IPlayer active = null;
     protected DealerHand dealerHand;
-    protected final Double deposit;
     
     /**
      * Constructor
      * @param house House actor which launched us.
-     * @param deposit Initial deposit made by the player.
      */
-    public Dealer(House house,Double deposit) {
+    public Dealer(House house) {
         this.house = house;
-        this.deposit = deposit;
 
         // Instantiate the shoe
         Properties props = house.getProps();
@@ -105,16 +102,12 @@ public class Dealer implements Serializable {
         // Add player in sequence of players
         playerSequence.add(player); 
         
-        // Add a bet for this player
+        // Add a bet for this hand
         bets.put(hid, bet);
         
         // Connect this hand to a player
         players.put(hid, player);
-
-
-        if(!accounts.containsKey(player))
-            accounts.put(player, deposit);
-        
+       
         // Add new hand for this player
         hands.put(hid, new Hand(hid));
         
@@ -191,6 +184,9 @@ public class Dealer implements Serializable {
         }
     }
     
+    /**
+     * Insures a dealer blackjack
+     */
     protected void insure() {
         // TODO
     }
@@ -256,7 +252,7 @@ public class Dealer implements Serializable {
         
         // If the hand broke, we're done with this hand
         if(hand.broke()) {
-            updateBankroll(hid,LOSS);
+            house.updateBankroll(player,(double)bets.get(hid),LOSS);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
@@ -266,7 +262,7 @@ public class Dealer implements Serializable {
         }
         // If hand got a charlie, we're done with this hand
         else if(hand.charlie()) {
-            updateBankroll(hid,PROFIT);
+            house.updateBankroll(player,(double)bets.get(hid),PROFIT);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
@@ -408,7 +404,7 @@ public class Dealer implements Serializable {
 
             // If hand less than dealer and dealer not broke, hand lost
             if(hand.getValue() < dealerHand.getValue() && !dealerHand.broke()) {
-                updateBankroll(hid,LOSS);
+                house.updateBankroll(players.get(hid),(double)bets.get(hid),LOSS);
                 
                 for (IPlayer player: playerSequence)
                     player.loose(hid);
@@ -417,7 +413,8 @@ public class Dealer implements Serializable {
             //    hand greater than dealer and dealer NOT broke => hand won
             else if(hand.getValue() < dealerHand.getValue() && dealerHand.broke() ||
                     hand.getValue() > dealerHand.getValue() && !dealerHand.broke()) {
-                updateBankroll(hid,PROFIT);
+                house.updateBankroll(players.get(hid),(double)bets.get(hid),PROFIT);
+                
                 for (IPlayer player: playerSequence)
                     player.win(hid);   
             }
@@ -434,25 +431,7 @@ public class Dealer implements Serializable {
         wrapUp();
     }
     
-    /**
-     * Updates the bankroll
-     * @param hid Hand
-     * @param gain P&L
-     */
-    protected void updateBankroll(Hid hid,Double gain) {
-        IPlayer player = this.players.get(hid);
-        
-        if(!accounts.containsKey(player))
-            return;
-        
-        Double bankroll = accounts.get(player);
-        
-        Integer bet = this.bets.get(hid);
-        
-        bankroll += (gain * bet);
-        
-        accounts.put(player, bankroll);
-    }
+
     
     /**
      * Tells everyone the game is over.
