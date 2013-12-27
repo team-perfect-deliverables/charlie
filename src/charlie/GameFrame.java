@@ -81,9 +81,9 @@ public class GameFrame extends javax.swing.JFrame {
         
         this.setLocationRelativeTo(null);
         
-        enableBetting(false);
+        enableDeal(false);
         
-        enablePlaying(false);
+        enablePlay(false);
     }
     
     /**
@@ -163,16 +163,21 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }
     
-    public void enableBetting(boolean betting) {
-        this.betButton.setEnabled(betting);
-        this.panel.enableBetting(betting);
+    public void enableDeal(boolean deal) {
+        this.betButton.setEnabled(deal);
+        
+        this.panel.enableBetting(deal);
+        
         this.hitButton.setEnabled(false);
+        
         this.stayButton.setEnabled(false);
+        
         this.splitButton.setEnabled(false);
+        
         this.ddownButton.setEnabled(false);
     }
     
-    public void enablePlaying(boolean playing) {
+    public void enablePlay(boolean playing) {
         this.hitButton.setEnabled(playing && trucking);
         this.stayButton.setEnabled(playing && trucking);
     }
@@ -228,7 +233,7 @@ public class GameFrame extends javax.swing.JFrame {
             }
         });
 
-        betButton.setText("Bet");
+        betButton.setText("Deal");
         betButton.setActionCommand(" Bet ");
         betButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -317,7 +322,7 @@ public class GameFrame extends javax.swing.JFrame {
                                 JOptionPane.INFORMATION_MESSAGE);
                         
                         frame.accessButton.setText("Logout");
-                        frame.enableBetting(true);
+                        frame.enableDeal(true);
                     }
                     else
                         JOptionPane.showMessageDialog(frame,
@@ -352,7 +357,7 @@ public class GameFrame extends javax.swing.JFrame {
 
                 hands.add(hid);
 
-                enableBetting(false);
+                enableDeal(false);
             }
         });
  
@@ -361,12 +366,12 @@ public class GameFrame extends javax.swing.JFrame {
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
         channel.stay(hands.get(this.handIndex));
         enableTrucking(false);
-        enablePlaying(false);
+        enablePlay(false);
     }//GEN-LAST:event_stayButtonActionPerformed
 
     private void hitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitButtonActionPerformed
         channel.hit(hands.get(this.handIndex));
-        enablePlaying(false);
+        enablePlay(false);
     }//GEN-LAST:event_hitButtonActionPerformed
 
     /**

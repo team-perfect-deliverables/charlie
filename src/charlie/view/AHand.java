@@ -1,6 +1,7 @@
 
 package charlie.view;
 
+import charlie.card.Hand;
 import charlie.card.Hid;
 import charlie.view.sprite.TurnSprite;
 import charlie.util.Constant;
@@ -44,7 +45,7 @@ public class AHand {
 //    public AHand(ACard card) {
 //        this();
 //
-//        add(card);
+//        hit(card);
 //    }
 //
 //    public AHand(Point home) {
@@ -54,7 +55,7 @@ public class AHand {
 //    public AHand(Point home, ACard card) {
 //        this(home);
 //
-//        add(card);
+//        hit(card);
 //    }
 
     public void update() {
@@ -122,7 +123,7 @@ public class AHand {
         return text;
     }
     
-    public boolean add(ACard card) {
+    public boolean hit(ACard card) {
         int xoff = cards.size() * HOME_OFFSET_X;
         int yoff = cards.size() * HOME_OFFSET_Y;
 
@@ -241,9 +242,10 @@ public class AHand {
     }
 
     public boolean isBroke() {
-        if(values[Constant.HAND_SOFT_VALUE] <= 21 || values[Constant.HAND_VALUE] <= 21)
-            return false;
-        return true;
+        return Hand.getValue(values) > 21;
+//        if(values[Constant.HAND_SOFT_VALUE] <= 21 || values[Constant.HAND_VALUE] <= 21)
+//            return false;
+//        return true;
     }
     
 }

@@ -21,7 +21,7 @@ public class ADealerHand extends AHand {
     }
     
     @Override
-    public boolean add(ACard card) {
+    public boolean hit(ACard card) {
         // Move over other cards
         int cardWidth = AHandsManager.getCardWidth();
 

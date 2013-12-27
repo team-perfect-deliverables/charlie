@@ -156,9 +156,9 @@ public class AHandsManager {
 //        
 //        ACard card = hand1.split();
 //        
-//        // Create new hand with the card and add the hand to the animator.
+//        // Create new hand with the card and hit the hand to the animator.
 //        AHand hand2 = new AHand(card);       
-//        this.add(hand2);
+//        this.hit(hand2);
 //        
 //        // Spread out the hands
 //        spread();

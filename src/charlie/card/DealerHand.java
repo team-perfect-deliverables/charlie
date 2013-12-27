@@ -4,10 +4,6 @@
  */
 package charlie.card;
 
-import charlie.card.Card;
-import charlie.card.Hid;
-import charlie.util.Constant;
-
 /**
  *
  * @author roncoleman125

@@ -4,10 +4,8 @@
  */
 package charlie.card;
 
-import charlie.card.HoleCard;
-import charlie.card.Card;
-import charlie.card.Hid;
 import charlie.util.Constant;
+import charlie.util.Helper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,9 +91,13 @@ public class Hand implements Serializable {
     }
     
     public int getValue() {
+        return Hand.getValue(values);        
+    }
+    
+    public static int getValue(int[] values) {
         return values[Constant.HAND_SOFT_VALUE] <= 21 ?
                 values[Constant.HAND_SOFT_VALUE] :
-                values[Constant.HAND_VALUE];
+                values[Constant.HAND_VALUE];        
     }
 
 }
