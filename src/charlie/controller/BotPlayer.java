@@ -40,17 +40,17 @@ public class BotPlayer implements IPlayer {
     }
 
     @Override
-    public void bust(Hid hid) {
+    public void bust(Hid hid,Double bet) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void win(Hid hid) {
+    public void win(Hid hid,Double bet) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void loose(Hid hid) {
+    public void loose(Hid hid,Double bet) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -75,12 +75,12 @@ public class BotPlayer implements IPlayer {
     }
 
     @Override
-    public void blackjack(Hid hid) {
+    public void blackjack(Hid hid,Double bet) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void charlie(Hid hid) {
+    public void charlie(Hid hid,Double bet) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

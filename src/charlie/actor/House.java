@@ -35,7 +35,7 @@ public class House implements Serializable {
     
     public final static Double[] MIN_BETS = {5.0, 25.0, 100.0};
 
-    protected List<RealPlayer> players = new ArrayList<>();
+    protected List<NetPlayer> players = new ArrayList<>();
     
     private Integer nextPlayerId = 0;
     private final Properties props;
@@ -70,7 +70,7 @@ public class House implements Serializable {
         Dealer dealer = new Dealer(this);
         
         // Spawn a player actor in server
-        RealPlayer player = new RealPlayer(dealer, channelAddress);
+        NetPlayer player = new NetPlayer(dealer, channelAddress);
         accounts.put(player,ticket);
         
         synchronized(this) {
@@ -116,5 +116,12 @@ public class House implements Serializable {
         Double bankroll = ticket.getBankroll() + gain * amt;
         
         ticket.setBankroll(bankroll);
-    }    
+    }
+    
+    public Double getBankroll(IPlayer player) {
+        if(player == null || !accounts.containsKey(player))
+            return 0.0;
+        
+        return accounts.get(player).getBankroll();
+    }
 }

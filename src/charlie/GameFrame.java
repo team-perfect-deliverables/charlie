@@ -5,7 +5,7 @@
 package charlie;
 
 import charlie.card.Hid;
-import charlie.actor.Channel;
+import charlie.actor.Courier;
 import charlie.message.view.from.Arrival;
 import charlie.server.Login;
 import charlie.server.Ticket;
@@ -49,7 +49,7 @@ public class GameFrame extends javax.swing.JFrame {
     
     private Actor house;
     
-    private Channel channel;
+    private Courier channel;
     
     private Table panel;
     
@@ -119,7 +119,7 @@ public class GameFrame extends javax.swing.JFrame {
             LOG.info("got house actor"); 
 
             // Connect the channel to its ghost surrogate
-            channel = new Channel(panel);
+            channel = new Courier(panel);
             
             serverTopology = new ServerTopology(MY_HOST, MY_PORT);
             

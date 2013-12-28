@@ -26,7 +26,7 @@ import charlie.card.Hand;
 import charlie.card.Shoe;
 import charlie.card.DealerHand;
 import charlie.actor.House;
-import charlie.actor.RealPlayer;
+import charlie.actor.NetPlayer;
 import charlie.card.Card;
 import charlie.card.HoleCard;
 import charlie.card.Hid;
@@ -42,17 +42,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Blackjack dealer.
+ * It uses the following rules:<br>
+ * <ol>
+ * <li>Dealer stands all 17s.
+ * <li>Blackjack pays 3:2. For interesting discussion of house advantage of different
+ * pay out ratios see http://answers.yahoo.com/question/index?qid=20080617174652AAOBfaj
+ * <li>Five card charlie pays 2:1.
+ * </ol>
  * @author Ron Coleman
  */
 public class Dealer implements Serializable { 
+    public final static Double BLACKJACK_PAYS = 1.5;
+    public final static Double CHARLIE_PAYS = 2.0;
     private final Logger LOG = LoggerFactory.getLogger(Dealer.class);
-    private final static Double PROFIT = 1.0;
-    private final static Double LOSS = -1.0;
+    protected final static Double PROFIT = 1.0;
+    protected final static Double LOSS = -1.0;
     protected Shoe shoe;
     protected HashMap<Hid,Hand> hands = new HashMap<>();
     protected HashMap<Hid,Integer> bets = new HashMap<>();
     protected HashMap<Hid,IPlayer> players = new HashMap<>();
-    protected HashMap<IPlayer,Double> accounts = new HashMap<>();
     protected List<Hid> handSequence = new ArrayList<>();
     protected List<IPlayer> playerSequence = new ArrayList<>();
     protected final House house;
@@ -85,7 +93,7 @@ public class Dealer implements Serializable {
      * @param hid
      * @param bet 
      */
-    public void bet(RealPlayer player,Hid hid,Integer bet) {
+    public void bet(NetPlayer player,Hid hid,Integer bet) {
         LOG.info("got new bet = "+bet+" from "+player+" for hid = "+hid);
         
         // Clear out the old stuff
@@ -252,21 +260,23 @@ public class Dealer implements Serializable {
         
         // If the hand broke, we're done with this hand
         if(hand.broke()) {
-            house.updateBankroll(player,(double)bets.get(hid),LOSS);
+            Double bet = (double)bets.get(hid);
+            house.updateBankroll(player,bet,LOSS);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
-                _player.bust(hid);
+                _player.bust(hid,bet);
             
             goNextHand();
         }
         // If hand got a charlie, we're done with this hand
         else if(hand.charlie()) {
-            house.updateBankroll(player,(double)bets.get(hid),PROFIT);
+            Double bet = (double)bets.get(hid);
+            house.updateBankroll(player,bet*CHARLIE_PAYS,PROFIT);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
-                _player.charlie(hid);
+                _player.charlie(hid,bet*CHARLIE_PAYS);
             
             goNextHand();
         }
@@ -316,10 +326,13 @@ public class Dealer implements Serializable {
         
         player.deal(hid, card, hand.getValues());
         
-        // If hand broke, tell everone
-        if(hand.broke())
+        // If hand broke, tell everyone
+        if(hand.broke()) {
+            house.updateBankroll(player,(double) bet,LOSS);
+            
             for (IPlayer _player : playerSequence)
-                _player.bust(hid);
+                _player.bust(hid,(double)bet);
+        }
         
         // Go to next hand regardless
         goNextHand();
@@ -342,8 +355,16 @@ public class Dealer implements Serializable {
             // If hand has blackjack, it's not automatic hand wins
             // since the dealer may also have blackjack
             if(hand.blackjack()) {
-                for (IPlayer player : playerSequence)
-                    player.blackjack(hid);
+                Double bet = (double)bets.get(hid);
+                
+                Double earnings = bet * BLACKJACK_PAYS;
+                
+                IPlayer player = this.players.get(hid);
+                
+                
+                house.updateBankroll(player,earnings,PROFIT);
+                for (IPlayer _player : playerSequence)
+                    _player.blackjack(hid,earnings);
              
                 goNextHand();
                 
@@ -404,19 +425,22 @@ public class Dealer implements Serializable {
 
             // If hand less than dealer and dealer not broke, hand lost
             if(hand.getValue() < dealerHand.getValue() && !dealerHand.broke()) {
-                house.updateBankroll(players.get(hid),(double)bets.get(hid),LOSS);
+                Double bet = (double) bets.get(hid);
+                house.updateBankroll(players.get(hid),bet,LOSS);
                 
                 for (IPlayer player: playerSequence)
-                    player.loose(hid);
+                    player.loose(hid,bet);
             }
             // If hand less than dealer and dealer broke OR...
             //    hand greater than dealer and dealer NOT broke => hand won
             else if(hand.getValue() < dealerHand.getValue() && dealerHand.broke() ||
                     hand.getValue() > dealerHand.getValue() && !dealerHand.broke()) {
-                house.updateBankroll(players.get(hid),(double)bets.get(hid),PROFIT);
+                Double bet = (double)bets.get(hid);
+                
+                house.updateBankroll(players.get(hid),bet,PROFIT);
                 
                 for (IPlayer player: playerSequence)
-                    player.win(hid);   
+                    player.win(hid,bet);   
             }
             // If player and dealer hands same, hand pushed
             else if(hand.getValue() == dealerHand.getValue())
@@ -438,10 +462,9 @@ public class Dealer implements Serializable {
      */
     protected void wrapUp() {
         for (IPlayer player: playerSequence) {
-            if(accounts.containsKey(player)) {
-                Double bankroll = accounts.get(player);
-                player.endGame(bankroll);
-            }
+            Double bankroll = house.getBankroll(player);
+            
+            player.endGame(bankroll);
         }         
     }
     
