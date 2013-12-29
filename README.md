@@ -46,27 +46,18 @@ and their MIT professor in Las Vegas. The story was dramatized by the popular
 In my own case, I studied Blackjack indepth, asking whether a machine could learn to play
 and count cards. The published papers are [here](http://foxweb.marist.edu/users/ron.coleman/).
 In 2010, I developed a related
-system in (Scala)[www.scala-lang.org]. However, having to teach Scala, too,
+system in [Scala](www.scala-lang.org). However, having to teach Scala, too,
 in addition to teaching some Blackjack, proved to be too much of a distraction. Thus, the 
 goal here is to focus more on Blackjack and Java.
 
 ###Charlie structure
-Charlie runs on a network with a server and one or more clients.
-The login thread, house actor, and dealer objects are passive and run on the server.
-By "passive" I mean, they execute only in response to some request.
-The GUI runs remotely on the client and in this case the request is directly from the user.
-
-The server flow is login -> house -> dealer.
-
-####Login thread
-The login thread listens on a server socket and on accepting a connection, receives a *Login* object
-from a user. The login thread authenticates the logname and password and if successful return
-a *Ticket* object over the connection.
-The *Ticket* contains three key data:
-
-1. Number. This is a random long integer.
-2. Bankroll. This is the player escrow funds. The game deducts bets from and deposits earning to this account.
-3. House address. This is the actor address of the house which the courier (see below) uses to 
-commensumate arrival of the user for play.
-
-
+Charlie uses the model view controller (MVC) design pattern.
+The model is roughly represented by the *House* class. It manages login and the bankroll.
+The controller is represented by the *Dealer* class. It executes the play rules.
+The view is represented by the *IPlayer* interface. There are two concrete IPlayer
+classes: *NetPlayer* and *BotPlayer*.
+NetPlayer is a server-side [actor](http://en.wikipedia.org/wiki/Actor_model) which
+communicates with *Courier*, a client-side actor. NetPlayer and Courier main tasks are to convey
+messages between the Dealer and the remote player GUI, the *GameFrame* class.  
+BotPlayer, which is not fully implemented,
+is designed to run as a bot player using some form of Basic Strategy and card counting system.
