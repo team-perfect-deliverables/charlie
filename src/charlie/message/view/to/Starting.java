@@ -14,12 +14,18 @@ import java.util.List;
  */
 public class Starting extends Message {
     private final List<Hid> hids;
+    private final int shoeSize;
     
-    public Starting(List<Hid> hids) {
+    public Starting(List<Hid> hids,int shoeSize) {
         this.hids = hids;
+        this.shoeSize = shoeSize;
     }
 
     public List<Hid> getHids() {
         return hids;
+    }
+
+    public int getShoeSize() {
+        return shoeSize;
     }
 }

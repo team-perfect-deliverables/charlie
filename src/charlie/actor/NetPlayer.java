@@ -48,7 +48,6 @@ import com.googlecode.actorom.Actor;
 import com.googlecode.actorom.Address;
 import com.googlecode.actorom.annotation.OnMessage;
 import com.googlecode.actorom.remote.ClientTopology;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -204,8 +203,8 @@ public class NetPlayer implements IPlayer {
      * @param hids Hands starting
      */
     @Override
-    public void startGame(List<Hid> hids) {
-        courier.send(new Starting(hids));
+    public void startGame(List<Hid> hids,int shoeSize) {
+        courier.send(new Starting(hids,shoeSize));
     }
 
     /**

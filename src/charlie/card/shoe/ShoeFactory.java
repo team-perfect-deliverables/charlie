@@ -20,18 +20,29 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.card;
+package charlie.card.shoe;
+
+import java.util.HashMap;
 
 /**
- * This class implements the dealer hole card.
+ * This class implements the shoe factory.
  * @author Ron Coleman
  */
-public class HoleCard extends Card {
+public class ShoeFactory {   
+    private static HashMap<String,Shoe> shoes = new HashMap<String,Shoe>() {
+        {
+            put("6deck",new Shoe());
+            put("01",new Shoe01());
+            put("02",new Shoe02());
+        }
+    };
+    
     /**
-     * Constructor
-     * @param card Card
+     * Gets an instance of a shoe based on a scenario.
+     * @param scenario Scenario
+     * @return Shoe
      */
-    public HoleCard(Card card) {
-        super(card);
+    public static Shoe getInstance(String scenario) {
+        return shoes.get(scenario);
     }
 }

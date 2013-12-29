@@ -23,13 +23,14 @@
 package charlie.controller;
 
 import charlie.card.Hand;
-import charlie.card.Shoe;
-import charlie.card.DealerHand;
+import charlie.card.shoe.Shoe;
+//import isCharlie.card.DealerHand;
 import charlie.actor.House;
 import charlie.actor.NetPlayer;
 import charlie.card.Card;
 import charlie.card.HoleCard;
 import charlie.card.Hid;
+import charlie.card.shoe.ShoeFactory;
 import charlie.util.Constant;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,19 +45,19 @@ import org.slf4j.LoggerFactory;
  * This class implements the Blackjack dealer.
  * It uses the following rules:<br>
  * <ol>
- * <li>Dealer stands all 17s.
- * <li>Blackjack pays 3:2. For interesting discussion of house advantage of different
- * pay out ratios see http://answers.yahoo.com/question/index?qid=20080617174652AAOBfaj
- * <li>Five card charlie pays 2:1.
+ * <li>Dealer stands on 17, hard or soft.
+ * <li>Blackjack pays 3:2. For discussion of house advantage of different
+ * pay outs see http://answers.yahoo.com/question/index?qid=20080617174652AAOBfaj
+ * <li>Five card Charlie pays 2:1.
  * </ol>
  * @author Ron Coleman
  */
 public class Dealer implements Serializable { 
-    public final static Double BLACKJACK_PAYS = 1.5;
-    public final static Double CHARLIE_PAYS = 2.0;
-    private final Logger LOG = LoggerFactory.getLogger(Dealer.class);
+    public final static Double BLACKJACK_PAYS = 3/2.;
+    public final static Double CHARLIE_PAYS = 2/1.;
     protected final static Double PROFIT = 1.0;
-    protected final static Double LOSS = -1.0;
+    protected final static Double LOSS = -1.0;    
+    private final Logger LOG = LoggerFactory.getLogger(Dealer.class);
     protected Shoe shoe;
     protected HashMap<Hid,Hand> hands = new HashMap<>();
     protected HashMap<Hid,Integer> bets = new HashMap<>();
@@ -66,7 +67,7 @@ public class Dealer implements Serializable {
     protected final House house;
     protected Integer handSeqIndex = 0;
     protected IPlayer active = null;
-    protected DealerHand dealerHand;
+    protected Hand dealerHand;
     
     /**
      * Constructor
@@ -78,20 +79,19 @@ public class Dealer implements Serializable {
         // Instantiate the shoe
         Properties props = house.getProps();
         
-        int shoeno = Integer.parseInt(props.getProperty("charlie.shoe", "-1"));
+        String scenario = props.getProperty("charlie.shoe", "6deck");
         
-        if(shoeno == -1)
-            shoe = new Shoe();
-        else
-            shoe = new Shoe(shoeno);
+        shoe = ShoeFactory.getInstance(scenario);
+        
+        shoe.init();
     }
     
     /**
      * Receives a bet request from a "real" player. Don't invoke this method
      * for a bot. Bots are instantiated directly by this class.
-     * @param player
-     * @param hid
-     * @param bet 
+     * @param player Player
+     * @param hid Hand
+     * @param bet Bet amount
      */
     public void bet(NetPlayer player,Hid hid,Integer bet) {
         LOG.info("got new bet = "+bet+" from "+player+" for hid = "+hid);
@@ -123,7 +123,7 @@ public class Dealer implements Serializable {
         spawnBots();
 
         // Create the dealer hand
-        dealerHand = new DealerHand(new Hid(Seat.DEALER));
+        dealerHand = new Hand(new Hid(Seat.DEALER));
         
         // Shuffle cards, if needed
         if(shoe.shuffleNeeded()) {
@@ -159,7 +159,7 @@ public class Dealer implements Serializable {
             
             // Tell each player we're starting a game
             for(IPlayer player: playerSequence)              
-                player.startGame(hids);
+                player.startGame(hids,shoe.size());
             
             Thread.sleep(250);
             
@@ -182,7 +182,7 @@ public class Dealer implements Serializable {
             if(upCard.isAce())
                 insure();
             
-            if(dealerHand.blackjack()) {
+            if(dealerHand.isBlackjack()) {
                 closeGame();
             }
             else
@@ -193,7 +193,7 @@ public class Dealer implements Serializable {
     }
     
     /**
-     * Insures a dealer blackjack
+     * Insures a dealer isBlackjack
      */
     protected void insure() {
         // TODO
@@ -258,8 +258,8 @@ public class Dealer implements Serializable {
         
         player.deal(hid, card, hand.getValues());
         
-        // If the hand broke, we're done with this hand
-        if(hand.broke()) {
+        // If the hand isBroke, we're done with this hand
+        if(hand.isBroke()) {
             Double bet = (double)bets.get(hid);
             house.updateBankroll(player,bet,LOSS);
             
@@ -269,8 +269,8 @@ public class Dealer implements Serializable {
             
             goNextHand();
         }
-        // If hand got a charlie, we're done with this hand
-        else if(hand.charlie()) {
+        // If hand got a isCharlie, we're done with this hand
+        else if(hand.isCharlie()) {
             Double bet = (double)bets.get(hid);
             house.updateBankroll(player,bet*CHARLIE_PAYS,PROFIT);
             
@@ -326,8 +326,8 @@ public class Dealer implements Serializable {
         
         player.deal(hid, card, hand.getValues());
         
-        // If hand broke, tell everyone
-        if(hand.broke()) {
+        // If hand isBroke, tell everyone
+        if(hand.isBroke()) {
             house.updateBankroll(player,(double) bet,LOSS);
             
             for (IPlayer _player : playerSequence)
@@ -349,12 +349,12 @@ public class Dealer implements Serializable {
             active = players.get(hid);
             LOG.info("active player = "+active);
 
-            // Check for blackjack before moving on
+            // Check for isBlackjack before moving on
             Hand hand = this.hands.get(hid);
             
-            // If hand has blackjack, it's not automatic hand wins
-            // since the dealer may also have blackjack
-            if(hand.blackjack()) {
+            // If hand has isBlackjack, it's not automatic hand wins
+            // since the dealer may also have isBlackjack
+            if(hand.isBlackjack()) {
                 Double bet = (double)bets.get(hid);
                 
                 Double earnings = bet * BLACKJACK_PAYS;
@@ -371,7 +371,7 @@ public class Dealer implements Serializable {
                 return;
             }
             
-            // Unless the player got a blackjack, tell the player they're
+            // Unless the player got a isBlackjack, tell the player they're
             // to start playing this hand
             active.play(hid);
             
@@ -392,8 +392,8 @@ public class Dealer implements Serializable {
             player.deal(dealerHand.getHid(), null, dealerHand.getValues());
      
         // Dealer only plays if there is someone standing and dealer doesn't
-        // blackjack
-        if (handsStanding() && !dealerHand.blackjack()) {
+        // isBlackjack
+        if (handsStanding() && !dealerHand.isBlackjack()) {
             // Draw until we reach (any) 17 or we break
             while (dealerHand.getValue() < 17) {
                 Card card = shoe.next();
@@ -420,21 +420,21 @@ public class Dealer implements Serializable {
             Hand hand = hands.get(hid);
             
             // These handled during hit cycle
-            if(hand.broke() || hand.charlie())
+            if(hand.isBroke() || hand.isCharlie())
                 continue;
 
-            // If hand less than dealer and dealer not broke, hand lost
-            if(hand.getValue() < dealerHand.getValue() && !dealerHand.broke()) {
+            // If hand less than dealer and dealer not isBroke, hand lost
+            if(hand.getValue() < dealerHand.getValue() && !dealerHand.isBroke()) {
                 Double bet = (double) bets.get(hid);
                 house.updateBankroll(players.get(hid),bet,LOSS);
                 
                 for (IPlayer player: playerSequence)
                     player.loose(hid,bet);
             }
-            // If hand less than dealer and dealer broke OR...
-            //    hand greater than dealer and dealer NOT broke => hand won
-            else if(hand.getValue() < dealerHand.getValue() && dealerHand.broke() ||
-                    hand.getValue() > dealerHand.getValue() && !dealerHand.broke()) {
+            // If hand less than dealer and dealer isBroke OR...
+            //    hand greater than dealer and dealer NOT isBroke => hand won
+            else if(hand.getValue() < dealerHand.getValue() && dealerHand.isBroke() ||
+                    hand.getValue() > dealerHand.getValue() && !dealerHand.isBroke()) {
                 Double bet = (double)bets.get(hid);
                 
                 house.updateBankroll(players.get(hid),bet,PROFIT);
@@ -478,14 +478,14 @@ public class Dealer implements Serializable {
     }
     
     /**
-     * Returns true if there are any hands that haven't broke
+     * Returns true if there are any hands that haven't isBroke
      * @return True if at least one hand hasn't broken, false otherwise
      */
     protected boolean handsStanding() {
         for(Hid hid: handSequence) {
             Hand hand = hands.get(hid);
             
-            if(!hand.broke())
+            if(!hand.isBroke())
                 return true;
         }
         
@@ -503,7 +503,7 @@ public class Dealer implements Serializable {
         
         Hand hand = hands.get(hid);
         
-        if(hand.broke())
+        if(hand.isBroke())
             return null;
         
         if(players.get(hid) != active)

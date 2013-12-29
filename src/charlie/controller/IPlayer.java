@@ -13,7 +13,7 @@ import java.util.List;
  * @author roncoleman125
  */
 public interface IPlayer {    
-    abstract public void startGame(List<Hid> hids);
+    abstract public void startGame(List<Hid> hids,int shoeSize);
     abstract public void endGame(Double bankroll);
     abstract public void deal(Hid hid, Card card, int[] values);
     abstract public void observe(Hid hid, Card card);

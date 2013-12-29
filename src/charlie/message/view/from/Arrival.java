@@ -22,7 +22,7 @@ public class Arrival extends Message {
         this.player = source;
     }
 
-    public Address getChannelAddress() {
+    public Address getCourierAddress() {
         return player;
     }
 

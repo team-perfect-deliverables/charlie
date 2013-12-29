@@ -1,10 +1,27 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie.actor;
 
-import charlie.card.Hid;
 import charlie.controller.Dealer;
 import charlie.controller.IPlayer;
 import charlie.message.view.from.Arrival;
@@ -24,35 +41,41 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author roncoleman125
+ * @author Ron Coleman
  */
 public class House implements Serializable {
     private final Logger LOG = LoggerFactory.getLogger(House.class);
-    
     @TopologyInstance private Topology topology;
-    
     private final String PLAYER_ACTOR = "PLAYER-";
-    
-    public final static Double[] MIN_BETS = {5.0, 25.0, 100.0};
-
     protected List<NetPlayer> players = new ArrayList<>();
-    
     private Integer nextPlayerId = 0;
     private final Properties props;
-    private Address myAddress;
     private final GameServer server;
     protected HashMap<IPlayer,Ticket> accounts = new HashMap<>();
 
-    
+    /**
+     * Constructor
+     * @param server Game server
+     * @param props Properties used by the server
+     */
     public House(GameServer server,Properties props) {    
         this.server = server;
         this.props = props;
     }
     
+    /**
+     * Receives an arrival by a a player.
+     * At login the user gets a ticket from the server which the
+     * house uses to validate. If the ticket is valid, the house
+     * allocates a dealer and spawns a player actor. The dealer
+     * then waits for contact from a courier through the player.
+     * In other words, the whole design is largely passive in nature.
+     * @param arrival 
+     */
     @OnMessage(type = Arrival.class)
     public void onReceive(Arrival arrival) {
-        Address channelAddress = arrival.getChannelAddress();
-        LOG.info("arrival from "+channelAddress);
+        Address courierAddress = arrival.getCourierAddress();
+        LOG.info("arrival from "+courierAddress);
         
         Ticket ticket = arrival.getTicket();
         
@@ -61,7 +84,7 @@ public class House implements Serializable {
             return;
         }
 
-        LOG.info("validate ticket = "+ticket);
+        LOG.info("validated ticket = "+ticket);
         
         // Get a dealer for this player
         // Note: if we were allocating dealers from a pool, this is the place
@@ -70,7 +93,7 @@ public class House implements Serializable {
         Dealer dealer = new Dealer(this);
         
         // Spawn a player actor in server
-        NetPlayer player = new NetPlayer(dealer, channelAddress);
+        NetPlayer player = new NetPlayer(dealer, courierAddress);
         accounts.put(player,ticket);
         
         synchronized(this) {
@@ -92,6 +115,11 @@ public class House implements Serializable {
         return props;
     }
     
+    /**
+     * Validates a ticket.
+     * @param ticket Ticket
+     * @return True if the ticket is valid, false otherwise.
+     */
     protected boolean valid(Ticket ticket) {
         List<Ticket> logins = server.getLogins();
         
@@ -103,7 +131,7 @@ public class House implements Serializable {
         return false;
     }
     /**
-     * Updates the bankroll
+     * Updates the bankroll.
      * @param hid Hand
      * @param gain P&L
      */
@@ -118,6 +146,11 @@ public class House implements Serializable {
         ticket.setBankroll(bankroll);
     }
     
+    /**
+     * Gets the bankroll for a player.
+     * @param player Player
+     * @return Dollar amount of bankroll
+     */
     public Double getBankroll(IPlayer player) {
         if(player == null || !accounts.containsKey(player))
             return 0.0;

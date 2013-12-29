@@ -99,7 +99,7 @@ public class ADealerHand extends AHand {
     protected String getText() {
         int value = values[Constant.HAND_SOFT_VALUE] <= 21 ?
                 values[Constant.HAND_SOFT_VALUE] :
-                values[Constant.HAND_VALUE];
+                values[Constant.HAND_LITERAL_VALUE];
         
         String text = name;
 

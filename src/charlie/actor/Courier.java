@@ -146,7 +146,7 @@ public class Courier {
         
         int[] values = deal.getHandValues();
         
-        LOG.info("received card = "+card+" values = "+values[Constant.HAND_VALUE]+"/"+values[Constant.HAND_SOFT_VALUE]+" hid = "+hid);
+        LOG.info("received card = "+card+" values = "+values[Constant.HAND_LITERAL_VALUE]+"/"+values[Constant.HAND_SOFT_VALUE]+" hid = "+hid);
         
         ui.deal(hid, card, values);
     }

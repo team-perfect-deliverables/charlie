@@ -109,7 +109,7 @@ public class AHand {
     protected String getText() {
         int value = values[Constant.HAND_SOFT_VALUE] <= 21 ?
                 values[Constant.HAND_SOFT_VALUE] :
-                values[Constant.HAND_VALUE];
+                values[Constant.HAND_LITERAL_VALUE];
 
         String text = name + ": "+value;
         
@@ -243,7 +243,7 @@ public class AHand {
 
     public boolean isBroke() {
         return Hand.getValue(values) > 21;
-//        if(values[Constant.HAND_SOFT_VALUE] <= 21 || values[Constant.HAND_VALUE] <= 21)
+//        if(values[Constant.HAND_SOFT_VALUE] <= 21 || values[Constant.HAND_LITERAL_VALUE] <= 21)
 //            return false;
 //        return true;
     }

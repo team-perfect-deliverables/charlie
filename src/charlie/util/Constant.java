@@ -10,7 +10,7 @@ package charlie.util;
  */
 public class Constant {
     public final static String DIR_IMGS = "./images/";
-    public final static int HAND_VALUE = 0;
+    public final static int HAND_LITERAL_VALUE = 0;
     public final static int HAND_SOFT_VALUE = 1;  
     public final static Integer DEAL_DELAY = 1200;
     public final static Integer NUM_DECKS = 6;

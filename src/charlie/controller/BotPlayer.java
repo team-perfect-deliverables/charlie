@@ -20,7 +20,7 @@ public class BotPlayer implements IPlayer {
     }
     
     @Override
-    public void startGame(List<Hid> hids) {
+    public void startGame(List<Hid> hids,int shoeSize) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

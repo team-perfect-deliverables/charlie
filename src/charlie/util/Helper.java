@@ -17,6 +17,6 @@ public class Helper {
     public static int getValue(int[] values) {
         return values[Constant.HAND_SOFT_VALUE] <= 21 ?
                 values[Constant.HAND_SOFT_VALUE] :
-                values[Constant.HAND_VALUE];
+                values[Constant.HAND_LITERAL_VALUE];
     }
 }
