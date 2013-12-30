@@ -18,14 +18,6 @@ public class Hand implements Serializable {
     protected Hid hid;
     protected List<Card> cards = new ArrayList<>();
     protected int[] values;
-
-    /**
-     * Constructor
-     */
-    public Hand() {
-        this.hid = new Hid();
-        values = new int[2];
-    }
     
     /**
      * Constructor

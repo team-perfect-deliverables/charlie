@@ -98,7 +98,7 @@ public class NetPlayer implements IPlayer {
     public void onReceive(Bet bet) {     
         LOG.info("player actor received bet = "+bet.getAmt());
         
-        dealer.bet(this, bet.getHid(), bet.getAmt());
+        dealer.bet(this, bet.getHid());
     }
     
     /**
@@ -165,8 +165,8 @@ public class NetPlayer implements IPlayer {
      * @param bet Bet amount lost
      */
     @Override
-    public void bust(Hid hid,Double bet) {
-        courier.send(new Bust(hid,bet));
+    public void bust(Hid hid) {
+        courier.send(new Bust(hid));
     }
     
     /**
@@ -175,8 +175,8 @@ public class NetPlayer implements IPlayer {
      * @param bet Bet amount won
      */
     @Override
-    public void win(Hid hid,Double bet) {
-        courier.send(new Win(hid,bet));
+    public void win(Hid hid) {
+        courier.send(new Win(hid));
     }
     
     /**
@@ -185,8 +185,8 @@ public class NetPlayer implements IPlayer {
      * @param bet Bet amount lost
      */
     @Override
-    public void loose(Hid hid,Double bet) {
-        courier.send(new Loose(hid,bet));
+    public void loose(Hid hid) {
+        courier.send(new Loose(hid));
     }
     
     /**
@@ -209,11 +209,10 @@ public class NetPlayer implements IPlayer {
 
     /**
      * Sends ending notice to courier.
-     * @param bankroll New bankroll
      */
     @Override
-    public void endGame(Double bankroll) {
-        courier.send(new Ending(bankroll));
+    public void endGame(int shoeSize) {
+        courier.send(new Ending(shoeSize));
     }
 
     /**
@@ -252,8 +251,8 @@ public class NetPlayer implements IPlayer {
      * @param bet Bet amount won
      */
     @Override
-    public void blackjack(Hid hid,Double bet) {
-        courier.send(new Blackjack(hid,bet) );
+    public void blackjack(Hid hid) {
+        courier.send(new Blackjack(hid) );
     }
     
     /**
@@ -262,8 +261,8 @@ public class NetPlayer implements IPlayer {
      * @param bet Bet amount won
      */
     @Override
-    public void charlie(Hid hid,Double bet) {
-        courier.send(new Charlie(hid,bet) );
+    public void charlie(Hid hid) {
+        courier.send(new Charlie(hid) );
     }
     
     /**

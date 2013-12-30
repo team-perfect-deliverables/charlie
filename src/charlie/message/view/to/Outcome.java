@@ -12,16 +12,10 @@ import charlie.message.Message;
  * @author roncoleman125
  */
 abstract public class Outcome extends Message {
-    protected final Double pl;
     private final Hid hid;
     
-    public Outcome(Hid hid, Double pl) {
+    public Outcome(Hid hid) {
         this.hid = hid;
-        this.pl = pl;
-    }
-
-    public Double getPl() {
-        return pl;
     }
 
     public Hid getHid() {

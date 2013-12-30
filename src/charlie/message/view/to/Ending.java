@@ -10,14 +10,14 @@ import charlie.message.Message;
  *
  * @author roncoleman125
  */
-public class Ending extends Message {
-    private final Double bankroll;
-    
-    public Ending(Double bankroll) {
-        this.bankroll = bankroll;
+public class Ending extends Message { 
+    private final int shoeSize;
+    public Ending(int shoeSize) {
+        this.shoeSize = shoeSize;
     }
 
-    public Double getBankroll() {
-        return bankroll;
+    public int getShoeSize() {
+        return shoeSize;
     }
+    
 }

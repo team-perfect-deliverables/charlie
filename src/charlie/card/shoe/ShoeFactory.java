@@ -32,6 +32,7 @@ public class ShoeFactory {
     private static HashMap<String,Shoe> shoes = new HashMap<String,Shoe>() {
         {
             put("6deck",new Shoe());
+            put("6deck-test",new Shoe00());
             put("01",new Shoe01());
             put("02",new Shoe02());
         }

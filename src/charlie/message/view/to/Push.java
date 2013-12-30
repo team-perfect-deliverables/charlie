@@ -12,6 +12,6 @@ import charlie.card.Hid;
  */
 public class Push extends Outcome {
     public Push(Hid hid) {
-        super(hid,0.0);
+        super(hid);
     }
 }

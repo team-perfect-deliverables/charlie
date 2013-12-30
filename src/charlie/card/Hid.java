@@ -43,15 +43,17 @@ public class Hid implements Serializable {
     private Long key;
     private String host = "UNKNOWN";
     private Seat seat;
-
+    protected Double amt;
+    
     /**
      * Constructor
+     * @param seat Hand id for this seat
      */
-    public Hid() {
-        try {            
-            key = Math.abs(ran.nextLong());
-            
-            this.seat = Seat.YOU;
+    public Hid(Seat seat,Double amt) {
+        try {       
+            this.amt = amt;
+            this.key = Math.abs(ran.nextLong());
+            this.seat = seat;
             
             InetAddress addr = InetAddress.getLocalHost();
             
@@ -62,13 +64,31 @@ public class Hid implements Serializable {
         }
     }
     
-    /**
-     * Constructor
-     * @param seat Hand id for this seat
-     */
     public Hid(Seat seat) {
-        this();
-        this.seat = seat;
+        this(seat,0.0);
+    }
+
+    /**
+     * Gets the amount for this hand.
+     * @return Amount
+     */
+    public Double getAmt() {
+        return amt;
+    }
+
+    /**
+     * Sets the amount for this hand.
+     * @param amt Amount
+     */
+    public void setAmt(Double amt) {
+        this.amt = amt;
+    }
+    
+    /**
+     * Doubles the amount.
+     */
+    public void multiplyAmt(Double factor) {
+        this.amt *= factor;
     }
 
     /**

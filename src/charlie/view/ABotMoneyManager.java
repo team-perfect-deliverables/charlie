@@ -2,10 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package charlie.controller;
+package charlie.view;
 
 /**
  *
  * @author roncoleman125
  */
-public enum Seat {NONE, ROSIE, ROBBY, YOU, DEALER};
+public class ABotMoneyManager extends AMoneyManager {
+    
+}

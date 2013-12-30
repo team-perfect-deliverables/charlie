@@ -11,7 +11,7 @@ import charlie.card.Hid;
  * @author roncoleman125
  */
 public class Bust extends Outcome {
-    public Bust(Hid hid,Double bet) {
-        super(hid,bet);
+    public Bust(Hid hid) {
+        super(hid);
     }   
 }

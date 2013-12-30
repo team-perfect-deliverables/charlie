@@ -25,7 +25,7 @@ public class Starting extends Message {
         return hids;
     }
 
-    public int getShoeSize() {
+    public int shoeSize() {
         return shoeSize;
     }
 }

@@ -1,3 +1,4 @@
 charlie.debug true
-charlie.shoe 0
-charlie.decks 6
+charlie.shoe 6deck-test
+charlie.port.topology 1234
+charlie.port.login 9000

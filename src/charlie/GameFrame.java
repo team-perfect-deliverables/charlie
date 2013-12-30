@@ -49,7 +49,7 @@ public class GameFrame extends javax.swing.JFrame {
     
     private Actor house;
     
-    private Courier channel;
+    private Courier courier;
     
     private Table panel;
     
@@ -87,8 +87,8 @@ public class GameFrame extends javax.swing.JFrame {
     }
     
     /**
-     * Connects local channel to remote channel (on server).
-     * @param panel Panel channel perceives.
+     * Connects local courier to remote courier (on server).
+     * @param panel Panel courier perceives.
      * @return True if connected, false if connect attempt fails.
      */
     private boolean connect(Table panel) {
@@ -118,15 +118,15 @@ public class GameFrame extends javax.swing.JFrame {
             house = clientTopology.getActor(addr);
             LOG.info("got house actor"); 
 
-            // Connect the channel to its ghost surrogate
-            channel = new Courier(panel);
+            // Connect the courier to its ghost surrogate
+            courier = new Courier(panel);
             
             serverTopology = new ServerTopology(MY_HOST, MY_PORT);
             
-            Address me = serverTopology.spawnActor(CHANNEL_ACTOR, channel);
+            Address me = serverTopology.spawnActor(CHANNEL_ACTOR, courier);
             LOG.info("spawned my addr = "+me); 
             
-            channel.setMyAddress(me);
+            courier.setMyAddress(me);
 
             // Sending this message causes the house to spawn a ghost
             // which if all goes well sends us a connect message which we wait for.
@@ -353,7 +353,7 @@ public class GameFrame extends javax.swing.JFrame {
                     return;
                 }
 
-                Hid hid = channel.bet(amt);
+                Hid hid = courier.bet(amt);
 
                 hands.add(hid);
 
@@ -364,13 +364,13 @@ public class GameFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_betButtonActionPerformed
 
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
-        channel.stay(hands.get(this.handIndex));
+        courier.stay(hands.get(this.handIndex));
         enableTrucking(false);
         enablePlay(false);
     }//GEN-LAST:event_stayButtonActionPerformed
 
     private void hitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitButtonActionPerformed
-        channel.hit(hands.get(this.handIndex));
+        courier.hit(hands.get(this.handIndex));
         enablePlay(false);
     }//GEN-LAST:event_hitButtonActionPerformed
 

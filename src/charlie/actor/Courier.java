@@ -27,6 +27,7 @@ import charlie.card.HoleCard;
 import charlie.message.view.to.Ready;
 import charlie.view.IUi;
 import charlie.card.Hid;
+import charlie.controller.Seat;
 import charlie.message.view.from.Bet;
 import charlie.message.view.from.Hit;
 import charlie.message.view.from.Stay;
@@ -76,9 +77,9 @@ public class Courier {
     }
     
     public Hid bet(Integer amt) {
-        Hid hid = new Hid();
+        Hid hid = new Hid(Seat.YOU,(double)amt);
         
-        player.send(new Bet(hid,amt));
+        player.send(new Bet(hid));
         
         return hid;
     }
@@ -128,11 +129,13 @@ public class Courier {
     }
     
     @OnMessage(type = Starting.class)
-    public void onReceive(Starting starting) {      
+    public void onReceive(Starting starting) { 
+        LOG.info("receive starting shoe size = "+starting.shoeSize());
+        
         for(Hid hid: starting.getHids())
             LOG.info("starting hand: "+hid);
         
-        ui.starting(starting.getHids());
+        ui.starting(starting.getHids(),starting.shoeSize());
     }
 
     @OnMessage(type = Deal.class)
@@ -160,8 +163,8 @@ public class Courier {
     
     @OnMessage(type = Ending.class)
     public void onReceive(Ending ending) {
-        LOG.info("received ending bankrool = "+ending.getBankroll());
-        ui.ending(ending.getBankroll());
+        LOG.info("received ending shoe size = "+ending.getShoeSize());
+        ui.ending(ending.getShoeSize());
     }
     
     @OnMessage(type = String.class)

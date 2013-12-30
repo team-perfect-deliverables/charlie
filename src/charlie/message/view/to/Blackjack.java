@@ -11,7 +11,7 @@ import charlie.card.Hid;
  * @author roncoleman125
  */
 public class Blackjack extends Outcome {
-    public Blackjack(Hid hid,Double pl) {
-        super(hid,pl);
+    public Blackjack(Hid hid) {
+        super(hid);
     }
 }

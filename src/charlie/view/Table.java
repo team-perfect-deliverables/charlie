@@ -33,7 +33,6 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.controller.Seat;
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -48,33 +47,41 @@ import java.util.Random;
 public final class Table extends JPanel implements Runnable, IUi, MouseListener {
 
     protected Random ran = new Random();
-    protected String[] hombres = {"Fred", "Bob", "Dave"};
-    protected String[] mujeres = {"Betty", "Sue", "Natalie"};
+    protected String[] hombres = {"Fred", "Barney", "George"};
+    protected String[] damas = {"Wilma", "Betty", "Jane"};
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
-    protected AHandsManager hombre = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(0, 50));
-    protected AHandsManager mujer = new AHandsManager(mujeres[ran.nextInt(mujeres.length)], new Point(100, 50));
-    protected AHandsManager[] handsManager = {you, dealer, hombre, mujer};
+    protected AHandsManager rosie = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(0, 50));
+    protected AHandsManager robby = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(100, 50));
+    protected AHandsManager[] handsManager = {you, dealer, rosie, robby};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;
     protected List<Feedback> feedbacks = new ArrayList<>();
     protected HashMap<Seat, AHandsManager> seats = new HashMap<Seat, AHandsManager>() {
         {
             put(Seat.YOU, you);
-            put(Seat.LEFT, hombre);
-            put(Seat.RIGHT, mujer);
+            put(Seat.ROSIE, rosie);
+            put(Seat.ROBBY, robby);
             put(Seat.DEALER, dealer);
         }
     };
+    
+    private final HashMap<Seat,AMoneyManager> monies = new HashMap<Seat,AMoneyManager>() {
+        {
+            put(Seat.YOU,new AMoneyManager());
+            put(Seat.ROSIE,new ABotMoneyManager());
+            put(Seat.ROBBY,new ABotMoneyManager());
+        }
+    };
+    
     protected HashMap<Hid, AHand> manos = new HashMap<>();
     private Thread gameLoop;
     private static Color COLOR_FELT = new Color(0, 127, 14);
     private final int DELAY = 50;
-    private Image cover = null;
     private final GameFrame frame;
-    private final BetManager betManager = new BetManager();
     private boolean bettable = false;
     private boolean gameOver = true;
+    private int shoeSize;
 
     /**
      * Constructor
@@ -107,7 +114,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      * @return 
      */
     public Integer getBetAmt() {
-        Integer amt = this.betManager.getAmount();
+        Integer amt = this.monies.get(Seat.YOU).getAmount();
         return amt;
     }
 
@@ -141,7 +148,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         }
         
         // Render the bet on the table
-        this.betManager.render(g);
+        this.monies.get(Seat.YOU).render(g);
 
         // Java tool related stuff
         Toolkit.getDefaultToolkit().sync();
@@ -211,11 +218,11 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     }
 
     /**
-     * Sets the bankroll.
-     * @param bankroll Bankroll
+     * Sets the amt.
+     * @param amt Bankroll
      */
-    public void setBankroll(Double bankroll) {
-        this.betManager.setBankroll(bankroll);
+    public void setBankroll(Double amt) {
+        this.monies.get(Seat.YOU).setBankroll(amt);
     }
 
     /**
@@ -306,6 +313,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Bust);
+        
+        AMoneyManager money = this.monies.get(hid.getSeat());
+        
+        money.decrease(hid.getAmt());        
     }
 
     /**
@@ -318,6 +329,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Win);
+        
+        AMoneyManager money = this.monies.get(hid.getSeat());
+        
+        money.increase(hid.getAmt());
     }
 
     /**
@@ -330,6 +345,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Loose);
+        
+        AMoneyManager money = this.monies.get(hid.getSeat());
+        
+        money.decrease(hid.getAmt());        
     }
 
     /**
@@ -354,6 +373,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Blackjack);
+        
+        AMoneyManager money = this.monies.get(hid.getSeat());
+        
+        money.increase(hid.getAmt());        
     }
 
     /**
@@ -366,28 +389,34 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Charlie);
+        
+        AMoneyManager money = this.monies.get(hid.getSeat());
+        
+        money.increase(hid.getAmt());        
     }
 
     /**
-     * Starts a game. Note: we received the initial player bankroll after slogin
+     * Starts a game.
+     * Note: we received the initial player bankroll during login
      * which is handled by GameFrame.
      *
      * @param hids Hand ids
      */
     @Override
-    public void starting(List<Hid> hids) {
+    public void starting(List<Hid> hids,int shoeSize) {
         // Clear out everything from last game
-        for (AHandsManager animator : seats.values()) {
+        for (AHandsManager animator : seats.values())
             animator.clear();
-        }
 
+        this.shoeSize = shoeSize;
+        
         // It's nobdy's turn...yet
         turn = null;
 
         // Game definitely not over
         gameOver = false;
 
-        // Create corresponding (animated) hands -- dealer has non-animated ones
+        // Create corresponding (animated) hands
         for (Hid hid : hids) {
             AHand hand =
                     hid.getSeat() == Seat.DEALER ? new ADealerHand(hid) : new AHand(hid);
@@ -403,22 +432,23 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     }
 
     /**
-     * Ends a game with a players bankroll
-     *
-     * @param bankroll Bankroll
+     * Signals end of a game.
+     * @param shoeSize Shoe size
      */
     @Override
-    public void ending(Double bankroll) {
-        betManager.setBankroll(bankroll);
+    public void ending(int shoeSize) {
+        // Game now over
+        gameOver = true;
+        
+        // Update the shoe size
+        this.shoeSize = shoeSize;
 
-        // Enable betting/dealing again
+        // Enable betting and dealing again
         frame.enableDeal(true);
         this.bettable = true;
 
-        // Diable play -- waiting for a bet/deal
+        // Disable play -- we must wait for player to bet and request deal
         frame.enablePlay(false);
-
-        gameOver = true;
     }
 
     @Override
@@ -445,7 +475,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         int x = e.getX();
         int y = e.getY();
 
-        this.betManager.click(x, y);
+        monies.get(Seat.YOU).click(x, y);
     }
 
     /**
@@ -455,7 +485,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void mouseReleased(MouseEvent e) {
-        this.betManager.unclick();
+        monies.get(Seat.YOU).unclick();
     }
 
     @Override

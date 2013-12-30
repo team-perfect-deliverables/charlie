@@ -11,7 +11,7 @@ import charlie.card.Hid;
  * @author roncoleman125
  */
 public class Charlie extends Outcome {
-    public Charlie(Hid hid,Double pl) {
-        super(hid,pl);
+    public Charlie(Hid hid) {
+        super(hid);
     }
 }

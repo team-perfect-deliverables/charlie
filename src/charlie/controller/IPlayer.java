@@ -14,15 +14,15 @@ import java.util.List;
  */
 public interface IPlayer {    
     abstract public void startGame(List<Hid> hids,int shoeSize);
-    abstract public void endGame(Double bankroll);
+    abstract public void endGame(int shoeSize);
     abstract public void deal(Hid hid, Card card, int[] values);
     abstract public void observe(Hid hid, Card card);
     abstract public void insure();
-    abstract public void bust(Hid hid,Double amt);
-    abstract public void win(Hid hid,Double amt);
-    abstract public void blackjack(Hid hid,Double amt);
-    abstract public void charlie(Hid hid,Double amt);
-    abstract public void loose(Hid hid,Double amt);
+    abstract public void bust(Hid hid);
+    abstract public void win(Hid hid);
+    abstract public void blackjack(Hid hid);
+    abstract public void charlie(Hid hid);
+    abstract public void loose(Hid hid);
     abstract public void push(Hid hid);
     abstract public void shuffling();
     abstract public void play(Hid hid);

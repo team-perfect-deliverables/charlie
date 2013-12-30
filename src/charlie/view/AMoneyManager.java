@@ -9,7 +9,6 @@ import charlie.view.sprite.BetAmtSprite;
 import charlie.view.sprite.Button;
 import charlie.util.Constant;
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -22,11 +21,13 @@ import javax.swing.ImageIcon;
  *
  * @author roncoleman125
  */
-public class BetManager {
+public class AMoneyManager {
     public final static int HOME_X = 210;
     public final static int HOME_Y = 355;
-    public final static int PLACE_HOME_X = BetAmtSprite.HOME_X + BetAmtSprite.DIAMETER + 10;
-    public final static int PLACE_HOME_Y = BetAmtSprite.HOME_Y + BetAmtSprite.DIAMETER / 4;
+    public final static int BET_HOME_X = 255;
+    public final static int BET_HOME_Y = 130;    
+    public final static int PLACE_HOME_X = BET_HOME_X + BetAmtSprite.DIAMETER + 10;
+    public final static int PLACE_HOME_Y = BET_HOME_Y + BetAmtSprite.DIAMETER / 4;
     
     protected final int INDEX_5 = 2;
     protected final int INDEX_25 = 1;
@@ -44,13 +45,13 @@ public class BetManager {
     
     protected List<Button> buttons = new ArrayList<>();
     
-    protected BetAmtSprite betAmt = new BetAmtSprite(0);
+    protected BetAmtSprite betAmt = new BetAmtSprite(BET_HOME_X,BET_HOME_Y,0);
     protected List<Chip> chips = new ArrayList<>();
     private final int width;
-    protected double bankroll;
+    protected ABankroll bankroll;
     protected Integer xDeposit = 0;
     
-    public BetManager() {
+    public AMoneyManager() {
         ImageIcon icon = new ImageIcon(Constant.DIR_IMGS+UP_FILES[0]);
 
         Image img = icon.getImage();
@@ -66,11 +67,24 @@ public class BetManager {
         }
         
         xDeposit = HOME_X + xoff + 5;
+        bankroll = new ABankroll(xDeposit,HOME_Y+5,0.0);
     }
     
     public Integer getAmount() {
         return this.betAmt.getAmt();
     }
+    
+    public void increase(Double amt) {
+        bankroll.increase(amt);
+    }
+    
+    public void decrease(Double amt) {
+        bankroll.decrease(amt);
+    }    
+
+    public void setBankroll(Double amt) {
+        bankroll.setAmount(amt);
+    }    
     
     public void render(Graphics2D g) {
         for(int i=0; i < buttons.size(); i++) {
@@ -84,22 +98,7 @@ public class BetManager {
         }
         
         this.betAmt.render(g);
-        
-        g.setFont(font);
-        String remark = "";
-        if(bankroll >= 100)
-            g.setColor(Color.WHITE);
-        else if(bankroll > 50 && bankroll < 100) {
-            g.setColor(Color.YELLOW);
-            remark = " !";
-        }
-        else {
-            g.setColor(Color.RED);
-            remark = " !!!!!";
-        }
-            
-        g.drawString("Bankroll: "+bankroll+remark, xDeposit, HOME_Y+5);
-        
+        this.bankroll.render(g);
     }
     
     public void click(int x, int y) {
@@ -117,8 +116,6 @@ public class BetManager {
                 chips.add(chip);
                 
                 betAmt.increase(amounts[i]);
-                
-                bankroll -= amounts[i];
             }
 
         }
@@ -130,10 +127,4 @@ public class BetManager {
             button.release();
         }        
     }
-
-    public void setBankroll(Double bankroll) {
-        this.bankroll = bankroll;
-    }
-    
-    
 }

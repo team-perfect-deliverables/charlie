@@ -21,7 +21,7 @@ public interface IUi {
     abstract public void push(Hid hid);
     abstract public void blackjack(Hid hid);
     abstract public void charlie(Hid hid);
-    abstract public void starting(List<Hid>hids);
-    abstract public void ending(Double bankroll);
+    abstract public void starting(List<Hid>hids,int shoeSize);
+    abstract public void ending(int shoeSize);
     abstract public void shuffling();
 }

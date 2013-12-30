@@ -60,7 +60,7 @@ public class Dealer implements Serializable {
     private final Logger LOG = LoggerFactory.getLogger(Dealer.class);
     protected Shoe shoe;
     protected HashMap<Hid,Hand> hands = new HashMap<>();
-    protected HashMap<Hid,Integer> bets = new HashMap<>();
+//    protected HashMap<Hid,Integer> bets = new HashMap<>();
     protected HashMap<Hid,IPlayer> players = new HashMap<>();
     protected List<Hid> handSequence = new ArrayList<>();
     protected List<IPlayer> playerSequence = new ArrayList<>();
@@ -87,40 +87,41 @@ public class Dealer implements Serializable {
     }
     
     /**
-     * Receives a bet request from a "real" player. Don't invoke this method
+     * Receives a bet request from a "real" you. Don't invoke this method
      * for a bot. Bots are instantiated directly by this class.
-     * @param player Player
-     * @param hid Hand
+     * @param you Player
+     * @param yours Hand
      * @param bet Bet amount
      */
-    public void bet(NetPlayer player,Hid hid,Integer bet) {
-        LOG.info("got new bet = "+bet+" from "+player+" for hid = "+hid);
+    public void bet(NetPlayer you,Hid yours) {
+        LOG.info("got new bet = "+yours.getAmt()+" from "+you+" for hid = "+yours);
         
         // Clear out the old stuff
         handSequence.clear();
         playerSequence.clear();
         hands.clear();
-        bets.clear();
 
-        // Add hid in sequence of hands to play
-        handSequence.add(hid);
+        HashMap<Seat,IBot> bots = spawnBots();
         
-        handSeqIndex = 0;
+        // Add yours in sequence of hands to play
+        if(bots != null) {
+            handSequence.add(bots.get(Seat.ROSIE).getHid());
+            playerSequence.add(bots.get(Seat.ROSIE));
+            players.put(bots.get(Seat.ROSIE).getHid(),bots.get(Seat.ROSIE));
+        }
         
-        // Add player in sequence of players
-        playerSequence.add(player); 
+        handSequence.add(yours);
+        playerSequence.add(you); 
+        players.put(yours, you);
+        hands.put(yours, new Hand(yours));
         
-        // Add a bet for this hand
-        bets.put(hid, bet);
+        if(bots != null) {
+            handSequence.add(bots.get(Seat.ROBBY).getHid());
+            playerSequence.add(bots.get(Seat.ROBBY));
+            players.put(bots.get(Seat.ROBBY).getHid(),bots.get(Seat.ROBBY));
+        }
         
-        // Connect this hand to a player
-        players.put(hid, player);
-       
-        // Add new hand for this player
-        hands.put(hid, new Hand(hid));
-        
-        // Create the bots
-        spawnBots();
+        handSeqIndex = 0;        
 
         // Create the dealer hand
         dealerHand = new Hand(new Hid(Seat.DEALER));
@@ -137,8 +138,8 @@ public class Dealer implements Serializable {
         startGame();
     }
         
-    protected void spawnBots() {
-        // TODO:
+    protected HashMap<Seat,IBot> spawnBots() {
+        return null;
     }
     
     /** Starts a game */
@@ -260,23 +261,22 @@ public class Dealer implements Serializable {
         
         // If the hand isBroke, we're done with this hand
         if(hand.isBroke()) {
-            Double bet = (double)bets.get(hid);
-            house.updateBankroll(player,bet,LOSS);
+            house.updateBankroll(player,hid.getAmt(),LOSS);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
-                _player.bust(hid,bet);
+                _player.bust(hid);
             
             goNextHand();
         }
         // If hand got a isCharlie, we're done with this hand
         else if(hand.isCharlie()) {
-            Double bet = (double)bets.get(hid);
-            house.updateBankroll(player,bet*CHARLIE_PAYS,PROFIT);
+            hid.multiplyAmt(CHARLIE_PAYS);
+            house.updateBankroll(player,hid.getAmt(),PROFIT);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
-                _player.charlie(hid,bet*CHARLIE_PAYS);
+                _player.charlie(hid);
             
             goNextHand();
         }
@@ -318,9 +318,7 @@ public class Dealer implements Serializable {
         hand.hit(card);
         
         // Doubble the bet and hit the hand once
-        Integer bet = bets.get(hid) * 2;
 
-        bets.put(hid, bet);
         
         hand.hit(card);
         
@@ -328,10 +326,10 @@ public class Dealer implements Serializable {
         
         // If hand isBroke, tell everyone
         if(hand.isBroke()) {
-            house.updateBankroll(player,(double) bet,LOSS);
+            house.updateBankroll(player,hid.getAmt(),LOSS);
             
             for (IPlayer _player : playerSequence)
-                _player.bust(hid,(double)bet);
+                _player.bust(hid);
         }
         
         // Go to next hand regardless
@@ -343,38 +341,35 @@ public class Dealer implements Serializable {
      */
     protected void goNextHand() {
         // Get next hand and inform player
-        if(handSeqIndex < handSequence.size()) {
+        if (handSeqIndex < handSequence.size()) {
             Hid hid = handSequence.get(handSeqIndex++);
-            
+
             active = players.get(hid);
-            LOG.info("active player = "+active);
+            LOG.info("active player = " + active);
 
             // Check for isBlackjack before moving on
             Hand hand = this.hands.get(hid);
-            
+
             // If hand has isBlackjack, it's not automatic hand wins
             // since the dealer may also have isBlackjack
-            if(hand.isBlackjack()) {
-                Double bet = (double)bets.get(hid);
-                
-                Double earnings = bet * BLACKJACK_PAYS;
-                
+            if (hand.isBlackjack()) {               
+                hid.multiplyAmt(BLACKJACK_PAYS);
+
                 IPlayer player = this.players.get(hid);
-                
-                
-                house.updateBankroll(player,earnings,PROFIT);
+
+                house.updateBankroll(player, hid.getAmt(), PROFIT);
                 for (IPlayer _player : playerSequence)
-                    _player.blackjack(hid,earnings);
-             
+                    _player.blackjack(hid);
+
                 goNextHand();
-                
+
                 return;
             }
-            
+
             // Unless the player got a isBlackjack, tell the player they're
             // to start playing this hand
             active.play(hid);
-            
+
             return;
         }
 
@@ -425,22 +420,20 @@ public class Dealer implements Serializable {
 
             // If hand less than dealer and dealer not isBroke, hand lost
             if(hand.getValue() < dealerHand.getValue() && !dealerHand.isBroke()) {
-                Double bet = (double) bets.get(hid);
-                house.updateBankroll(players.get(hid),bet,LOSS);
+                house.updateBankroll(players.get(hid),hid.getAmt(),LOSS);
                 
                 for (IPlayer player: playerSequence)
-                    player.loose(hid,bet);
+                    player.loose(hid);
             }
             // If hand less than dealer and dealer isBroke OR...
             //    hand greater than dealer and dealer NOT isBroke => hand won
             else if(hand.getValue() < dealerHand.getValue() && dealerHand.isBroke() ||
                     hand.getValue() > dealerHand.getValue() && !dealerHand.isBroke()) {
-                Double bet = (double)bets.get(hid);
                 
-                house.updateBankroll(players.get(hid),bet,PROFIT);
+                house.updateBankroll(players.get(hid),hid.getAmt(),PROFIT);
                 
                 for (IPlayer player: playerSequence)
-                    player.win(hid,bet);   
+                    player.win(hid);   
             }
             // If player and dealer hands same, hand pushed
             else if(hand.getValue() == dealerHand.getValue())
@@ -458,14 +451,11 @@ public class Dealer implements Serializable {
 
     
     /**
-     * Tells everyone the game is over.
+     * Tells everyone game over.
      */
     protected void wrapUp() {
-        for (IPlayer player: playerSequence) {
-            Double bankroll = house.getBankroll(player);
-            
-            player.endGame(bankroll);
-        }         
+        for (IPlayer player: playerSequence)           
+            player.endGame(shoe.size());      
     }
     
     /**
