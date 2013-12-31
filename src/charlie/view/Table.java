@@ -52,7 +52,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
     protected AHandsManager b9 = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(450, 150));
-    protected AHandsManager prot = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(100, 150));
+    protected AHandsManager prot = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(25, 150));
     protected AHandsManager[] handsManager = {you, dealer, b9, prot};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;

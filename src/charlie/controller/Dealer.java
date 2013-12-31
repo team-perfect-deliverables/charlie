@@ -104,11 +104,11 @@ public class Dealer implements Serializable {
         reset();
 
         // Insert the player -- IN THIS ORDER
-        insert("B9",Seat.LEFT);
+        sit("B9",Seat.RIGHT);
         
-        insert(you,yours);
+        sit(you,yours);
         
-        insert("Prot",Seat.RIGHT);
+        sit("B9",Seat.LEFT);
       
         handSeqIndex = 0;        
 
@@ -127,7 +127,7 @@ public class Dealer implements Serializable {
      * @param you You player
      * @param yours Your hand id
      */
-    protected void insert(IPlayer you,Hid yours) {
+    protected void sit(IPlayer you,Hid yours) {
         handSequence.add(yours);
         playerSequence.add(you); 
         players.put(yours, you);
@@ -140,7 +140,7 @@ public class Dealer implements Serializable {
      * @param seat Bot seat at table
      * @return A bot
      */
-    protected IBot insert(String name, Seat seat) {
+    protected IBot sit(String name, Seat seat) {
         if(seat != Seat.LEFT && seat != Seat.RIGHT) {
             LOG.error("can't seat bot at seat = "+seat);
             return null;
@@ -213,14 +213,14 @@ public class Dealer implements Serializable {
     protected void startGame() {
         LOG.info("starting a game");
         try {
-            // Gather up all the initial hands
+            // Gather up all the initial hands (ie, not including splits)
             List<Hid> hids = new ArrayList<>();
             
-            for(Hid hid: hands.keySet()) {
+            for(Hid hid: handSequence) {
                 hids.add(hid);
             }
             
-            // Include the dealer's hand
+            // Include the dealer's hand as last to play
             hids.add(dealerHand.getHid());
           
             LOG.info("hands at table + dealer = "+hids.size());
@@ -295,7 +295,18 @@ public class Dealer implements Serializable {
                 // Distribute the hard to everyone, even if it's not theirs
                 for (IPlayer _player : playerSequence)
                     _player.deal(hid, card, hand.getValues());
+                
+                // If player has blackjack -- they win automatically!
+                if (hid.getSeat() != Seat.DEALER && hand.isBlackjack()) {
+                    hid.multiplyAmt(BLACKJACK_PAYS);
+                    
+                    house.updateBankroll(players.get(hid), hid.getAmt(), PROFIT);
 
+                    for (IPlayer player_ : playerSequence) {
+                        player_.blackjack(hid);
+                    }
+                }
+                    
                 Thread.sleep(Constant.DEAL_DELAY);
 
                 // Deal corresponding dealer card
@@ -422,20 +433,10 @@ public class Dealer implements Serializable {
             // Check for isBlackjack before moving on
             Hand hand = this.hands.get(hid);
 
-            // If hand has isBlackjack, it's not automatic hand wins
+            // If hand has Blackjack, it's not automatic hand wins
             // since the dealer may also have isBlackjack
             if (hand.isBlackjack()) {               
-                hid.multiplyAmt(BLACKJACK_PAYS);
-
-                IPlayer player = this.players.get(hid);
-
-                house.updateBankroll(player, hid.getAmt(), PROFIT);
-                
-                for (IPlayer _player : playerSequence)
-                    _player.blackjack(hid);
-
                 goNextHand();
-
                 return;
             }
 
