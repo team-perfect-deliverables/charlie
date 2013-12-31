@@ -51,17 +51,17 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     protected String[] damas = {"Wilma", "Betty", "Jane"};
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
-    protected AHandsManager rosie = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(0, 50));
-    protected AHandsManager robby = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(100, 50));
-    protected AHandsManager[] handsManager = {you, dealer, rosie, robby};
+    protected AHandsManager b9 = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(0, 50));
+    protected AHandsManager prot = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(100, 50));
+    protected AHandsManager[] handsManager = {you, dealer, b9, prot};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;
     protected List<Feedback> feedbacks = new ArrayList<>();
     protected HashMap<Seat, AHandsManager> seats = new HashMap<Seat, AHandsManager>() {
         {
             put(Seat.YOU, you);
-            put(Seat.ROSIE, rosie);
-            put(Seat.ROBBY, robby);
+            put(Seat.RIGHT, b9);
+            put(Seat.LEFT, prot);
             put(Seat.DEALER, dealer);
         }
     };
@@ -69,8 +69,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     private final HashMap<Seat,AMoneyManager> monies = new HashMap<Seat,AMoneyManager>() {
         {
             put(Seat.YOU,new AMoneyManager());
-            put(Seat.ROSIE,new ABotMoneyManager());
-            put(Seat.ROBBY,new ABotMoneyManager());
+            put(Seat.RIGHT,new ABotMoneyManager());
+            put(Seat.LEFT,new ABotMoneyManager());
         }
     };
     
@@ -140,16 +140,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         Graphics2D g = (Graphics2D) _g;
 
-//        g.drawImage(cover, 0, 0, null);
-
+        // Render the bet on the table
+        this.monies.get(Seat.YOU).render(g);
+        
         // Render the hands
         for (int i = 0; i < handsManager.length; i++) {
             handsManager[i].render(g);
         }
-        
-        // Render the bet on the table
-        this.monies.get(Seat.YOU).render(g);
-
         // Java tool related stuff
         Toolkit.getDefaultToolkit().sync();
 
@@ -258,7 +255,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             this.frame.enablePlay(false);
         } else {
             // Disable old hand
-            if (turn != null) // This turns off the turn indicator
+            if (turn != null)
             {
                 turn.enablePlaying(false);
             }

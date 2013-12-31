@@ -47,7 +47,7 @@ public class House implements Serializable {
     private final Logger LOG = LoggerFactory.getLogger(House.class);
     @TopologyInstance private Topology topology;
     private final String PLAYER_ACTOR = "PLAYER-";
-    protected List<NetPlayer> players = new ArrayList<>();
+    protected List<RealPlayer> players = new ArrayList<>();
     private Integer nextPlayerId = 0;
     private final Properties props;
     private final GameServer server;
@@ -93,7 +93,7 @@ public class House implements Serializable {
         Dealer dealer = new Dealer(this);
         
         // Spawn a player actor in server
-        NetPlayer player = new NetPlayer(dealer, courierAddress);
+        RealPlayer player = new RealPlayer(dealer, courierAddress);
         accounts.put(player,ticket);
         
         synchronized(this) {

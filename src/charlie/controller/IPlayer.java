@@ -16,7 +16,6 @@ public interface IPlayer {
     abstract public void startGame(List<Hid> hids,int shoeSize);
     abstract public void endGame(int shoeSize);
     abstract public void deal(Hid hid, Card card, int[] values);
-    abstract public void observe(Hid hid, Card card);
     abstract public void insure();
     abstract public void bust(Hid hid);
     abstract public void win(Hid hid);

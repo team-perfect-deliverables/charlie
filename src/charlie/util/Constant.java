@@ -13,5 +13,6 @@ public class Constant {
     public final static int HAND_LITERAL_VALUE = 0;
     public final static int HAND_SOFT_VALUE = 1;  
     public final static Integer DEAL_DELAY = 1200;
-    public final static Integer NUM_DECKS = 6;
+    public final static Double BOT_BANKROLL = 500.0;
+    public final static Double BOT_MIN_BET = 5.0;
 }

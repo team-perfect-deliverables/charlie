@@ -8,4 +8,4 @@ package charlie.controller;
  *
  * @author roncoleman125
  */
-public enum Seat {NONE, ROSIE, ROBBY, YOU, DEALER};
+public enum Seat {NONE, RIGHT, LEFT, YOU, DEALER};

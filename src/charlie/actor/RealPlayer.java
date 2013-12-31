@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
  * This class implements the game interface to a player in the cloud.
  * @author Ron Coleman
  */
-public class NetPlayer implements IPlayer {
-    private final Logger LOG = LoggerFactory.getLogger(NetPlayer.class);
+public class RealPlayer implements IPlayer {
+    private final Logger LOG = LoggerFactory.getLogger(RealPlayer.class);
     ClientTopology topology;
     protected Address myAddress;
     protected Actor courier;   
@@ -70,7 +70,7 @@ public class NetPlayer implements IPlayer {
      * @param dealer Dealer the player is using.
      * @param courierAddress Actor address of our courier to the remote host
      */
-    public NetPlayer(Dealer dealer, Address courierAddress) {
+    public RealPlayer(Dealer dealer, Address courierAddress) {
         this.dealer = dealer;
         
         String host = courierAddress.getHost();
@@ -139,16 +139,6 @@ public class NetPlayer implements IPlayer {
      */
     public void setMyAddress(Address mine) {
         this.myAddress = mine;
-    }
-
-    /**
-     * Observes a card for a hand.
-     * @param hid Hand id
-     * @param card Card
-     */
-    @Override
-    public void observe(Hid hid, Card card) {
-        courier.send(new Observe(hid,card));
     }
 
     /**

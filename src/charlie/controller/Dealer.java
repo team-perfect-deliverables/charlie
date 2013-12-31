@@ -26,7 +26,7 @@ import charlie.card.Hand;
 import charlie.card.shoe.Shoe;
 //import isCharlie.card.DealerHand;
 import charlie.actor.House;
-import charlie.actor.NetPlayer;
+import charlie.actor.RealPlayer;
 import charlie.card.Card;
 import charlie.card.HoleCard;
 import charlie.card.Hid;
@@ -68,6 +68,7 @@ public class Dealer implements Serializable {
     protected Integer handSeqIndex = 0;
     protected IPlayer active = null;
     protected Hand dealerHand;
+    private HoleCard holeCard;
     
     /**
      * Constructor
@@ -93,56 +94,119 @@ public class Dealer implements Serializable {
      * @param yours Hand
      * @param bet Bet amount
      */
-    public void bet(NetPlayer you,Hid yours) {
+    public void bet(RealPlayer you,Hid yours) {
         LOG.info("got new bet = "+yours.getAmt()+" from "+you+" for hid = "+yours);
         
-        // Clear out the old stuff
-        handSequence.clear();
-        playerSequence.clear();
-        hands.clear();
+        // Clear out old hands, if any
+        reset();
 
-        HashMap<Seat,IBot> bots = spawnBots();
+        // Insert the player -- IN THIS ORDER
+        insert("B9",Seat.RIGHT);
         
-        // Add yours in sequence of hands to play
-        if(bots != null) {
-            handSequence.add(bots.get(Seat.ROSIE).getHid());
-            playerSequence.add(bots.get(Seat.ROSIE));
-            players.put(bots.get(Seat.ROSIE).getHid(),bots.get(Seat.ROSIE));
-        }
+        insert(you,yours);
         
-        handSequence.add(yours);
-        playerSequence.add(you); 
-        players.put(yours, you);
-        hands.put(yours, new Hand(yours));
-        
-        if(bots != null) {
-            handSequence.add(bots.get(Seat.ROBBY).getHid());
-            playerSequence.add(bots.get(Seat.ROBBY));
-            players.put(bots.get(Seat.ROBBY).getHid(),bots.get(Seat.ROBBY));
-        }
-        
+        insert("Prot",Seat.LEFT);
+      
         handSeqIndex = 0;        
 
         // Create the dealer hand
         dealerHand = new Hand(new Hid(Seat.DEALER));
         
-        // Shuffle cards, if needed
-        if(shoe.shuffleNeeded()) {
-            shoe.shuffle();
-            
-            for(IPlayer _player: playerSequence)
-                _player.shuffling();
-        }
+        // Shuffle cards
+        shuffle();
         
         // Let the game begin!
         startGame();
     }
         
-    protected HashMap<Seat,IBot> spawnBots() {
+    /**
+     * Inserts a player at the table.
+     * @param you You player
+     * @param yours Your hand id
+     */
+    protected void insert(IPlayer you,Hid yours) {
+        handSequence.add(yours);
+        playerSequence.add(you); 
+        players.put(yours, you);
+        hands.put(yours, new Hand(yours));        
+    }
+    
+    /**
+     * Spawns a full-fledged bot. 
+     * @param name Bot name
+     * @param seat Bot seat at table
+     * @return A bot
+     */
+    protected IBot insert(String name, Seat seat) {
+        if(seat != Seat.LEFT && seat != Seat.RIGHT) {
+            LOG.error("can't seat bot at seat = "+seat);
+            return null;
+        }
+        
+        String name_ = name.toLowerCase();
+        String className = house.getProps().getProperty("charlie.bot." + name_);
+        if (className == null) {
+            LOG.info("no bot configured for charlie.bot."+name_);
+            return null;
+        }
+        
+        LOG.info("attempting to spawn bot "+name_+" class = "+className);
+
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+
+            IBot bot = (IBot) clazz.newInstance();
+            
+            bot.sit(seat);
+            
+            bot.setDealer(this);
+            
+            Hand hand = bot.getHand();
+            Hid hid = hand.getHid();
+
+            handSequence.add(hid);
+            
+            playerSequence.add(bot);
+            
+            players.put(hid, bot);
+            
+            hands.put(hid, hand);
+           
+            LOG.info("successfully spawned bot = "+name_);
+            return bot;
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            LOG.error("caught exception: " + ex);
+        }
+
         return null;
     }
     
-    /** Starts a game */
+    /**
+     * Resets the state of the game.
+     */
+    protected void reset() {
+        handSequence.clear();
+        playerSequence.clear();
+        hands.clear();        
+    }
+    
+    /**
+     * Shuffles the shoe, if necessary.
+     */
+    protected void shuffle() {
+        if (shoe.shuffleNeeded()) {
+            shoe.shuffle();
+
+            for (IPlayer player : playerSequence) {
+                player.shuffling();
+            }
+        }      
+    }
+    
+    /**
+     * Starts the game.
+     */
     protected void startGame() {
         LOG.info("starting a game");
         try {
@@ -165,7 +229,7 @@ public class Dealer implements Serializable {
             Thread.sleep(250);
             
             // First round hole card sent to everyone
-            HoleCard holeCard = new HoleCard(shoe.next());
+            holeCard = new HoleCard(shoe.next());
             dealerHand.hit(holeCard);
             round(hids,holeCard);
             Thread.sleep(Constant.DEAL_DELAY);
@@ -194,7 +258,7 @@ public class Dealer implements Serializable {
     }
     
     /**
-     * Insures a dealer isBlackjack
+     * Insures against dealer Blackjack
      */
     protected void insure() {
         // TODO
@@ -228,10 +292,12 @@ public class Dealer implements Serializable {
 
                 Thread.sleep(Constant.DEAL_DELAY);
 
-                // Deal the corresponding dealer card
+                // Deal corresponding dealer card
+                // If hole card, dont send to bots -- dont want them to cheat!
                 LOG.info("sending dealer card = "+dealerCard);
 
-                player.deal(dealerHand.getHid(), dealerCard, dealerHand.getValues());
+                if(!(dealerCard instanceof HoleCard && player instanceof IBot))
+                    player.deal(dealerHand.getHid(), dealerCard, dealerHand.getValues());
             }            
         }
         catch(Exception e) {
@@ -248,7 +314,7 @@ public class Dealer implements Serializable {
         // Validate the request
         Hand hand = validate(hid);
         if(hand == null) {
-            LOG.error("got invalide HIT player = "+player);
+            LOG.error("got invalid HIT player = "+player);
             return;
         }
         
@@ -459,10 +525,15 @@ public class Dealer implements Serializable {
     }
     
     /**
-     * Tells everyone it's dealer's turn.
+     * Tells everyone it's dealers turn.
      */
     protected void signal() {
         for (IPlayer player: playerSequence) {
+            // Reveal hole card for bot
+            if(player instanceof IBot)
+                player.deal(dealerHand.getHid(), holeCard, dealerHand.getValues());
+            
+            // Tell player it's dealers turn
             player.play(this.dealerHand.getHid());
         }    
     }

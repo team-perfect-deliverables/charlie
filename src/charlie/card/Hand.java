@@ -137,5 +137,15 @@ public class Hand implements Serializable {
                 values[Constant.HAND_SOFT_VALUE] :
                 values[Constant.HAND_LITERAL_VALUE];        
     }
+    
+    @Override
+    public String toString() {
+        String s = "";
+        for(int i=0; i < cards.size(); i++) {
+            s += "[" + cards.get(i) + "] ";
+        }
+        
+        return s;
+    }
 
 }

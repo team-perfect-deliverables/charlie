@@ -5,7 +5,6 @@
 package charlie.message.view.from;
 
 import charlie.card.Hid;
-import charlie.message.Message;
 
 /**
  *

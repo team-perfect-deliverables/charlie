@@ -4,12 +4,14 @@
  */
 package charlie.controller;
 
-import charlie.card.Hid;
+import charlie.card.Hand;
 
 /**
  *
  * @author roncoleman125
  */
 public interface IBot extends IPlayer {
-    public Hid getHid();
+    public Hand getHand();
+    public void setDealer(Dealer dealer);
+    public void sit(Seat seat);
 }
