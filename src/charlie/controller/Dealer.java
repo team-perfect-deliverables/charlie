@@ -80,11 +80,14 @@ public class Dealer implements Serializable {
         // Instantiate the shoe
         Properties props = house.getProps();
         
-        String scenario = props.getProperty("charlie.shoe", "6deck");
+        String scenario = props.getProperty("charlie.shoe", "6deck-test");
+        LOG.info("using scenario = '"+scenario+"'");
         
         shoe = ShoeFactory.getInstance(scenario);
         
         shoe.init();
+        
+        LOG.info("shoe = "+shoe);
     }
     
     /**
@@ -101,11 +104,11 @@ public class Dealer implements Serializable {
         reset();
 
         // Insert the player -- IN THIS ORDER
-        insert("B9",Seat.RIGHT);
+        insert("B9",Seat.LEFT);
         
         insert(you,yours);
         
-        insert("Prot",Seat.LEFT);
+        insert("Prot",Seat.RIGHT);
       
         handSeqIndex = 0;        
 
@@ -284,11 +287,14 @@ public class Dealer implements Serializable {
                 // Deal this card
                 LOG.info("dealing to "+player+" card 1 = "+card); 
                 
+                // Save it to dealer's copy of hand
                 Hand hand = this.hands.get(hid);
                 
                 hand.hit(card);
                 
-                player.deal(hid, card, hand.getValues());
+                // Distribute the hard to everyone, even if it's not theirs
+                for (IPlayer _player : playerSequence)
+                    _player.deal(hid, card, hand.getValues());
 
                 Thread.sleep(Constant.DEAL_DELAY);
 
@@ -322,8 +328,8 @@ public class Dealer implements Serializable {
         Card card = shoe.next();
         
         hand.hit(card);
-        
-        player.deal(hid, card, hand.getValues());
+        for (IPlayer _player : playerSequence)
+            _player.deal(hid, card, hand.getValues());
         
         // If the hand isBroke, we're done with this hand
         if(hand.isBroke()) {
@@ -424,6 +430,7 @@ public class Dealer implements Serializable {
                 IPlayer player = this.players.get(hid);
 
                 house.updateBankroll(player, hid.getAmt(), PROFIT);
+                
                 for (IPlayer _player : playerSequence)
                     _player.blackjack(hid);
 
@@ -434,7 +441,10 @@ public class Dealer implements Serializable {
 
             // Unless the player got a isBlackjack, tell the player they're
             // to start playing this hand
-            active.play(hid);
+            for (IPlayer player: playerSequence) {
+                LOG.info("sending turn "+hid+" to "+player);
+                player.play(hid);
+            }
 
             return;
         }
@@ -481,7 +491,7 @@ public class Dealer implements Serializable {
             Hand hand = hands.get(hid);
             
             // These handled during hit cycle
-            if(hand.isBroke() || hand.isCharlie())
+            if(hand.isBroke() || hand.isCharlie() || hand.isBlackjack())
                 continue;
 
             // If hand less than dealer and dealer not isBroke, hand lost
@@ -546,7 +556,7 @@ public class Dealer implements Serializable {
         for(Hid hid: handSequence) {
             Hand hand = hands.get(hid);
             
-            if(!hand.isBroke())
+            if(!hand.isBroke() && !hand.isBlackjack() && !hand.isCharlie())
                 return true;
         }
         

@@ -123,4 +123,16 @@ public class Shoe  {
     public int size() {
         return cards.size() - index;
     }
+    
+    /**
+     * Converts shoe to string.
+     * @return String
+     */
+    @Override
+    public String toString() {
+        String s = "";
+        for(int i=index, count=0; i < cards.size() && count < 15; i++, count++)
+            s += cards.get(i) + " ";
+        return this.getClass().getName()+": "+s;
+    }
 }

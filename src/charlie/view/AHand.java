@@ -42,22 +42,6 @@ public class AHand {
         this.home = new Point(0, 0);
     }
 
-//    public AHand(ACard card) {
-//        this();
-//
-//        hit(card);
-//    }
-//
-//    public AHand(Point home) {
-//        this.home = home;
-//    }
-//
-//    public AHand(Point home, ACard card) {
-//        this(home);
-//
-//        hit(card);
-//    }
-
     public void update() {
         int sz = cards.size();
         for (int i = 0; i < sz; i++) {
@@ -80,30 +64,51 @@ public class AHand {
         renderState(g,text);
     }
 
-    protected void renderState(Graphics2D g,String text) {
-        ACard card = cards.get(0);
-        
-        int wind = turnSprite.getImage().getWidth(null);
-        
-        int xoff = card.getImage().getWidth(null) / 2 - wind / 2;
-        int yoff = -turnSprite.getImage().getHeight(null) - 5;
-        
-        int x = home.getX()+xoff;
-        int y = home.getY()+yoff;
-        
-        Point pos = new Point(x,y);
-        
-        turnSprite.setXY(pos);
+    protected void renderState(Graphics2D g, String stateText) {
+        try {
+            int indicatorWidth = turnSprite.getImage().getWidth(null);
+            int cardWidth = AHandsManager.getCardWidth();
+            
+            int xoff = cardWidth / 2 - indicatorWidth / 2;
+            int yoff = -turnSprite.getImage().getHeight(null) - 5;
 
-        turnSprite.render(g);
+            int x = home.getX() + xoff;
+            int y = home.getY() + yoff;
 
-        x += turnSprite.getWidth();
-        y += turnSprite.getHeight() / 2;
-        
-        g.setColor(fontColor);
-        g.setFont(font);
+            Point pos = new Point(x, y);
 
-        g.drawString(text, x, y);       
+            turnSprite.setXY(pos);
+
+            turnSprite.render(g);
+
+            x += turnSprite.getWidth() + 5;
+            y += turnSprite.getHeight() / 2 + 15;
+
+            g.setColor(fontColor);
+            g.setFont(font);
+
+            g.drawString(stateText, x, y);
+            
+            String outcomeText = "";
+            if (outcome == Outcome.Blackjack)
+                outcomeText += "Blackjack !";
+            else if (outcome == Outcome.Charlie)
+                outcomeText += "Charlie !";
+            else if (outcome != Outcome.None)
+                outcomeText += outcome.toString().toUpperCase() + " !"; 
+            
+            int sz = cards.size();
+            if(sz == 0)
+                return;
+            
+            int cardHeight = AHandsManager.getCardHeight();
+            x = cards.get(sz-1).getHome().getX() + cardWidth + 5;
+            y = cards.get(sz-1).getHome().getY() + cardHeight / 2; 
+            
+            g.drawString(outcomeText,x,y);
+        }
+        catch (Exception e) {
+        }
     }
     
     protected String getText() {
@@ -112,13 +117,6 @@ public class AHand {
                 values[Constant.HAND_LITERAL_VALUE];
 
         String text = name + ": "+value;
-        
-        if(outcome == Outcome.Blackjack)
-            text += " => WIN Blackjack !";
-        else if(outcome == Outcome.Charlie)
-            text += " => WIN Charlie !";
-        else if(outcome != Outcome.None)
-            text += " => "+outcome.toString().toUpperCase()+" !";
         
         return text;
     }

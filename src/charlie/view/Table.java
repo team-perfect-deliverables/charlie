@@ -47,12 +47,12 @@ import java.util.Random;
 public final class Table extends JPanel implements Runnable, IUi, MouseListener {
 
     protected Random ran = new Random();
-    protected String[] hombres = {"Fred", "Barney", "George"};
-    protected String[] damas = {"Wilma", "Betty", "Jane"};
+    protected String[] hombres = {"Robby", "R2", "C3P0"};
+    protected String[] damas = {"Rosey", "Pris", "Rhoda"};
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
-    protected AHandsManager b9 = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(0, 50));
-    protected AHandsManager prot = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(100, 50));
+    protected AHandsManager b9 = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(450, 150));
+    protected AHandsManager prot = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(100, 150));
     protected AHandsManager[] handsManager = {you, dealer, b9, prot};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;
@@ -162,7 +162,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             handsManager[i].update();
 
         // If it's my turn, I didn't break, and my cards have landed,
-        // then enable me to play
+        // then enable enable to play
         if (turn != null
                 && turn.hid.getSeat() == Seat.YOU
                 && !turn.isBroke()
@@ -178,7 +178,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     }
 
     /**
-     * Repaints the diplay
+     * Repaints the display
      */
     public void render() {
         repaint();
@@ -256,23 +256,22 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         } else {
             // Disable old hand
             if (turn != null)
-            {
                 turn.enablePlaying(false);
-            }
 
             // Enable new hand
             turn = hand;
+            
+            turn.enablePlaying(true);
 
             // If turn is NOT my hand, disable my hand
-            boolean me = true;
+            boolean enable = true;
 
             if (hid.getSeat() != Seat.YOU) {
-                me = false;
+                enable = false;
             }
 
-            turn.enablePlaying(me);
-            this.frame.enableTrucking(me);
-            this.frame.enablePlay(me);
+            this.frame.enableTrucking(enable);
+            this.frame.enablePlay(enable);
         }
     }
 
@@ -290,9 +289,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         // If card is null, this is not a "real" hit but only
         // updating the respective hand value.
-        if (card == null) {
+        if (card == null)
             return;
-        }
 
         // Convert card to an animated card and hit the hand
         ACard acard = AHandsManager.animate(card);
