@@ -33,12 +33,15 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.controller.Seat;
+import charlie.util.Config;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import javax.swing.ImageIcon;
 
 /**
  * This class is the main table panel.
@@ -47,13 +50,13 @@ import java.util.Random;
 public final class Table extends JPanel implements Runnable, IUi, MouseListener {
 
     protected Random ran = new Random();
-    protected String[] hombres = {"Robby", "R2", "C3P0"};
-    protected String[] damas = {"Rosey", "Pris", "Rhoda"};
+    protected String[] b9s = {"Robby", "Rosey", "C3P0"};
+    protected String[] n6s = {"Roy", "Pris", "Leon"};
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
-    protected AHandsManager b9 = new AHandsManager(hombres[ran.nextInt(hombres.length)], new Point(450, 150));
-    protected AHandsManager prot = new AHandsManager(damas[ran.nextInt(damas.length)], new Point(25, 150));
-    protected AHandsManager[] handsManager = {you, dealer, b9, prot};
+    protected AHandsManager b9 = new AHandsManager(b9s[ran.nextInt(b9s.length)], new Point(450, 150));
+    protected AHandsManager n6 = new AHandsManager(n6s[ran.nextInt(n6s.length)], new Point(25, 150));
+    protected AHandsManager[] handsManager = {you, dealer, b9, n6};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;
     protected List<Feedback> feedbacks = new ArrayList<>();
@@ -61,7 +64,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         {
             put(Seat.YOU, you);
             put(Seat.RIGHT, b9);
-            put(Seat.LEFT, prot);
+            put(Seat.LEFT, n6);
             put(Seat.DEALER, dealer);
         }
     };
@@ -76,12 +79,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     
     protected HashMap<Hid, AHand> manos = new HashMap<>();
     private Thread gameLoop;
-    private static Color COLOR_FELT = new Color(0, 127, 14);
+    private static Color COLOR_FELT = new Color(0, 153, 100);
     private final int DELAY = 50;
     private final GameFrame frame;
     private boolean bettable = false;
     private boolean gameOver = true;
     private int shoeSize;
+    private Image instrImg;
 
     /**
      * Constructor
@@ -107,6 +111,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         this.addMouseListener(this);
 
         this.addNotify();
+        
+        this.instrImg = new ImageIcon(Config.DIR_IMGS + "dealer-stands-0.png").getImage();
     }
 
     /**
@@ -140,6 +146,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         Graphics2D g = (Graphics2D) _g;
 
+        // Render the instructions
+        g.drawImage(this.instrImg, 140, 208, this);
+        
         // Render the bet on the table
         this.monies.get(Seat.YOU).render(g);
         
