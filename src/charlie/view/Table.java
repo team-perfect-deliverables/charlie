@@ -86,6 +86,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     private boolean gameOver = true;
     private int shoeSize;
     private Image instrImg;
+    private Image shoeImg;
+    private Image trayImg;
 
     /**
      * Constructor
@@ -113,6 +115,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         this.addNotify();
         
         this.instrImg = new ImageIcon(Config.DIR_IMGS + "dealer-stands-0.png").getImage();
+        this.shoeImg = new ImageIcon(Config.DIR_IMGS + "shoe-0.png").getImage();
+        this.trayImg = new ImageIcon(Config.DIR_IMGS + "tray-0.png").getImage();
     }
 
     /**
@@ -146,8 +150,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         Graphics2D g = (Graphics2D) _g;
 
-        // Render the instructions
+        // Render the paraphenelia
         g.drawImage(this.instrImg, 140, 208, this);
+        g.drawImage(this.shoeImg, 540, 5, this);
+        g.drawImage(this.trayImg, 430, 5, this);
         
         // Render the bet on the table
         this.monies.get(Seat.YOU).render(g);
