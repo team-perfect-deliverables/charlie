@@ -20,35 +20,22 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.card.shoe;
+package charlie.message.view.to;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import charlie.message.Message;
 
 /**
- * This class implements the shoe factory.
+ * Indicates game is over.
  * @author Ron Coleman
  */
-public class ShoeFactory {     
-    private static final Logger LOG = LoggerFactory.getLogger(ShoeFactory.class);
-    /**
-     * Gets an instance of a shoe based on a scenario.
-     * @param scenario Scenario
-     * @return Shoe
-     */
-    public static Shoe getInstance(String scenario) {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(scenario);
-            
-            Shoe shoe = (Shoe) clazz.newInstance();
-            
-            return shoe;
-        }
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            LOG.error("failed to instantiate shoe '"+scenario+"': " + ex);
-        }
-        
-        return null;
+public class GameOver extends Message { 
+    private final int shoeSize;
+    public GameOver(int shoeSize) {
+        this.shoeSize = shoeSize;
     }
+
+    public int getShoeSize() {
+        return shoeSize;
+    }
+    
 }

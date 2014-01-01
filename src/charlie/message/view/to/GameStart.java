@@ -1,4 +1,5 @@
 /*
+/*
  Copyright (c) 2014 Ron Coleman
 
  Permission is hereby granted, free of charge, to any person obtaining
@@ -20,35 +21,43 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.card.shoe;
+package charlie.message.view.to;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import charlie.card.Hid;
+import charlie.message.Message;
+import java.util.List;
 
 /**
- * This class implements the shoe factory.
+ * This message tells all players the game is starting with all hands in the game.
  * @author Ron Coleman
  */
-public class ShoeFactory {     
-    private static final Logger LOG = LoggerFactory.getLogger(ShoeFactory.class);
+public class GameStart extends Message {
+    private final List<Hid> hids;
+    private final int shoeSize;
+    
     /**
-     * Gets an instance of a shoe based on a scenario.
-     * @param scenario Scenario
-     * @return Shoe
+     * Constructor
+     * @param hids Hand ids playing in the game.
+     * @param shoeSize Starting shoe size
      */
-    public static Shoe getInstance(String scenario) {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(scenario);
-            
-            Shoe shoe = (Shoe) clazz.newInstance();
-            
-            return shoe;
-        }
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            LOG.error("failed to instantiate shoe '"+scenario+"': " + ex);
-        }
-        
-        return null;
+    public GameStart(List<Hid> hids,int shoeSize) {
+        this.hids = hids;
+        this.shoeSize = shoeSize;
+    }
+
+    /**
+     * Gets the hand ids.
+     * @return Hand ids
+     */
+    public List<Hid> getHids() {
+        return hids;
+    }
+
+    /**
+     * Gets the shoe size.
+     * @return Shoe size
+     */
+    public int shoeSize() {
+        return shoeSize;
     }
 }

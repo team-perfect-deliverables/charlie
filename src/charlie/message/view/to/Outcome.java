@@ -8,8 +8,9 @@ import charlie.card.Hid;
 import charlie.message.Message;
 
 /**
- *
- * @author roncoleman125
+ * This is the base class for all outcomes.
+ * @see charlie.message.view.from.Request
+ * @author Ron Coleman
  */
 abstract public class Outcome extends Message {
     private final Hid hid;

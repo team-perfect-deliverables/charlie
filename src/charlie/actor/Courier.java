@@ -35,12 +35,12 @@ import charlie.message.view.to.Blackjack;
 import charlie.message.view.to.Bust;
 import charlie.message.view.to.Charlie;
 import charlie.message.view.to.Deal;
-import charlie.message.view.to.Ending;
+import charlie.message.view.to.GameOver;
 import charlie.message.view.to.Loose;
 import charlie.message.view.to.Outcome;
 import charlie.message.view.to.Play;
 import charlie.message.view.to.Push;
-import charlie.message.view.to.Starting;
+import charlie.message.view.to.GameStart;
 import charlie.message.view.to.Win;
 import charlie.util.Constant;
 import com.googlecode.actorom.Actor;
@@ -112,13 +112,13 @@ public class Courier {
      */
     @OnMessage(type = Ready.class)
     public void onReceive(Ready msg) {
-        Address addr = msg.getAddress();
+        Address addr = msg.getSource();
         LOG.info("received "+msg+" from "+addr);
         
         this.topology =
                 new ClientTopology(addr.getHost(), addr.getPort(), 5, TimeUnit.SECONDS, 3, TimeUnit.SECONDS);
         
-        this.player = topology.getActor(msg.getAddress());
+        this.player = topology.getActor(msg.getSource());
         
         if(!player.isActive())
             return;
@@ -128,8 +128,8 @@ public class Courier {
         }
     }
     
-    @OnMessage(type = Starting.class)
-    public void onReceive(Starting starting) { 
+    @OnMessage(type = GameStart.class)
+    public void onReceive(GameStart starting) { 
         LOG.info("receive starting shoe size = "+starting.shoeSize());
         
         for(Hid hid: starting.getHids())
@@ -161,8 +161,8 @@ public class Courier {
         ui.turn(turn.getHid());
     }
     
-    @OnMessage(type = Ending.class)
-    public void onReceive(Ending ending) {
+    @OnMessage(type = GameOver.class)
+    public void onReceive(GameOver ending) {
         LOG.info("received ending shoe size = "+ending.getShoeSize());
         ui.ending(ending.getShoeSize());
     }

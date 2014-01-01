@@ -1,5 +1,5 @@
 charlie.debug true
-charlie.shoe 6deck-test
+charlie.shoe charlie.card.shoe.Shoe00
 charlie.port.topology 1234
 charlie.port.login 9000
 charlie.bot.b9 charlie.bot.B9

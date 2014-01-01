@@ -36,13 +36,12 @@ import charlie.message.view.to.Blackjack;
 import charlie.message.view.to.Bust;
 import charlie.message.view.to.Charlie;
 import charlie.message.view.to.Deal;
-import charlie.message.view.to.Ending;
+import charlie.message.view.to.GameOver;
 import charlie.message.view.to.Loose;
-import charlie.message.view.to.Observe;
 import charlie.message.view.to.Ready;
 import charlie.message.view.to.Play;
 import charlie.message.view.to.Push;
-import charlie.message.view.to.Starting;
+import charlie.message.view.to.GameStart;
 import charlie.message.view.to.Win;
 import com.googlecode.actorom.Actor;
 import com.googlecode.actorom.Address;
@@ -54,7 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class implements the game interface to a player in the cloud.
+ * This class implements the game interface to a "real" player.
  * @author Ron Coleman
  */
 public class RealPlayer implements IPlayer {
@@ -96,7 +95,7 @@ public class RealPlayer implements IPlayer {
      */
     @OnMessage(type = Bet.class)
     public void onReceive(Bet bet) {     
-        LOG.info("player actor received bet = "+bet.getAmt());
+        LOG.info("player actor received bet = "+bet.getHid().getAmt());
         
         dealer.bet(this, bet.getHid());
     }
@@ -194,7 +193,7 @@ public class RealPlayer implements IPlayer {
      */
     @Override
     public void startGame(List<Hid> hids,int shoeSize) {
-        courier.send(new Starting(hids,shoeSize));
+        courier.send(new GameStart(hids,shoeSize));
     }
 
     /**
@@ -202,7 +201,7 @@ public class RealPlayer implements IPlayer {
      */
     @Override
     public void endGame(int shoeSize) {
-        courier.send(new Ending(shoeSize));
+        courier.send(new GameOver(shoeSize));
     }
 
     /**

@@ -31,6 +31,7 @@ import java.util.Random;
 
 /**
  * This class implements a six deck shoe, the standard in many houses.
+ * This class is also the base class for all other shoes.
  * @author Ron Coleman
  */
 public class Shoe  {

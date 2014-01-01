@@ -24,7 +24,6 @@ package charlie.controller;
 
 import charlie.card.Hand;
 import charlie.card.shoe.Shoe;
-//import isCharlie.card.DealerHand;
 import charlie.actor.House;
 import charlie.actor.RealPlayer;
 import charlie.card.Card;
@@ -60,7 +59,6 @@ public class Dealer implements Serializable {
     private final Logger LOG = LoggerFactory.getLogger(Dealer.class);
     protected Shoe shoe;
     protected HashMap<Hid,Hand> hands = new HashMap<>();
-//    protected HashMap<Hid,Integer> bets = new HashMap<>();
     protected HashMap<Hid,IPlayer> players = new HashMap<>();
     protected List<Hid> handSequence = new ArrayList<>();
     protected List<IPlayer> playerSequence = new ArrayList<>();
@@ -80,7 +78,7 @@ public class Dealer implements Serializable {
         // Instantiate the shoe
         Properties props = house.getProps();
         
-        String scenario = props.getProperty("charlie.shoe", "6deck-test");
+        String scenario = props.getProperty("charlie.shoe", "charlie.card.Shoe");
         LOG.info("using scenario = '"+scenario+"'");
         
         shoe = ShoeFactory.getInstance(scenario);

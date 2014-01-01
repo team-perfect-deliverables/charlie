@@ -64,17 +64,17 @@ public class House implements Serializable {
     }
     
     /**
-     * Receives an arrival by a a player.
+     * Receives an arrival by a a myAddress.
      * At login the user gets a ticket from the server which the
      * house uses to validate. If the ticket is valid, the house
-     * allocates a dealer and spawns a player actor. The dealer
-     * then waits for contact from a courier through the player.
+     * allocates a dealer and spawns a myAddress actor. The dealer
+     * then waits for contact from a courier through the myAddress.
      * In other words, the whole design is largely passive in nature.
      * @param arrival 
      */
     @OnMessage(type = Arrival.class)
     public void onReceive(Arrival arrival) {
-        Address courierAddress = arrival.getCourierAddress();
+        Address courierAddress = arrival.getSource();
         LOG.info("arrival from "+courierAddress);
         
         Ticket ticket = arrival.getTicket();
@@ -86,13 +86,13 @@ public class House implements Serializable {
 
         LOG.info("validated ticket = "+ticket);
         
-        // Get a dealer for this player
+        // Get a dealer for this myAddress
         // Note: if we were allocating dealers from a pool, this is the place
         // to implement that logic. For now we'll just spawn dealers without
         // restriction.
         Dealer dealer = new Dealer(this);
         
-        // Spawn a player actor in server
+        // Spawn an actor in server
         RealPlayer player = new RealPlayer(dealer, courierAddress);
         accounts.put(player,ticket);
         
@@ -147,8 +147,8 @@ public class House implements Serializable {
     }
     
     /**
-     * Gets the bankroll for a player.
-     * @param player Player
+     * Gets the bankroll for a myAddress.
+     * @param myAddress Player
      * @return Dollar amount of bankroll
      */
     public Double getBankroll(IPlayer player) {
