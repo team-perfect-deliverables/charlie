@@ -60,13 +60,13 @@ public class ADealerHand extends AHand {
         if(cards.isEmpty())
             return;
 
-        FontMetrics fm = g.getFontMetrics(font);
+        FontMetrics fm = g.getFontMetrics(stateFont);
         
         int x = cards.get(0).getX() + getPileWidth() / 2 - fm.charsWidth(text.toCharArray(), 0, text.length()) / 2;
         int y = AHandsManager.getCardHeight() + fm.getHeight();
         
-        g.setColor(fontColor);
-        g.setFont(font);
+        g.setColor(stateColor);
+        g.setFont(stateFont);
 
         g.drawString(text, x, y); 
     }

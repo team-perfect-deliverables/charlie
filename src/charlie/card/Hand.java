@@ -74,7 +74,7 @@ public class Hand implements Serializable {
      * @return True if hand has A+10
      */    
     public boolean isCharlie() {
-        if(cards.size() == 5 && values[Constant.HAND_SOFT_VALUE] <= 21)
+        if(cards.size() == 5 && getValue() <= 21)
             return true;
         
         return false;

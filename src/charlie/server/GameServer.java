@@ -1,6 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie.server;
 
@@ -25,8 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author roncoleman125
+ * This class implements the game server.
+ * @author Ron Coleman
  */
 public class GameServer {
     static {
@@ -36,9 +54,7 @@ public class GameServer {
         _props.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         _props.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
     }
-    
     public static  Logger LOG = LoggerFactory.getLogger(GameServer.class);
-
     private final static String HOUSE_ACTOR = "HOUSE";
     private final static Random ran = new Random(0);
     private final static Integer TOPOLOGY_PORT = 1234;
@@ -46,23 +62,30 @@ public class GameServer {
     private final static String HOST = "127.0.0.1";
     private Properties props = new Properties();
     private final List<Ticket> logins = new ArrayList<>();
-
     public static void main(String[] args) {
         new GameServer().go();
     }
     
     public void go() {
         try {
+            // Start the actor server
             props.load(new FileInputStream("charlie.props"));
             
-            Topology serverTopology = new ServerTopology(HOST, TOPOLOGY_PORT);
+            String host = props.getProperty("charlie.server.host", HOST);
+            int topologyPort = Integer.parseInt(props.getProperty("charlie.server.topology.port", TOPOLOGY_PORT+""));
+            
+            Topology serverTopology = new ServerTopology(host, topologyPort);
             LOG.info("server topology started...");
 
+            // Spawn the house
             House house = new House(this,props);
 
             Address houseAddr = serverTopology.spawnActor(HOUSE_ACTOR, house);
 
-            ServerSocket serverSocket = new ServerSocket(LOGIN_PORT);
+            // Enter the login-loop
+            int loginPort = Integer.parseInt(props.getProperty("charlie.server.login.port", LOGIN_PORT+""));
+            
+            ServerSocket serverSocket = new ServerSocket(loginPort);
             
             LOG.info("game server started...");
             while (true) {
@@ -78,6 +101,11 @@ public class GameServer {
         }
     }
 
+    /**
+     * Processes a login request
+     * @param clientSocket
+     * @param house 
+     */
     private void process(final Socket clientSocket, final Address house) {
         Runnable thread = new Runnable() {
             @Override
@@ -123,9 +151,20 @@ public class GameServer {
         new Thread(thread).start();
     }
 
+    /**
+     * Gets the logins by ticket
+     * @return Tickets
+     */
     public List<Ticket> getLogins() {
         return logins;
     }
+    
+    /**
+     * Validates a login
+     * @param house House actor address
+     * @param login Login credentials to authenticate
+     * @return Ticket or null if login fails
+     */
     private Ticket validate(Address house, Login login) {
         if (login.getLogname() != null && login.getPassword() != null) {
             return new Ticket(house,ran.nextLong(),500.0);

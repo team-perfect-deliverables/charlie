@@ -8,6 +8,7 @@ import charlie.util.Constant;
 import charlie.util.Point;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,12 @@ public class AHand {
     protected List<ACard> cards = new ArrayList<>();
     protected int[] values;
     
-    protected Font font = new Font("Arial", Font.PLAIN, 18);
-    protected Color fontColor = Color.YELLOW; //new Color(247,115,7);
+    protected Font stateFont = new Font("Arial", Font.PLAIN, 18);
+    protected Font outcomeFont = new Font("Arial", Font.BOLD, 18);
+    protected Color stateColor = Color.WHITE;
+    protected Color looseColor = new Color(250,58,5);
+    protected Color winColor = Color.BLACK;
+    protected Color pushColor = Color.BLUE;
     
     protected Point home;
     protected String name = "NOBODY";
@@ -84,27 +89,38 @@ public class AHand {
             x += turnSprite.getWidth() + 5;
             y += turnSprite.getHeight() / 2 + 15;
 
-            g.setColor(fontColor);
-            g.setFont(font);
+            g.setColor(stateColor);
+            g.setFont(stateFont);
 
             g.drawString(stateText, x, y);
-            
-            String outcomeText = "";
-            if (outcome == Outcome.Blackjack)
-                outcomeText += "Blackjack !";
-            else if (outcome == Outcome.Charlie)
-                outcomeText += "Charlie !";
-            else if (outcome != Outcome.None)
-                outcomeText += outcome.toString().toUpperCase() + " !"; 
-            
+
             int sz = cards.size();
             if(sz == 0)
                 return;
+            
+            String outcomeText = "";             
+            if(outcome != Outcome.None)
+                outcomeText += outcome.toString().toUpperCase() + " !"; 
             
             int cardHeight = AHandsManager.getCardHeight();
             x = cards.get(sz-1).getHome().getX() + cardWidth + 5;
             y = cards.get(sz-1).getHome().getY() + cardHeight / 2; 
             
+            FontMetrics fm = g.getFontMetrics(outcomeFont);
+            int w = fm.charsWidth(outcomeText.toCharArray(), 0, outcomeText.length());
+            int h = fm.getHeight();
+            g.setColor(Color.WHITE);
+            g.fillRoundRect(x, y-h+5, w, h, 5, 5);
+            
+            if (outcome == Outcome.Loose || outcome == Outcome.Bust)
+                g.setColor(looseColor);
+            
+            else if(outcome == Outcome.Push)
+                g.setColor(pushColor);
+            else
+                g.setColor(winColor);    
+            
+            g.setFont(outcomeFont);
             g.drawString(outcomeText,x,y);
         }
         catch (Exception e) {

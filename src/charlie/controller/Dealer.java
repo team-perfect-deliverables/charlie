@@ -218,10 +218,10 @@ public class Dealer implements Serializable {
                 hids.add(hid);
             }
             
-            // Include the dealer's hand as last to play
+            // Include the dealer's hand
             hids.add(dealerHand.getHid());
           
-            LOG.info("hands at table + dealer = "+hids.size());
+            LOG.info("hands at table + dealer = "+hids.size()+1);
             
             // Tell each player we're starting a game
             for(IPlayer player: playerSequence)              
@@ -229,19 +229,32 @@ public class Dealer implements Serializable {
             
             Thread.sleep(250);
             
-            // First round hole card sent to everyone
+            // First round card to every one
+            round(hids);
+            
             holeCard = new HoleCard(shoe.next());
-            dealerHand.hit(holeCard);
-            round(hids,holeCard);
+            dealerHand.hit(holeCard);  
+            
             Thread.sleep(Constant.DEAL_DELAY);
             
-            // Second round up-card sent to everyone
+            for(IPlayer player: playerSequence) {
+                // Don't send hole card yet to bots -- they could see it
+                if(!(player instanceof IBot))
+                    player.deal(dealerHand.getHid(), holeCard, dealerHand.getValues());
+            }
+
+            // Second round card to everyone
+            round(hids);
+            
             Card upCard = shoe.next();
             dealerHand.hit(upCard);
-            round(hids,upCard);
-
-            // Revalue the dealer's hand since the normal hit doesn't count
-            // the hole card
+            
+            Thread.sleep(Constant.DEAL_DELAY);
+            
+            for(IPlayer player: playerSequence)
+                player.deal(dealerHand.getHid(), upCard, dealerHand.getValues()); 
+            
+            // Revalue the dealer's hand since hit doesn't vale hole card
             dealerHand.revalue();
             
             // CHeck if players want to buy insurance
@@ -270,7 +283,7 @@ public class Dealer implements Serializable {
      * @param hids Hand ids
      * @param dealerCard The dealer card, up or hole.
      */
-    protected void round(List<Hid> hids,Card dealerCard) {
+    protected void round(List<Hid> hids) {
         try {
             for(Hid hid: hids) {
                 IPlayer player = players.get(hid);
@@ -278,7 +291,7 @@ public class Dealer implements Serializable {
                 // If there's no correspondsing player, must be dealer's hid
                 if(player == null)
                     continue;
-                
+               
                 // Get a card from the shoe
                 Card card = shoe.next();
                 
@@ -289,13 +302,15 @@ public class Dealer implements Serializable {
                 Hand hand = this.hands.get(hid);
                 
                 hand.hit(card);
+                                                
+                Thread.sleep(Constant.DEAL_DELAY);
                 
                 // Distribute the hard to everyone, even if it's not theirs
                 for (IPlayer _player : playerSequence)
                     _player.deal(hid, card, hand.getValues());
                 
                 // If player has blackjack -- they win automatically!
-                if (hid.getSeat() != Seat.DEALER && hand.isBlackjack()) {
+                if (hand.isBlackjack()) {
                     hid.multiplyAmt(BLACKJACK_PAYS);
                     
                     house.updateBankroll(players.get(hid), hid.getAmt(), PROFIT);
@@ -304,15 +319,6 @@ public class Dealer implements Serializable {
                         player_.blackjack(hid);
                     }
                 }
-                    
-                Thread.sleep(Constant.DEAL_DELAY);
-
-                // Deal corresponding dealer card
-                // If hole card, dont send to bots -- dont want them to cheat!
-                LOG.info("sending dealer card = "+dealerCard);
-
-                if(!(dealerCard instanceof HoleCard && player instanceof IBot))
-                    player.deal(dealerHand.getHid(), dealerCard, dealerHand.getValues());
             }            
         }
         catch(Exception e) {
@@ -359,6 +365,10 @@ public class Dealer implements Serializable {
             for (IPlayer _player : playerSequence)
                 _player.charlie(hid);
             
+            goNextHand();
+        }
+        // Player has 21: don't force player to break!
+        else if(hand.getValue() == 21) {
             goNextHand();
         }
     }    
@@ -469,18 +479,17 @@ public class Dealer implements Serializable {
                 Card card = shoe.next();
 
                 dealerHand.hit(card);
-
-                // Tell everybody what dealer drew
-                for (IPlayer player : playerSequence) {
-                    player.deal(dealerHand.getHid(), card, dealerHand.getValues());
-                }
                 
                 try {
-                    if(dealerHand.getValue() < 17)
-                        Thread.sleep(Constant.DEAL_DELAY);
+                    Thread.sleep(Constant.DEAL_DELAY);
                 }
                 catch (InterruptedException ex) {
                     java.util.logging.Logger.getLogger(Dealer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                // Tell everybody what dealer drew
+                for (IPlayer player : playerSequence) {
+                    player.deal(dealerHand.getHid(), card, dealerHand.getValues());
                 }
             }
         }

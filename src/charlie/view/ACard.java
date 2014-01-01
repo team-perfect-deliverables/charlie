@@ -18,7 +18,7 @@ import java.awt.Image;
  */
 public class ACard extends Sprite {
 
-    protected final static int SPEED = 15;
+    protected final static int SPEED = 10;
     protected Point home = new Point(ShoeView.SHOE_X, ShoeView.SHOE_Y);
     protected Image back;
     protected Image front;
