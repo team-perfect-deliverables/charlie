@@ -30,7 +30,7 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="199" max="32767" attributes="0"/>
+                      <EmptySpace pref="182" max="32767" attributes="0"/>
                       <Component id="splitButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ddownButton" min="-2" max="-2" attributes="0"/>
@@ -120,8 +120,11 @@
     </Component>
     <Component class="javax.swing.JButton" name="ddownButton">
       <Properties>
-        <Property name="label" type="java.lang.String" value="Double"/>
+        <Property name="text" type="java.lang.String" value="DDown"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ddownButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="splitButton">
       <Properties>
@@ -130,7 +133,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Advice"/>
+        <Property name="text" type="java.lang.String" value="Auto (on)"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -20,10 +20,35 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.controller;
+package charlie.card;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Seats at the table.
+ * This class implements the shoe factory.
  * @author Ron Coleman
  */
-public enum Seat {NONE, RIGHT, LEFT, YOU, DEALER};
+public class ShoeFactory {     
+    private static final Logger LOG = LoggerFactory.getLogger(ShoeFactory.class);
+    /**
+     * Gets an instance of a shoe based on a scenario.
+     * @param scenario Scenario
+     * @return Shoe
+     */
+    public static Shoe getInstance(String scenario) {
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(scenario);
+            
+            Shoe shoe = (Shoe) clazz.newInstance();
+            
+            return shoe;
+        }
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            LOG.error("failed to instantiate shoe '"+scenario+"': " + ex);
+        }
+        
+        return null;
+    }
+}

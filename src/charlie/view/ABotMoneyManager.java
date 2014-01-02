@@ -9,5 +9,5 @@ package charlie.view;
  * @author roncoleman125
  */
 public class ABotMoneyManager extends AMoneyManager {
-    
+  
 }

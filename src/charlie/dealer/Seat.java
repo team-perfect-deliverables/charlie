@@ -20,20 +20,10 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.card.shoe;
-
-import java.util.Random;
+package charlie.dealer;
 
 /**
- * This shoe is used primarily for testing.
- * @author Ron Coleman */
-public class Shoe00 extends Shoe {
-    @Override
-    public void init() {
-        ran = new Random(0);
-        
-        load();
-        
-        shuffle();
-    }
-}
+ * Seats at the table.
+ * @author Ron Coleman
+ */
+public enum Seat {NONE, RIGHT, LEFT, YOU, DEALER};

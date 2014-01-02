@@ -22,7 +22,7 @@
  */
 package charlie.card;
 
-import charlie.controller.Seat;
+import charlie.dealer.Seat;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -85,10 +85,18 @@ public class Hid implements Serializable {
     }
     
     /**
-     * Doubles the amount.
+     * Multiplies bet by some factor.
+     * @param factor the multiplier
      */
     public void multiplyAmt(Double factor) {
         this.amt *= factor;
+    }
+    
+    /**
+     * Doubles the bet amount.
+     */
+    public void dubble() {
+        multiplyAmt(2.0);
     }
 
     /**

@@ -27,8 +27,9 @@ import charlie.card.HoleCard;
 import charlie.message.view.to.Ready;
 import charlie.view.IUi;
 import charlie.card.Hid;
-import charlie.controller.Seat;
+import charlie.dealer.Seat;
 import charlie.message.view.from.Bet;
+import charlie.message.view.from.DoubleDown;
 import charlie.message.view.from.Hit;
 import charlie.message.view.from.Stay;
 import charlie.message.view.to.Blackjack;
@@ -75,6 +76,10 @@ public class Courier {
     public void hit(Hid hid) {
         player.send(new Hit(hid));
     }
+    
+    public void ddown(Hid hid) {
+        player.send(new DoubleDown(hid));
+    }    
     
     public Hid bet(Integer amt) {
         Hid hid = new Hid(Seat.YOU,(double)amt);

@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 
 /**
  *
- * @author roncoleman125
+ * @author Ron Coleman
  */
 public class ABankroll {
     protected Double amount;

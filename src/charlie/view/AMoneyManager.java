@@ -50,6 +50,7 @@ public class AMoneyManager {
     private final int width;
     protected ABankroll bankroll;
     protected Integer xDeposit = 0;
+    protected boolean dubble = false;
     
     public AMoneyManager() {
         ImageIcon icon = new ImageIcon(Constant.DIR_IMGS+UP_FILES[0]);
@@ -74,8 +75,59 @@ public class AMoneyManager {
         return this.betAmt.getAmt();
     }
     
+    public void dubble() {
+        // Can double only once
+        if(dubble)
+            return;
+        
+        // Copy in the new chips
+        int sz = chips.size();
+        int x = chips.get(sz-1).getX();
+        int y = chips.get(sz-1).getY() + ran.nextInt(5)-5;
+        
+        for(int n=0; n < sz; n++) {
+                int placeX = x + n * width/3 + ran.nextInt(10)-10;
+                int placeY = y + ran.nextInt(5)-5;
+                
+                Chip chip = new Chip(chips.get(n));
+                
+                chip.setX(placeX);
+                chip.setY(placeY);
+                
+                chips.add(chip);                        
+        }
+        
+        dubble = true;
+    }
+    
+    public void undubble() {
+        if(!this.dubble)
+            return;
+
+        // Clear out the old chips
+        List<Chip> oldChips = chips;
+        
+        chips.clear();
+       
+        this.betAmt.zero();
+        
+        int sz = oldChips.size();
+        
+        // Restore half the old chips
+        for(int i=0; i < sz / 2; i++) {
+            chips.add(oldChips.get(i));
+            betAmt.increase(oldChips.get(i).getAmt());
+        }
+        
+        dubble = false;
+    }
+    
     public void increase(Double amt) {
         bankroll.increase(amt);
+    }
+    
+    public void increase(Chip chip) {
+        betAmt.increase(chip.getAmt());
     }
     
     public void decrease(Double amt) {
@@ -111,7 +163,7 @@ public class AMoneyManager {
                 
                 int placeY = PLACE_HOME_Y + ran.nextInt(5)-5;
                 
-                Chip chip = new Chip(button.getImage(),placeX,placeY);
+                Chip chip = new Chip(button.getImage(),placeX,placeY,amounts[i]);
                 
                 chips.add(chip);
                 

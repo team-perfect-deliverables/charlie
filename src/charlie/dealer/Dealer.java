@@ -20,16 +20,16 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.controller;
+package charlie.dealer;
 
 import charlie.card.Hand;
-import charlie.card.shoe.Shoe;
+import charlie.card.Shoe;
 import charlie.actor.House;
 import charlie.actor.RealPlayer;
 import charlie.card.Card;
 import charlie.card.HoleCard;
 import charlie.card.Hid;
-import charlie.card.shoe.ShoeFactory;
+import charlie.card.ShoeFactory;
 import charlie.util.Constant;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -102,10 +102,12 @@ public class Dealer implements Serializable {
         reset();
 
         // Insert the player -- IN THIS ORDER
+        // B9 Robby
         sit("B9",Seat.RIGHT);
         
         sit(you,yours);
         
+        // AAF709 / Rhoda
         sit("B9",Seat.LEFT);
       
         handSeqIndex = 0;        
@@ -408,9 +410,8 @@ public class Dealer implements Serializable {
 
         hand.hit(card);
         
-        // Doubble the bet and hit the hand once
+        // Double the bet and hit the hand once
 
-        
         hand.hit(card);
         
         player.deal(hid, card, hand.getValues());

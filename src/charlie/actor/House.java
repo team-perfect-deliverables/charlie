@@ -22,8 +22,8 @@
  */
 package charlie.actor;
 
-import charlie.controller.Dealer;
-import charlie.controller.IPlayer;
+import charlie.dealer.Dealer;
+import charlie.dealer.IPlayer;
 import charlie.message.view.from.Arrival;
 import charlie.server.GameServer;
 import charlie.server.Ticket;

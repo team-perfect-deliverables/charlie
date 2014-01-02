@@ -20,35 +20,30 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.card.shoe;
+package charlie.dealer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import charlie.card.Hand;
 
 /**
- * This class implements the shoe factory.
+ * This is an interface for bot players running in the server.
  * @author Ron Coleman
  */
-public class ShoeFactory {     
-    private static final Logger LOG = LoggerFactory.getLogger(ShoeFactory.class);
+public interface IBot extends IPlayer {
     /**
-     * Gets an instance of a shoe based on a scenario.
-     * @param scenario Scenario
-     * @return Shoe
+     * Gets the bots hand.
+     * @return Hand
      */
-    public static Shoe getInstance(String scenario) {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(scenario);
-            
-            Shoe shoe = (Shoe) clazz.newInstance();
-            
-            return shoe;
-        }
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            LOG.error("failed to instantiate shoe '"+scenario+"': " + ex);
-        }
-        
-        return null;
-    }
+    public Hand getHand();
+    
+    /**
+     * Sets the dealer for the bot.
+     * @param dealer Dealer
+     */
+    public void setDealer(Dealer dealer);
+    
+    /**
+     * Sits the bot in seat.
+     * @param seat Seat
+     */
+    public void sit(Seat seat);
 }

@@ -32,7 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
-import charlie.controller.Seat;
+import charlie.dealer.Seat;
 import charlie.util.Config;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -50,13 +50,13 @@ import javax.swing.ImageIcon;
 public final class Table extends JPanel implements Runnable, IUi, MouseListener {
 
     protected Random ran = new Random();
-    protected String[] b9s = {"Robby", "Rosey", "C3P0"};
-    protected String[] n6s = {"Roy", "Pris", "Leon"};
+    protected String[] b9s = {"Apollo", "Zeus", "Talos"};
+    protected String[] aaf709s = {"Hera", "Athena", "Hecate"};
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
     protected AHandsManager b9 = new AHandsManager(b9s[ran.nextInt(b9s.length)], new Point(450, 150));
-    protected AHandsManager n6 = new AHandsManager(n6s[ran.nextInt(n6s.length)], new Point(25, 150));
-    protected AHandsManager[] handsManager = {you, dealer, b9, n6};
+    protected AHandsManager aaf709 = new AHandsManager(aaf709s[ran.nextInt(aaf709s.length)], new Point(25, 150));
+    protected AHandsManager[] handsManager = {you, dealer, b9, aaf709};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;
     protected List<Feedback> feedbacks = new ArrayList<>();
@@ -64,7 +64,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         {
             put(Seat.YOU, you);
             put(Seat.RIGHT, b9);
-            put(Seat.LEFT, n6);
+            put(Seat.LEFT, aaf709);
             put(Seat.DEALER, dealer);
         }
     };

@@ -31,9 +31,12 @@ public class AHand {
     protected Font stateFont = new Font("Arial", Font.PLAIN, 18);
     protected Font outcomeFont = new Font("Arial", Font.BOLD, 18);
     protected Color stateColor = Color.WHITE;
-    protected Color looseColor = new Color(250,58,5);
-    protected Color winColor = Color.BLACK;
-    protected Color pushColor = Color.BLUE;
+    protected Color looseColorBg = new Color(250,58,5);
+    protected Color looseColorFg = Color.WHITE;
+    protected Color winColorFg = Color.BLACK;
+    protected Color winColorBg = new Color(116,255,4);
+    protected Color pushColorFg = Color.BLACK;
+    protected Color pushColorBg = Color.CYAN;
     
     protected Point home;
     protected String name = "NOBODY";
@@ -71,6 +74,7 @@ public class AHand {
 
     protected void renderState(Graphics2D g, String stateText) {
         try {
+            // Paint the turn indicator
             int indicatorWidth = turnSprite.getImage().getWidth(null);
             int cardWidth = AHandsManager.getCardWidth();
             
@@ -86,6 +90,7 @@ public class AHand {
 
             turnSprite.render(g);
 
+            // Paint the state
             x += turnSprite.getWidth() + 5;
             y += turnSprite.getHeight() / 2 + 15;
 
@@ -98,9 +103,10 @@ public class AHand {
             if(sz == 0)
                 return;
             
+            // Figure the outcome foreground
             String outcomeText = "";             
             if(outcome != Outcome.None)
-                outcomeText += outcome.toString().toUpperCase() + " !"; 
+                outcomeText += " " + outcome.toString().toUpperCase() + " ! "; 
             
             int cardHeight = AHandsManager.getCardHeight();
             x = cards.get(sz-1).getHome().getX() + cardWidth + 5;
@@ -109,16 +115,26 @@ public class AHand {
             FontMetrics fm = g.getFontMetrics(outcomeFont);
             int w = fm.charsWidth(outcomeText.toCharArray(), 0, outcomeText.length());
             int h = fm.getHeight();
-            g.setColor(Color.WHITE);
-            g.fillRoundRect(x, y-h+5, w, h, 5, 5);
             
+            // Paint the outcome background            
             if (outcome == Outcome.Loose || outcome == Outcome.Bust)
-                g.setColor(looseColor);
+                g.setColor(looseColorBg);
             
             else if(outcome == Outcome.Push)
-                g.setColor(pushColor);
+                g.setColor(pushColorBg);
             else
-                g.setColor(winColor);    
+                g.setColor(winColorBg);    
+            
+            g.fillRoundRect(x, y-h+5, w, h, 5, 5);
+            
+            // Paint the outcome foreground            
+            if (outcome == Outcome.Loose || outcome == Outcome.Bust)
+                g.setColor(looseColorFg);
+            
+            else if(outcome == Outcome.Push)
+                g.setColor(pushColorFg);
+            else
+                g.setColor(winColorFg);    
             
             g.setFont(outcomeFont);
             g.drawString(outcomeText,x,y);

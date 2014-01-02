@@ -32,6 +32,10 @@ public class BetAmtSprite {
         this.amt = amt;
     }
     
+    public void zero() {
+        this.amt = 0;
+    }
+    
     public void render(Graphics2D g) {
         g.setColor(Color.BLACK);
                 

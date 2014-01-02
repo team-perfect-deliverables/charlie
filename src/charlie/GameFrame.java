@@ -179,7 +179,10 @@ public class GameFrame extends javax.swing.JFrame {
     
     public void enablePlay(boolean playing) {
         this.hitButton.setEnabled(playing && trucking);
+        
         this.stayButton.setEnabled(playing && trucking);
+        
+        this.ddownButton.setEnabled(playing && trucking);
     }
     
     public void enableTrucking(boolean trucking) {
@@ -255,11 +258,16 @@ public class GameFrame extends javax.swing.JFrame {
             }
         });
 
-        ddownButton.setLabel("Double");
+        ddownButton.setText("DDown");
+        ddownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ddownButtonActionPerformed(evt);
+            }
+        });
 
         splitButton.setText("Split");
 
-        jButton1.setText("Advice");
+        jButton1.setText("Auto (on)");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -272,7 +280,7 @@ public class GameFrame extends javax.swing.JFrame {
                     .add(layout.createSequentialGroup()
                         .add(6, 6, 6)
                         .add(jButton1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 199, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 182, Short.MAX_VALUE)
                         .add(splitButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(ddownButton)
@@ -374,7 +382,18 @@ public class GameFrame extends javax.swing.JFrame {
         enablePlay(false);
     }//GEN-LAST:event_hitButtonActionPerformed
 
+    private void ddownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ddownButtonActionPerformed
+        hands.get(handIndex).dubble();
+ 
+        courier.ddown(hands.get(this.handIndex));
+        
+        enableTrucking(false);
+        
+        enablePlay(false);
+    }//GEN-LAST:event_ddownButtonActionPerformed
+
     /**
+     * Main starting point of app.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
