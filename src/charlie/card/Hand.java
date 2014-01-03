@@ -80,6 +80,10 @@ public class Hand implements Serializable {
         return false;
     }
     
+    public void dubble() {
+        this.hid.dubble();
+    }
+    
     /**
      * Gets the hand id.
      * @return Hand id

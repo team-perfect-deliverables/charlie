@@ -246,6 +246,16 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     }
 
     /**
+     * Double the bet on the panel.
+     * @param hid Hand id
+     */
+    public void dubble(Hid hid) {
+        AMoneyManager money = this.monies.get(hid.getSeat());
+        
+        money.dubble();
+    }
+    
+    /**
      * Sets the turn for a hand.
      *
      * @param hid Hand id
@@ -415,6 +425,16 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     @Override
     public void starting(List<Hid> hids,int shoeSize) {
         // Clear out everything from last game
+        for(Hid hid: manos.keySet()) {
+            AMoneyManager money = monies.get(hid.getSeat());
+            
+            // Skip the dealer since it doesn't have a money manager
+            if(money == null)
+                continue;
+            
+            money.undubble();
+        }
+        
         for (AHandsManager animator : seats.values())
             animator.clear();
 
@@ -453,6 +473,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         // Update the shoe size
         this.shoeSize = shoeSize;
 
+        
         // Enable betting and dealing again
         frame.enableDeal(true);
         this.bettable = true;

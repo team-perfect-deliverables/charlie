@@ -86,7 +86,7 @@ public class AMoneyManager {
         int y = chips.get(sz-1).getY() + ran.nextInt(5)-5;
         
         for(int n=0; n < sz; n++) {
-                int placeX = x + n * width/3 + ran.nextInt(10)-10;
+                int placeX = x + (n+1) * width/3 + ran.nextInt(10)-10;
                 int placeY = y + ran.nextInt(5)-5;
                 
                 Chip chip = new Chip(chips.get(n));
@@ -97,6 +97,8 @@ public class AMoneyManager {
                 chips.add(chip);                        
         }
         
+        this.betAmt.dubble();
+        
         dubble = true;
     }
     
@@ -104,21 +106,24 @@ public class AMoneyManager {
         if(!this.dubble)
             return;
 
-        // Clear out the old chips
-        List<Chip> oldChips = chips;
-        
-        chips.clear();
+        // Get a new chip set
+        List<Chip> newChips = new ArrayList<>();
        
         this.betAmt.zero();
         
-        int sz = oldChips.size();
+        int sz = chips.size();
         
-        // Restore half the old chips
+        // Transfer half of old chips
         for(int i=0; i < sz / 2; i++) {
-            chips.add(oldChips.get(i));
-            betAmt.increase(oldChips.get(i).getAmt());
+            newChips.add(chips.get(i));
+            
+            betAmt.increase(chips.get(i).getAmt());
         }
         
+        // Make new the current chip set
+        chips = newChips;
+        
+        // Enable double down
         dubble = false;
     }
     

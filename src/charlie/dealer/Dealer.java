@@ -290,7 +290,7 @@ public class Dealer implements Serializable {
             for(Hid hid: hids) {
                 IPlayer player = players.get(hid);
                 
-                // If there's no correspondsing player, must be dealer's hid
+                // If there's no correspondsing player, must be dealer's hid_
                 if(player == null)
                     continue;
                
@@ -331,7 +331,7 @@ public class Dealer implements Serializable {
     /**
      * Hits player hand upon request only AFTER the initial rounds. 
      * @param player Player requesting a hit.
-     * @param hid Player's hand id
+     * @param hid_ Player's hand id
      */
     public void hit(IPlayer player,Hid hid) {
         // Validate the request
@@ -378,7 +378,7 @@ public class Dealer implements Serializable {
     /**
      * Stands down player hand upon request only AFTER the initial rounds. 
      * @param player Player requesting a hit.
-     * @param hid Player's hand id
+     * @param hid_ Player's hand id
      */
     public void stay(IPlayer player, Hid hid) {
         // Validate the request
@@ -395,7 +395,7 @@ public class Dealer implements Serializable {
     /**
      * Double down player hand upon request only AFTER the initial rounds. 
      * @param player Player requesting a hit.
-     * @param hid Player's hand id
+     * @param hid_ Player's hand id
      */    
     public void doubleDown(IPlayer player, Hid hid) {
         // Validate the request
@@ -406,17 +406,21 @@ public class Dealer implements Serializable {
             return;
         }
         
+        LOG.info("got double down amt = "+hid.getAmt()+" hid = "+hid);
+        
+        // Dealer must double bet since one in hid is a copy -- not dealers
+        hand.dubble();
+       
         Card card = shoe.next();
-
-        hand.hit(card);
         
         // Double the bet and hit the hand once
-
         hand.hit(card);
         
-        player.deal(hid, card, hand.getValues());
+        // Send the card out to everyone
+        for (IPlayer _player : playerSequence)
+            _player.deal(hid, card, hand.getValues());
         
-        // If hand isBroke, tell everyone
+        // If hand broke, update the account and tell everyone
         if(hand.isBroke()) {
             house.updateBankroll(player,hid.getAmt(),LOSS);
             
@@ -424,7 +428,7 @@ public class Dealer implements Serializable {
                 _player.bust(hid);
         }
         
-        // Go to next hand regardless
+        // Go to next hand regardless on a double down
         goNextHand();
     }
     
@@ -533,8 +537,6 @@ public class Dealer implements Serializable {
         wrapUp();
     }
     
-
-    
     /**
      * Tells everyone game over.
      */
@@ -572,9 +574,21 @@ public class Dealer implements Serializable {
         return false;
     }
     
+//    /**
+//     * Double the bet amount in a hand id
+//     * @param hid 
+//     */
+//    protected void dubble(Hid hid) {
+//        int match = this.handSequence.indexOf(hid);
+//        
+//        Hid hid_ = handSequence.get(match);
+//        
+//        hid_.setAmt(hid_.getAmt());        
+//    }
+    
     /**
      * Validates a hand.
-     * @param hid Hand
+     * @param hid_ Hand
      * @return True if had is valid, false otherwise
      */
     protected Hand validate(Hid hid) {

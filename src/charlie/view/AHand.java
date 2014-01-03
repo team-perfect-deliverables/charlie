@@ -100,16 +100,17 @@ public class AHand {
             g.drawString(stateText, x, y);
 
             int sz = cards.size();
-            if(sz == 0)
+            if(sz == 0 || outcome == Outcome.None)
                 return;
             
-            // Figure the outcome foreground
+            // Figure the outcome text
             String outcomeText = "";             
             if(outcome != Outcome.None)
                 outcomeText += " " + outcome.toString().toUpperCase() + " ! "; 
             
+            // Calculate the outcome position
             int cardHeight = AHandsManager.getCardHeight();
-            x = cards.get(sz-1).getHome().getX() + cardWidth + 5;
+            x = cards.get(sz-1).getHome().getX() + cardWidth - 15;
             y = cards.get(sz-1).getHome().getY() + cardHeight / 2; 
             
             FontMetrics fm = g.getFontMetrics(outcomeFont);

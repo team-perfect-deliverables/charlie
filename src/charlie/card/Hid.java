@@ -46,6 +46,16 @@ public class Hid implements Serializable {
     protected Double amt;
     
     /**
+     * Copy constructor
+     * @param hid Hand id
+     */
+    public Hid(Hid hid) {
+        this.key = hid.key;
+        this.host =  hid.host;
+        this.seat = hid.seat;
+        this.amt = hid.amt;
+    }
+    /**
      * Constructor
      * @param seat Hand id for this seat
      */

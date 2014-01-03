@@ -60,9 +60,10 @@ public class GameFrame extends javax.swing.JFrame {
     private Topology serverTopology;
     private Topology clientTopology;
     
-    private List<Hid> hands = new ArrayList<>();
+    private List<Hid> hids = new ArrayList<>();
     private int handIndex = 0;
     private boolean trucking = false;
+    private boolean dubblable;
     
     /**
      * Creates new form GameFrame
@@ -182,7 +183,7 @@ public class GameFrame extends javax.swing.JFrame {
         
         this.stayButton.setEnabled(playing && trucking);
         
-        this.ddownButton.setEnabled(playing && trucking);
+        this.ddownButton.setEnabled(playing && dubblable && trucking);
     }
     
     public void enableTrucking(boolean trucking) {
@@ -280,7 +281,7 @@ public class GameFrame extends javax.swing.JFrame {
                     .add(layout.createSequentialGroup()
                         .add(6, 6, 6)
                         .add(jButton1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 182, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 210, Short.MAX_VALUE)
                         .add(splitButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(ddownButton)
@@ -345,8 +346,12 @@ public class GameFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_accessButtonActionPerformed
 
     private void betButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_betButtonActionPerformed
-        hands.clear();
+        hids.clear();
+        
         this.handIndex = 0;
+        
+        this.dubblable = true;
+        
         final GameFrame frame = this;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -363,7 +368,7 @@ public class GameFrame extends javax.swing.JFrame {
 
                 Hid hid = courier.bet(amt);
 
-                hands.add(hid);
+                hids.add(hid);
 
                 enableDeal(false);
             }
@@ -372,24 +377,43 @@ public class GameFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_betButtonActionPerformed
 
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
-        courier.stay(hands.get(this.handIndex));
+        courier.stay(hids.get(this.handIndex));
         enableTrucking(false);
         enablePlay(false);
     }//GEN-LAST:event_stayButtonActionPerformed
 
     private void hitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitButtonActionPerformed
-        courier.hit(hands.get(this.handIndex));
+        // NOTE: this isables double down on all hids and will have to be
+        // fixed when splitting hids
+        this.dubblable = false;
+        
+        // Disable play until the card arrives
         enablePlay(false);
+       
+        courier.hit(hids.get(this.handIndex));
     }//GEN-LAST:event_hitButtonActionPerformed
 
     private void ddownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ddownButtonActionPerformed
-        hands.get(handIndex).dubble();
- 
-        courier.ddown(hands.get(this.handIndex));
-        
+        // Disable further playing since this is ouble-down
         enableTrucking(false);
         
         enablePlay(false);
+        
+        // No further dubbling until the next bet made
+        dubblable = false;
+        
+        // Double the bet in the hand using a copy since this
+        // is a transient bet.
+        Hid hid = new Hid(hids.get(handIndex));
+        
+        hid.dubble();
+ 
+        // Send this off to the dealer
+        courier.ddown(hid);
+        
+        // Double the bet on the panel
+        panel.dubble(hid);
+
     }//GEN-LAST:event_ddownButtonActionPerformed
 
     /**

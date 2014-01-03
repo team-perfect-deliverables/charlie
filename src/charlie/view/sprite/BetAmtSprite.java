@@ -36,6 +36,10 @@ public class BetAmtSprite {
         this.amt = 0;
     }
     
+    public void dubble() {
+        this.amt *= 2;
+    }
+    
     public void render(Graphics2D g) {
         g.setColor(Color.BLACK);
                 
