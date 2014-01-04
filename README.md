@@ -11,12 +11,14 @@ We let others decide.
 
 * History
 * Game theory
-* How to make calculated bets
+* Utility theory and risk taking
 * Probability theory, statistics
 * Concurrency and threads
-* Synchronization and communication
 * Hyper-threading concepts
-* Network programming, serialization
+* Synchronization and communication
+* Actors
+* Network programming
+* Serialization
 * User interface design
 * Artificial intelligence
 * Object-oriented principles
@@ -26,6 +28,7 @@ We let others decide.
 * Software testing
 * Diagnostic logging
 * Even markdown (in the case of this document)
+* How to look like you know what you're doing should you get stuck in Vegas
 
 The rest of this document describes the Charlie organization, suggestions for extending it, and known bugs.
 I will not described how to play Blackjack or its many variations.
