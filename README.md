@@ -10,6 +10,7 @@ We let others decide.
 ###What does Charlie teach?
 
 * How to look like you know what you're doing should you find yourself stuck in Vegas
+* History
 * Game theory
 * How to make calculated bets
 * Probability theory, statistics
