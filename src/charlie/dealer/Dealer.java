@@ -482,8 +482,6 @@ public class Dealer implements Serializable {
             // Draw until we reach (any) 17 or we break
             while (dealerHand.getValue() < 17) {
                 Card card = shoe.next();
-
-                dealerHand.hit(card);
                 
                 try {
                     Thread.sleep(Constant.DEAL_DELAY);
@@ -492,6 +490,8 @@ public class Dealer implements Serializable {
                     java.util.logging.Logger.getLogger(Dealer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
+                dealerHand.hit(card);
+
                 // Tell everybody what dealer drew
                 for (IPlayer player : playerSequence) {
                     player.deal(dealerHand.getHid(), card, dealerHand.getValues());

@@ -24,6 +24,10 @@ package charlie.view;
 
 import charlie.view.sprite.TurnSprite;
 import charlie.GameFrame;
+import charlie.audio.Effect;
+import charlie.audio.Sound;
+import charlie.audio.SoundFactory;
+import charlie.audio.SoundFactory;
 import charlie.card.Hid;
 import charlie.card.Card;
 import java.awt.Color;
@@ -42,13 +46,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import javax.swing.ImageIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is the main table panel.
+ *
  * @author Ron Coleman
  */
 public final class Table extends JPanel implements Runnable, IUi, MouseListener {
-
+    private final Logger LOG = LoggerFactory.getLogger(Table.class);
+    
     protected Random ran = new Random();
     protected String[] b9s = {"Apollo", "Zeus", "Talos"};
     protected String[] aaf709s = {"Hera", "Athena", "Hecate"};
@@ -68,15 +76,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             put(Seat.DEALER, dealer);
         }
     };
-    
-    private final HashMap<Seat,AMoneyManager> monies = new HashMap<Seat,AMoneyManager>() {
+    private final HashMap<Seat, AMoneyManager> monies = new HashMap<Seat, AMoneyManager>() {
         {
-            put(Seat.YOU,new AMoneyManager());
-            put(Seat.RIGHT,new ABotMoneyManager());
-            put(Seat.LEFT,new ABotMoneyManager());
+            put(Seat.YOU, new AMoneyManager());
+            put(Seat.RIGHT, new ABotMoneyManager());
+            put(Seat.LEFT, new ABotMoneyManager());
         }
     };
-    
     protected HashMap<Hid, AHand> manos = new HashMap<>();
     private Thread gameLoop;
     private static Color COLOR_FELT = new Color(0, 153, 100);
@@ -88,9 +94,14 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     private Image instrImg;
     private Image shoeImg;
     private Image trayImg;
+    private int numHands;
+    private int looserCount;
+    private int pushCount;
+    private int winnerCount;
 
     /**
      * Constructor
+     *
      * @param frame Main game frame
      * @param parent Parent panel containing this one.
      */
@@ -113,7 +124,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         this.addMouseListener(this);
 
         this.addNotify();
-        
+
         this.instrImg = new ImageIcon(Config.DIR_IMGS + "dealer-stands-0.png").getImage();
         this.shoeImg = new ImageIcon(Config.DIR_IMGS + "shoe-0.png").getImage();
         this.trayImg = new ImageIcon(Config.DIR_IMGS + "tray-0.png").getImage();
@@ -121,7 +132,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     /**
      * Gets the bet amount on the table.
-     * @return 
+     *
+     * @return
      */
     public Integer getBetAmt() {
         Integer amt = this.monies.get(Seat.YOU).getAmount();
@@ -142,7 +154,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     /**
      * Paints the display some time after repainted invoked.
-     * @param _g 
+     *
+     * @param _g
      */
     @Override
     public synchronized void paint(Graphics _g) {
@@ -154,10 +167,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         g.drawImage(this.instrImg, 140, 208, this);
         g.drawImage(this.shoeImg, 540, 5, this);
         g.drawImage(this.trayImg, 430, 5, this);
-        
+
         // Render the bet on the table
         this.monies.get(Seat.YOU).render(g);
-        
+
         // Render the hands
         for (int i = 0; i < handsManager.length; i++) {
             handsManager[i].render(g);
@@ -173,8 +186,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     public synchronized void update() {
         // Update every hand at the table
-        for (int i = 0; i < handsManager.length; i++)
+        for (int i = 0; i < handsManager.length; i++) {
             handsManager[i].update();
+        }
 
         // If it's my turn, I didn't break, and my cards have landed,
         // then enable enable to play
@@ -186,7 +200,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
                 && !gameOver) {
             // "trucking" => I'm running
             frame.enableTrucking(true);
-            
+
             // Enable the buttons
             frame.enablePlay(true);
         }
@@ -231,6 +245,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     /**
      * Sets the amt.
+     *
      * @param amt Bankroll
      */
     public void setBankroll(Double amt) {
@@ -239,6 +254,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     /**
      * Enables betting (i.e., the keys work)
+     *
      * @param betting True or false
      */
     public void enableBetting(boolean betting) {
@@ -247,14 +263,15 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     /**
      * Double the bet on the panel.
+     *
      * @param hid Hand id
      */
     public void dubble(Hid hid) {
         AMoneyManager money = this.monies.get(hid.getSeat());
-        
+
         money.dubble();
     }
-    
+
     /**
      * Sets the turn for a hand.
      *
@@ -280,12 +297,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             this.frame.enablePlay(false);
         } else {
             // Disable old hand
-            if (turn != null)
+            if (turn != null) {
                 turn.enablePlaying(false);
+            }
 
             // Enable new hand
             turn = hand;
-            
+
             turn.enablePlaying(true);
 
             // If turn is NOT my hand, disable my hand
@@ -308,14 +326,17 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public synchronized void deal(Hid hid, Card card, int[] handValues) {
+        SoundFactory.make(Effect.DEAL);
+
         AHand hand = manos.get(hid);
 
         hand.setValues(handValues);
 
         // If card is null, this is not a "real" hit but only
         // updating the respective hand value.
-        if (card == null)
+        if (card == null) {
             return;
+        }
 
         // Convert card to an animated card and hit the hand
         ACard acard = AHandsManager.animate(card);
@@ -333,10 +354,15 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Bust);
-        
+
         AMoneyManager money = this.monies.get(hid.getSeat());
-        
-        money.decrease(hid.getAmt());        
+
+        money.decrease(hid.getAmt());
+
+        if (hid.getSeat() != Seat.DEALER) {
+            SoundFactory.make(Effect.BUST);
+            looserCount++;
+        }
     }
 
     /**
@@ -346,13 +372,17 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void win(Hid hid) {
+        LOG.info("WIN for hid = "+hid);
+        
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Win);
-        
+
         AMoneyManager money = this.monies.get(hid.getSeat());
-        
+
         money.increase(hid.getAmt());
+
+        winnerCount++;
     }
 
     /**
@@ -362,13 +392,17 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void loose(Hid hid) {
+        LOG.info("LOOSE for hid = "+hid);
+        
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Loose);
-        
+
         AMoneyManager money = this.monies.get(hid.getSeat());
-        
-        money.decrease(hid.getAmt());        
+
+        money.decrease(hid.getAmt());
+
+        looserCount++;
     }
 
     /**
@@ -378,9 +412,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void push(Hid hid) {
+        LOG.info("PUSH for hid = "+hid);
+        
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Push);
+
+        ++pushCount;
     }
 
     /**
@@ -390,13 +428,21 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void blackjack(Hid hid) {
+        LOG.info("BJ for hid = "+hid);
+        
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Blackjack);
-        
+
         AMoneyManager money = this.monies.get(hid.getSeat());
-        
-        money.increase(hid.getAmt());        
+
+        money.increase(hid.getAmt());
+
+        if (hid.getSeat() != Seat.DEALER) {
+            SoundFactory.make(Effect.BJ);
+
+            winnerCount++;
+        }
     }
 
     /**
@@ -406,40 +452,51 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void charlie(Hid hid) {
+        LOG.info("CHARLIE for hid = "+hid);
+        
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Charlie);
-        
+
         AMoneyManager money = this.monies.get(hid.getSeat());
-        
-        money.increase(hid.getAmt());        
+
+        money.increase(hid.getAmt());
+
+        SoundFactory.make(Effect.CHARLIE);
+
+        winnerCount++;
     }
 
     /**
-     * Starts a game.
-     * Note: we received the initial player bankroll during login
+     * Starts a game. Note: we received the initial player bankroll during login
      * which is handled by GameFrame.
      *
      * @param hids Hand ids
      */
     @Override
-    public void starting(List<Hid> hids,int shoeSize) {
-        // Clear out everything from last game
-        for(Hid hid: manos.keySet()) {
+    public void starting(List<Hid> hids, int shoeSize) {
+        // Clear out everything from last game 
+        numHands = hids.size();
+
+        winnerCount = looserCount = pushCount = 0;
+
+        for (Hid hid : manos.keySet()) {
             AMoneyManager money = monies.get(hid.getSeat());
-            
+
             // Skip the dealer since it doesn't have a money manager
-            if(money == null)
+            if (money == null) {
                 continue;
-            
+            }
+
             money.undubble();
         }
-        
-        for (AHandsManager animator : seats.values())
+
+        for (AHandsManager animator : seats.values()) {
             animator.clear();
+        }
 
         this.shoeSize = shoeSize;
-        
+
         // It's nobdy's turn...yet
         turn = null;
 
@@ -463,23 +520,36 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     /**
      * Signals end of a game.
+     *
      * @param shoeSize Shoe size
      */
     @Override
     public void ending(int shoeSize) {
+        LOG.info("num hands = "+numHands);
+        LOG.info("winner count = "+winnerCount);
+        LOG.info("looser count = "+looserCount);
+        LOG.info("push count = "+pushCount);
+        
         // Game now over
         gameOver = true;
-        
+
         // Update the shoe size
         this.shoeSize = shoeSize;
 
-        
         // Enable betting and dealing again
         frame.enableDeal(true);
         this.bettable = true;
 
         // Disable play -- we must wait for player to bet and request deal
         frame.enablePlay(false);
+
+        if (winnerCount == numHands - 1) {
+            SoundFactory.make(Effect.NICE);
+        } else if (looserCount == numHands - 1) {
+            SoundFactory.make(Effect.TOUGH);
+        } else if (pushCount == numHands - 1) {
+            SoundFactory.make(Effect.PUSH);
+        }
     }
 
     @Override
@@ -497,8 +567,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!bettable)
+        if (!bettable) {
             return;
+        }
 
         // Get the coordinates of the mouse and let bet manager
         // determine whether this is a bet and how much.

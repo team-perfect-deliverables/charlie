@@ -18,6 +18,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Sound {
+    public enum Cue { DEAL, CHARLIE, BJ, NICE, TOUCH };
     private final int EXTERNAL_BUFFER_SIZE = 128000;
     private SourceDataLine line;
     private AudioInputStream audioInputStream;
@@ -108,6 +109,16 @@ public class Sound {
     }
 
     public void play() {
+        try {
+            bais.rewind();
+            
+            audioInputStream = AudioSystem.getAudioInputStream(bais);
+        } catch (UnsupportedAudioFileException ex) {
+            Logger.getLogger(Sound.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Sound.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         /*
          Still not enough. The line now can receive data,
          but will not pass them on to the audio output device
@@ -139,11 +150,11 @@ public class Sound {
                 int nBytesWritten = line.write(abData, 0, nBytesRead);
             }
         }
-        try {
-            audioInputStream.reset();
-        } catch (IOException ex) {
-            Logger.getLogger(Sound.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            audioInputStream.reset();
+//        } catch (IOException ex) {
+//            Logger.getLogger(Sound.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
         /*
          Wait until all data are played.
@@ -158,16 +169,8 @@ public class Sound {
         //        /*
         //         All data are played. We can close the shop.
         //         */
-        //        line.close();        
-        try {
-            bais.rewind();
-            
-            audioInputStream = AudioSystem.getAudioInputStream(bais);
-        } catch (UnsupportedAudioFileException ex) {
-            Logger.getLogger(Sound.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Sound.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//                line.close();        
+
     }
 }
 
