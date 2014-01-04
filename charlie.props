@@ -3,6 +3,4 @@ charlie.server.topology.port 1234
 charlie.server.login.port 9000
 charlie.debug true
 charlie.shoe charlie.card.Shoe00
-charlie.port.topology 1234
-charlie.port.login 9000
 charlie.bot.b9 charlie.bot.B9
