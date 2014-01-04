@@ -497,9 +497,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!bettable) {
+        if (!bettable)
             return;
-        }
 
         // Get the coordinates of the mouse and let bet manager
         // determine whether this is a bet and how much.

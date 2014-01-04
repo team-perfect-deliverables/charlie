@@ -174,7 +174,12 @@ public class AMoneyManager {
                 
                 betAmt.increase(amounts[i]);
             }
-
+        }
+        
+        // Check for bet reset
+        if(this.betAmt.isPressed(x, y)) {
+            this.betAmt.zero();
+            chips.clear();
         }
     }
     

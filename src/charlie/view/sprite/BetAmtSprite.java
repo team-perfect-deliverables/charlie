@@ -73,4 +73,12 @@ public class BetAmtSprite {
     public void clear() {
         amt = 0;
     }
+    
+    public boolean isPressed(int x, int y) {
+        if( x > this.xHome && x < this.xHome+DIAMETER && y > this.yHome && y < this.yHome+DIAMETER) {
+            return true;
+        }
+        
+        return false;
+    }    
 }
