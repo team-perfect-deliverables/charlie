@@ -9,13 +9,13 @@ We let others decide.
 
 ###What does Charlie teach?
 
-* How to look like you know what you're doing should you find yourself stuck in Vegas
 * History
 * Game theory
 * How to make calculated bets
 * Probability theory, statistics
-* Threads, threadless concurrency, synchronization, communication
-* Hyperthreading concepts
+* Concurrency and threads
+* Synchronization and communication
+* Hyper-threading concepts
 * Network programming, serialization
 * User interface design
 * Artificial intelligence
