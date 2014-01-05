@@ -25,6 +25,7 @@ package charlie.view;
 import charlie.view.sprite.Sprite;
 import charlie.card.Card;
 import charlie.card.HoleCard;
+import charlie.util.Constant;
 import charlie.util.Point;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -40,7 +41,7 @@ import java.awt.Image;
  */
 public class ACard extends Sprite {
     protected final static int SPEED = 15;
-    protected Point home = new Point(ShoeView.SHOE_X, ShoeView.SHOE_Y);
+    protected Point home = new Point(Constant.SHOE_X, Constant.SHOE_Y);
     protected Image back;
     protected Image front;
     protected boolean up = true;

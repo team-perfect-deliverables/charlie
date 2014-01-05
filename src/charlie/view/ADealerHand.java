@@ -27,21 +27,18 @@ import charlie.card.Hid;
 import static charlie.view.AHand.HOME_OFFSET_X;
 import charlie.util.Point;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 /**
  * Dealer hand only uses the soft value.
- * @author Ron Coleman, Ph.D.
+ * @author Ron Coleman
  */
 public class ADealerHand extends AHand {
     protected Color bjFgColor = new Color(116,255,4);
     protected Color bjBgColor = Color.BLACK;
     protected Color bustFgColor = Color.WHITE;
-    protected Color bustBgColor = new Color(250,58,5);
-    protected Font outcomeFont = new Font("Arial", Font.BOLD, 18);
-    
+    protected Color bustBgColor = new Color(250,58,5);    
     /**
      * Constructor
      * @param hid Hand hid
@@ -96,8 +93,8 @@ public class ADealerHand extends AHand {
     
     /**
      * Renders the hand state (i.e., the value and its outcomeText in case of Blackjack).
-     * @param g
-     * @param text 
+     * @param g Graphics context
+     * @param text Message
      */
     @Override
     protected void renderState(Graphics2D g,String text) {

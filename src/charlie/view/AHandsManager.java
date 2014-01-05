@@ -6,6 +6,7 @@ package charlie.view;
 
 import charlie.card.Card;
 import charlie.util.Config;
+import charlie.util.Constant;
 import charlie.util.Point;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -95,7 +96,7 @@ public class AHandsManager {
     }
     
     public static ACard animate(Card card) {
-        Point pos = new Point(ShoeView.SHOE_X, ShoeView.SHOE_Y);
+        Point pos = new Point(Constant.SHOE_X, Constant.SHOE_Y);
         return new ACard(card,pos);
     }
     
@@ -108,7 +109,7 @@ public class AHandsManager {
         for(int i=0; i < hands.size(); i++) {
             AHand ahand = hands.get(i);
             
-            if(!ahand.ready())
+            if(!ahand.isReady())
                 return false;
         }
         

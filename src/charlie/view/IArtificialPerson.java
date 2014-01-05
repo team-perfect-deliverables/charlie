@@ -20,19 +20,20 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.util;
+package charlie.view;
+
+import charlie.actor.Courier;
+import charlie.dealer.IPlayer;
+import charlie.view.AMoneyIndicator;
+import java.awt.Graphics2D;
 
 /**
- * System-wide constants
+ * This interface defines the behavior of an artificial person.
  * @author Ron Coleman
  */
-public class Constant {
-    public final static String DIR_IMGS = "./images/";
-    public final static int HAND_LITERAL_VALUE = 0;
-    public final static int HAND_SOFT_VALUE = 1;  
-    public final static Integer DEAL_DELAY = 750;
-    public final static Double BOT_BANKROLL = 500.0;
-    public final static Double BOT_MIN_BET = 5.0;
-    public final static int SHOE_X = 500;
-    public final static int SHOE_Y = 0;
+public interface IArtificialPerson extends IPlayer {
+    public void setCourier(Courier courier);
+    public void setMoneyIndicator(AMoneyIndicator mi);
+    public void update();
+    public void render(Graphics2D g);
 }

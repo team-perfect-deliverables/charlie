@@ -25,8 +25,6 @@ package charlie.view;
 import charlie.view.sprite.TurnSprite;
 import charlie.GameFrame;
 import charlie.audio.Effect;
-import charlie.audio.Sound;
-import charlie.audio.SoundFactory;
 import charlie.audio.SoundFactory;
 import charlie.card.Hid;
 import charlie.card.Card;
@@ -67,7 +65,6 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     protected AHandsManager[] handsManager = {you, dealer, b9, aaf709};
     protected TurnSprite turnSprite = new TurnSprite();
     protected AHand turn = null;
-    protected List<Feedback> feedbacks = new ArrayList<>();
     protected HashMap<Seat, AHandsManager> seats = new HashMap<Seat, AHandsManager>() {
         {
             put(Seat.YOU, you);
@@ -76,9 +73,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             put(Seat.DEALER, dealer);
         }
     };
-    private final HashMap<Seat, AMoneyManager> monies = new HashMap<Seat, AMoneyManager>() {
+    private final HashMap<Seat, AMoneyIndicator> monies = new HashMap<Seat, AMoneyIndicator>() {
         {
-            put(Seat.YOU, new AMoneyManager());
+            put(Seat.YOU, new AMoneyIndicator());
             put(Seat.RIGHT, new ABotMoneyManager());
             put(Seat.LEFT, new ABotMoneyManager());
         }
@@ -267,7 +264,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      * @param hid Hand id
      */
     public void dubble(Hid hid) {
-        AMoneyManager money = this.monies.get(hid.getSeat());
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
 
         money.dubble();
     }
@@ -357,7 +354,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Bust);
 
-        AMoneyManager money = this.monies.get(hid.getSeat());
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
 
         money.decrease(hid.getAmt());
 
@@ -380,7 +377,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Win);
 
-        AMoneyManager money = this.monies.get(hid.getSeat());
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
 
         money.increase(hid.getAmt());
 
@@ -400,7 +397,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Loose);
 
-        AMoneyManager money = this.monies.get(hid.getSeat());
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
 
         money.decrease(hid.getAmt());
 
@@ -436,7 +433,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Blackjack);
 
-        AMoneyManager money = this.monies.get(hid.getSeat());
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
 
         money.increase(hid.getAmt());
 
@@ -460,7 +457,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Charlie);
 
-        AMoneyManager money = this.monies.get(hid.getSeat());
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
 
         money.increase(hid.getAmt());
 
@@ -483,7 +480,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         winnerCount = looserCount = pushCount = 0;
 
         for (Hid hid : manos.keySet()) {
-            AMoneyManager money = monies.get(hid.getSeat());
+            AMoneyIndicator money = monies.get(hid.getSeat());
 
             // Skip the dealer since it doesn't have a money manager
             if (money == null) {

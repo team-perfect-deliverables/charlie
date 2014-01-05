@@ -26,6 +26,6 @@ package charlie.view;
  * This class implements an animated money manager for bots.
  * @author Ron Coleman
  */
-public class ABotMoneyManager extends AMoneyManager {
+public class ABotMoneyManager extends AMoneyIndicator {
   
 }

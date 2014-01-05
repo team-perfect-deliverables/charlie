@@ -1,14 +1,32 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie.view;
 
 import charlie.audio.Effect;
 import charlie.audio.SoundFactory;
 import charlie.view.sprite.Chip;
-import charlie.view.sprite.BetAmtSprite;
-import charlie.view.sprite.Button;
+import charlie.view.sprite.AtStakeSprite;
+import charlie.view.sprite.ChipButton;
 import charlie.util.Constant;
 import java.awt.BasicStroke;
 import java.awt.Font;
@@ -20,23 +38,30 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 
 /**
- *
- * @author roncoleman125
+ * This class implements money indicator for a player including chip buttons and
+ * chips and money at stake on the table.
+ * @author Ron Coleman
  */
-public class AMoneyManager {
+public class AMoneyIndicator {
+    // Home base for the money indicators
     public final static int HOME_X = 210;
     public final static int HOME_Y = 355;
-    public final static int BET_HOME_X = 255;
-    public final static int BET_HOME_Y = 130;    
-    public final static int PLACE_HOME_X = BET_HOME_X + BetAmtSprite.DIAMETER + 10;
-    public final static int PLACE_HOME_Y = BET_HOME_Y + BetAmtSprite.DIAMETER / 4;
     
+    // Stake home (ie, the bet amount actually at stake)
+    public final static int STAKE_HOME_X = 255;
+    public final static int STAKE_HOME_Y = 130; 
+    
+    // Corresponding chips equal to the stake
+    public final static int PLACE_HOME_X = STAKE_HOME_X + AtStakeSprite.DIAMETER + 10;
+    public final static int PLACE_HOME_Y = STAKE_HOME_Y + AtStakeSprite.DIAMETER / 4;
+    
+    // Amount chip-to-dollar amount indices
     protected final int INDEX_5 = 2;
     protected final int INDEX_25 = 1;
     protected final int INDEX_100 = 0;
+    protected Integer[] amounts = { 100, 25, 5 };
     protected Font font = new Font("Arial", Font.BOLD, 18);
     protected BasicStroke stroke = new BasicStroke(3);    
-    protected Integer[] amounts = { 100, 25, 5 };
     protected Random ran = new Random();
     
     protected final static String[] UP_FILES =
@@ -45,16 +70,16 @@ public class AMoneyManager {
     protected final static String[] DOWN_FILES =
         {"chip-100-2.png","chip-25-2.png","chip-5-2.png"};
     
-    protected List<Button> buttons = new ArrayList<>();
+    protected List<ChipButton> buttons = new ArrayList<>();
     
-    protected BetAmtSprite betAmt = new BetAmtSprite(BET_HOME_X,BET_HOME_Y,0);
+    protected AtStakeSprite betAmt = new AtStakeSprite(STAKE_HOME_X,STAKE_HOME_Y,0);
     protected List<Chip> chips = new ArrayList<>();
     private final int width;
     protected ABankroll bankroll;
     protected Integer xDeposit = 0;
     protected boolean dubble = false;
     
-    public AMoneyManager() {
+    public AMoneyIndicator() {
         ImageIcon icon = new ImageIcon(Constant.DIR_IMGS+UP_FILES[0]);
 
         Image img = icon.getImage();
@@ -65,7 +90,7 @@ public class AMoneyManager {
         for(int i=0; i < amounts.length; i++) {
             Image up = new ImageIcon(Constant.DIR_IMGS+UP_FILES[i]).getImage();
             Image down = new ImageIcon(Constant.DIR_IMGS+DOWN_FILES[i]).getImage();
-            buttons.add(new Button(up,down,HOME_X+xoff,HOME_Y));
+            buttons.add(new ChipButton(up,down,HOME_X+xoff,HOME_Y));
             xoff += (width + 7);
         }
         
@@ -147,7 +172,7 @@ public class AMoneyManager {
     
     public void render(Graphics2D g) {
         for(int i=0; i < buttons.size(); i++) {
-            Button button = buttons.get(i);
+            ChipButton button = buttons.get(i);
             button.render(g);
         }
         
@@ -162,7 +187,7 @@ public class AMoneyManager {
     
     public void click(int x, int y) {
         for(int i=0; i < buttons.size(); i++) {
-            Button button = buttons.get(i);
+            ChipButton button = buttons.get(i);
             if(button.isReady() && button.isPressed(x,y)) {
                 int n = chips.size();
                 
@@ -190,7 +215,7 @@ public class AMoneyManager {
     
     public void unclick() {
         for(int i=0; i < buttons.size(); i++) {
-            Button button = buttons.get(i);
+            ChipButton button = buttons.get(i);
             button.release();
         }        
     }

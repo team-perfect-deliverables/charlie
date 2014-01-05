@@ -17,6 +17,10 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+/**
+ * See http://www.jsresources.org/examples/audio_playing_recording.html
+ * @author Ron Coleman
+ */
 public class Sound {
     public enum Cue { DEAL, CHARLIE, BJ, NICE, TOUCH };
     private final int EXTERNAL_BUFFER_SIZE = 128000;
