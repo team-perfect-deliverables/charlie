@@ -1,13 +1,33 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie.view;
 
+import charlie.card.Hand;
 import charlie.card.Hid;
 import static charlie.view.AHand.HOME_OFFSET_X;
-import charlie.util.Constant;
 import charlie.util.Point;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
@@ -16,13 +36,31 @@ import java.awt.Graphics2D;
  * @author Ron Coleman, Ph.D.
  */
 public class ADealerHand extends AHand {
+    protected Color bjFgColor = new Color(116,255,4);
+    protected Color bjBgColor = Color.BLACK;
+    protected Color bustFgColor = Color.WHITE;
+    protected Color bustBgColor = new Color(250,58,5);
+    protected Font outcomeFont = new Font("Arial", Font.BOLD, 18);
+    
+    /**
+     * Constructor
+     * @param hid Hand hid
+     */
     public ADealerHand(Hid hid) {
         super(hid);
     }
     
+    /**
+     * Hits hand with a card.
+     * @param card Card
+     * @return True
+     */
     @Override
-    public boolean hit(ACard card) {
-        // Move over other cards
+    public void hit(ACard card) {
+        // Move other cards to left to make room for new card
+        // The idea is to move the cards such that the original 
+        // center remains the same regards of how many cards
+        // are in the hand with a little space between the cards.
         int cardWidth = AHandsManager.getCardWidth();
 
         int sz = cards.size();
@@ -32,7 +70,7 @@ public class ADealerHand extends AHand {
 
             Point ahome = acard.getHome();
 
-            int x = ahome.getX() - (cardWidth / 2 + HOME_OFFSET_X / 2);
+            int x = ahome.getX() - (cardWidth + HOME_OFFSET_X ) / 2;
             int y = ahome.getY();
 
             Point newHome = new Point(x, y);
@@ -40,11 +78,12 @@ public class ADealerHand extends AHand {
             acard.setHome(newHome);
         }
 
+        // Put in the new card in the space we just created for it.
         int x;
 
-        if (sz == 0) {
+        if (sz == 0)
             x = home.getX();
-        } else {
+        else {
             int xLastCard = cards.get(sz - 1).getHome().getX();
 
             x = xLastCard + cardWidth + HOME_OFFSET_X / 2;
@@ -52,9 +91,14 @@ public class ADealerHand extends AHand {
 
         Point sweetHome = new Point(x, home.getY());
 
-        return cards.add(new ACard(card, sweetHome));
+        cards.add(new ACard(card, sweetHome));
     }
     
+    /**
+     * Renders the hand state (i.e., the value and its outcomeText in case of Blackjack).
+     * @param g
+     * @param text 
+     */
     @Override
     protected void renderState(Graphics2D g,String text) {
         if(cards.isEmpty())
@@ -62,13 +106,49 @@ public class ADealerHand extends AHand {
 
         FontMetrics fm = g.getFontMetrics(stateFont);
         
-        int x = cards.get(0).getX() + getPileWidth() / 2 - fm.charsWidth(text.toCharArray(), 0, text.length()) / 2;
+        int textWidth = fm.charsWidth(text.toCharArray(), 0, text.length());
+        
+        int x = cards.get(0).getX() + getPileWidth() / 2 - textWidth / 2;
         int y = AHandsManager.getCardHeight() + fm.getHeight();
         
         g.setColor(stateColor);
         g.setFont(stateFont);
 
         g.drawString(text, x, y); 
+        
+        int value = Hand.getValue(values);
+        if(cards.isEmpty() || value < 21)
+            return;
+       
+        String outcomeText = ""; 
+        if(isBlackjack())
+            outcomeText += " BLACKJACK ! ";
+        else
+            outcomeText += " BUST ! ";
+        
+        int sz = cards.size();
+        
+        ACard lastCard = cards.get(sz-1);
+        x = cards.get(0).getX() + getPileWidth() - 15;
+        y = lastCard.getY() + AHandsManager.getCardHeight() * 2 / 3;
+        
+        int outcomeWidth = fm.charsWidth(outcomeText.toCharArray(), 0, outcomeText.length());
+        int outcomeHeight = fm.getHeight(); 
+                
+        if(isBlackjack())
+            g.setColor(bjBgColor);
+        else
+            g.setColor(bustBgColor);
+        
+        g.fillRoundRect(x, y-outcomeHeight+5, outcomeWidth,outcomeHeight, 5, 5);
+        
+        if(isBlackjack())
+            g.setColor(bjFgColor);
+        else
+            g.setColor(bustFgColor);
+        
+        g.setFont(outcomeFont);
+        g.drawString(outcomeText, x, y);
     }
     
     @Override
@@ -97,19 +177,24 @@ public class ADealerHand extends AHand {
     
     @Override
     protected String getText() {
-        int value = values[Constant.HAND_SOFT_VALUE] <= 21 ?
-                values[Constant.HAND_SOFT_VALUE] :
-                values[Constant.HAND_LITERAL_VALUE];
+//        int value = values[Constant.HAND_SOFT_VALUE] <= 21 ?
+//                values[Constant.HAND_SOFT_VALUE] :
+//                values[Constant.HAND_LITERAL_VALUE];
+        int value = Hand.getValue(values);
         
-        String text = name;
+        String text = name + ": " + value;
 
-        if(value != 0) {
-            if(cards.size() == 2 && value == 21)
-                text += ": Blackjack !";
-            else
-                text += ": "+value;
-        }
+//        if(value != 0) {
+//            if(cards.size() == 2 && value == 21)
+//                text += ": Blackjack !";
+//            else
+//                text += ": "+value;
+//        }
         
         return text;
+    }
+    
+    protected boolean isBlackjack() {
+        return Hand.getValue(values) == 21 && cards.size() == 2;
     }
 }

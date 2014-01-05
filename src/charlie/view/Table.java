@@ -190,7 +190,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             handsManager[i].update();
         }
 
-        // If it's my turn, I didn't break, and my cards have landed,
+        // If it's my turn, I didn't break, and my cards have isLanded,
         // then enable enable to play
         if (turn != null
                 && turn.hid.getSeat() == Seat.YOU
@@ -290,7 +290,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             }
 
             // Reveal the hole card
-            hand.get(0).reveal();
+            hand.get(0).flip();
 
             // Disable player input
             this.frame.enableTrucking(false);

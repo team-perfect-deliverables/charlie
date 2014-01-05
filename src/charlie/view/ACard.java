@@ -1,6 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie.view;
 
@@ -13,17 +31,26 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 
 /**
- *
- * @author roncoleman125
+ * This class implements an animated card that moves through the game world.
+ * This card seeks home, if it is not already there, by traveling on a
+ * straight line.
+ * This class is the animated analog of the Card.
+ * @see charlie.card.Card
+ * @author Ron Coleman
  */
 public class ACard extends Sprite {
-
     protected final static int SPEED = 15;
     protected Point home = new Point(ShoeView.SHOE_X, ShoeView.SHOE_Y);
     protected Image back;
     protected Image front;
     protected boolean up = true;
 
+    /**
+     * Constructor<p>
+     * It is defined from a non-animated card.
+     * @param card Card
+     * @param pos Position in world
+     */
     public ACard(Card card, Point pos) {
         front = AHandsManager.getImage(card);
 
@@ -36,6 +63,11 @@ public class ACard extends Sprite {
         this.y = pos.getY();
     }
 
+    /**
+     * Copy constructor
+     * @param card Card to copy
+     * @param home 
+     */
     public ACard(ACard card, Point home) {
         this.front = card.front;
         this.back = card.back;
@@ -45,6 +77,10 @@ public class ACard extends Sprite {
         this.home = home;
     }
 
+    /**
+     * Renders the card.
+     * @param g Graphics context
+     */
     @Override
     public void render(Graphics2D g) {
         // Majic: synchronizaton problem here !!!
@@ -62,18 +98,20 @@ public class ACard extends Sprite {
         g.drawRect(x, y, w, h);
     }
 
+    /**
+     * Updates the card position, if needed.
+     */
     @Override
-    public void update() {
-        if(back != null)
-            System.out.print("");
-        
-        // Set which image is showing
+    public void update() {        
+        // Set which image is showing, front or back...thus
+        // it is possible for a card to "flip" in its current place
         if (up == true || back == null)
             img = front;
         else
             img = back;
 
-        if(this.landed())
+        // If card is home, there's nothing more to do.
+        if(this.isLanded())
             return;
 
         // Otherwise get the angle of attack
@@ -101,31 +139,41 @@ public class ACard extends Sprite {
         }
     }
 
-    public boolean landed() {
-        // Stay put if we're already home
-        if (home.getX() == x && home.getY() == y)
-            return true;
-        
-       return false;
+    /**
+     * Tests if a card has reached its home.
+     * @return True if the card (x,y) == home
+     */
+    public boolean isLanded() {
+       return home.getX() == x && home.getY() == y;
     }
     
-    public void reveal() {
+    /**
+     * Turns over the card to its up face
+     */
+    public void flip() {
         up = true;
     }
     
+    /**
+     * Sets the home position in the world.
+     * @param home Home point
+     */
     public void setHome(Point home) {
         this.home = home;
     }
 
+    /**
+     * Puts a card in its home position.
+     */
     public void settle() {
         this.x = home.getX();
         this.y = home.getY();
     }
 
-    public Point getPoint() {
-        return new Point(x, y);
-    }
-
+    /**
+     * Gets the card home position.
+     * @return Home point
+     */
     public Point getHome() {
         return home;
     }

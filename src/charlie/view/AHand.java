@@ -154,18 +154,18 @@ public class AHand {
         return text;
     }
     
-    public boolean hit(ACard card) {
+    public void hit(ACard card) {
         int xoff = cards.size() * HOME_OFFSET_X;
         int yoff = cards.size() * HOME_OFFSET_Y;
 
         Point myhome = new Point(home.getX() + xoff, home.getY() + yoff);
 
-        return cards.add(new ACard(card, myhome));
+        cards.add(new ACard(card, myhome));
     }
 
     public boolean ready() {
         for(int i=0; i < cards.size(); i++) {
-            if(!cards.get(i).landed())
+            if(!cards.get(i).isLanded())
                 return false;
         }
         
