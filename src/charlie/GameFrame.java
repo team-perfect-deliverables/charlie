@@ -6,6 +6,8 @@ package charlie;
 
 import charlie.card.Hid;
 import charlie.actor.Courier;
+import charlie.audio.Effect;
+import charlie.audio.SoundFactory;
 import charlie.message.view.from.Arrival;
 import charlie.server.Login;
 import charlie.server.Ticket;
@@ -35,7 +37,8 @@ import org.slf4j.LoggerFactory;
  * @author roncoleman125
  */
 public class GameFrame extends javax.swing.JFrame {
-    static {  
+
+    static {
         Properties props = System.getProperties();
         props.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         props.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
@@ -46,49 +49,45 @@ public class GameFrame extends javax.swing.JFrame {
     private final String GAME_SERVER = "127.0.0.1";
     private final Integer GAME_SERVER_PORT = 9000;
     private final Integer HOUSE_PORT = 1234;
-    
     private Actor house;
-    
     private Courier courier;
-    
     private Table panel;
-    
     private boolean connected = false;
-    
     private final String CHANNEL_ACTOR = "CHANNEL";
-    
     private Topology serverTopology;
     private Topology clientTopology;
-    
     private List<Hid> hids = new ArrayList<>();
     private int handIndex = 0;
     private boolean trucking = false;
     private boolean dubblable;
-    
+
     /**
      * Creates new form GameFrame
      */
     public GameFrame() {
         initComponents();
-        
+
         init();
 
     }
-    
+
     protected final void init() {
-        panel = new Table(this,this.surface);
-        
+        panel = new Table(this, this.surface);
+
         surface.add(panel);
-        
+
         this.setLocationRelativeTo(null);
-        
+
         enableDeal(false);
-        
+
         enablePlay(false);
+
+        SoundFactory.play(Effect.DEAL);
     }
-    
+
     /**
      * Connects local courier to remote courier (on server).
+     *
      * @param panel Panel courier perceives.
      * @return True if connected, false if connect attempt fails.
      */
@@ -96,14 +95,14 @@ public class GameFrame extends javax.swing.JFrame {
         try {
             // Login to the server to get the house address
             Socket client = new Socket(GAME_SERVER, GAME_SERVER_PORT);
-            LOG.info("opened socket to game server "+GAME_SERVER+":"+GAME_SERVER_PORT);
+            LOG.info("opened socket to game server " + GAME_SERVER + ":" + GAME_SERVER_PORT);
 
             OutputStream os = client.getOutputStream();
 
             ObjectOutputStream oos = new ObjectOutputStream(os);
 
             oos.writeObject(new Login("abc", "def"));
-            
+
             Ticket ticket;
             try (InputStream is = client.getInputStream(); ObjectInputStream ois = new ObjectInputStream(is)) {
                 ticket = (Ticket) ois.readObject();
@@ -111,45 +110,45 @@ public class GameFrame extends javax.swing.JFrame {
 
             // Get the house actor
             Address addr = ticket.getHouse();
-             
-            LOG.info("got house addr = "+addr);  
-            
+
+            LOG.info("got house addr = " + addr);
+
             clientTopology = new ClientTopology(GAME_SERVER, HOUSE_PORT, 5, TimeUnit.SECONDS, 3, TimeUnit.SECONDS);
 
             house = clientTopology.getActor(addr);
-            LOG.info("got house actor"); 
+            LOG.info("got house actor");
 
             // Connect the courier to its ghost surrogate
             courier = new Courier(panel);
-            
+
             serverTopology = new ServerTopology(MY_HOST, MY_PORT);
-            
+
             Address me = serverTopology.spawnActor(CHANNEL_ACTOR, courier);
-            LOG.info("spawned my addr = "+me); 
-            
+            LOG.info("spawned my addr = " + me);
+
             courier.setMyAddress(me);
 
             // Sending this message causes the house to spawn a ghost
             // which if all goes well sends us a connect message which we wait for.
-            house.send(new Arrival(ticket,me));
-            LOG.info("sent ARRIVAL to "+house);
-            
+            house.send(new Arrival(ticket, me));
+            LOG.info("sent ARRIVAL to " + house);
+
             // Wait for the acknowledgement from the surrogate
-            synchronized(panel) {
+            synchronized (panel) {
                 try {
                     panel.wait(5000);
 
                     Double bankroll = ticket.getBankroll();
-                    
+
                     panel.setBankroll(bankroll);
-                    
-                    LOG.info("connected to channel bankroll = "+bankroll); 
-                    
+
+                    LOG.info("connected to channel bankroll = " + bankroll);
+
                 } catch (InterruptedException ex) {
-                    LOG.info("failed to connect to channel: "+ex);
-                    
+                    LOG.info("failed to connect to channel: " + ex);
+
                     failOver();
-                    
+
                     return false;
                 }
             }
@@ -158,44 +157,46 @@ public class GameFrame extends javax.swing.JFrame {
 
             return true;
         } catch (IOException | ClassNotFoundException e) {
-            LOG.info("failed to connect to server: "+e);
-            
+            LOG.info("failed to connect to server: " + e);
+
             return false;
         }
     }
-    
+
     public void enableDeal(boolean deal) {
         this.betButton.setEnabled(deal);
-        
+
         this.panel.enableBetting(deal);
-        
+
         this.hitButton.setEnabled(false);
-        
+
         this.stayButton.setEnabled(false);
-        
+
         this.splitButton.setEnabled(false);
-        
+
         this.ddownButton.setEnabled(false);
     }
-    
+
     public void enablePlay(boolean playing) {
         this.hitButton.setEnabled(playing && trucking);
-        
+
         this.stayButton.setEnabled(playing && trucking);
-        
+
         this.ddownButton.setEnabled(playing && dubblable && trucking);
     }
-    
+
     public void enableTrucking(boolean trucking) {
         this.trucking = trucking;
     }
-    
+
     protected void failOver() {
-        if(serverTopology != null)
+        if (serverTopology != null) {
             serverTopology.shutdown();
-        
-        if(clientTopology != null)
+        }
+
+        if (clientTopology != null) {
             clientTopology.shutdown();
+        }
     }
 
     /**
@@ -317,48 +318,47 @@ public class GameFrame extends javax.swing.JFrame {
 
     private void accessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessButtonActionPerformed
         final GameFrame frame = this;
-        if(!connected) {
+        if (!connected) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                   
                     connected = frame.connect(panel);
-                    
-                    if(connected) {
+
+                    if (connected) {
                         JOptionPane.showMessageDialog(frame,
                                 "Successfully connected to server.",
                                 "Status",
                                 JOptionPane.INFORMATION_MESSAGE);
-                        
+
                         frame.accessButton.setText("Logout");
                         frame.enableDeal(true);
-                    }
-                    else
+                    } else {
                         JOptionPane.showMessageDialog(frame,
                                 "Failed to connect to server.",
                                 "Status",
                                 JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
-        }
-        else
+        } else {
             System.exit(0);
+        }
     }//GEN-LAST:event_accessButtonActionPerformed
 
     private void betButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_betButtonActionPerformed
         hids.clear();
-        
+
         this.handIndex = 0;
-        
+
         this.dubblable = true;
-        
+
         final GameFrame frame = this;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 Integer amt = frame.panel.getBetAmt();
-                
-                if(amt <= 0) {
+
+                if (amt <= 0) {
                     JOptionPane.showMessageDialog(frame,
                             "Minimum bet is $5.",
                             "Status",
@@ -373,7 +373,7 @@ public class GameFrame extends javax.swing.JFrame {
                 enableDeal(false);
             }
         });
- 
+
     }//GEN-LAST:event_betButtonActionPerformed
 
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
@@ -386,31 +386,31 @@ public class GameFrame extends javax.swing.JFrame {
         // NOTE: this isables double down on all hids and will have to be
         // fixed when splitting hids
         this.dubblable = false;
-        
+
         // Disable play until the card arrives
         enablePlay(false);
-       
+
         courier.hit(hids.get(this.handIndex));
     }//GEN-LAST:event_hitButtonActionPerformed
 
     private void ddownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ddownButtonActionPerformed
         // Disable further playing since this is ouble-down
         enableTrucking(false);
-        
+
         enablePlay(false);
-        
+
         // No further dubbling until the next bet made
         dubblable = false;
-        
+
         // Double the bet in the hand using a copy since this
         // is a transient bet.
         Hid hid = new Hid(hids.get(handIndex));
-        
+
         hid.dubble();
- 
+
         // Send this off to the dealer
         courier.ddown(hid);
-        
+
         // Double the bet on the panel
         panel.dubble(hid);
 
@@ -418,6 +418,7 @@ public class GameFrame extends javax.swing.JFrame {
 
     /**
      * Main starting point of app.
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {

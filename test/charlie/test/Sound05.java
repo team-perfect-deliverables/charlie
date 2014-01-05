@@ -41,7 +41,7 @@ public class Sound05 {
     }
     @Test
     public void test() {
-        SoundFactory.make(Effect.NICE);
+        SoundFactory.play(Effect.NICE);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {

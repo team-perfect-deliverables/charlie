@@ -326,7 +326,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public synchronized void deal(Hid hid, Card card, int[] handValues) {
-        SoundFactory.make(Effect.DEAL);
+        SoundFactory.play(Effect.DEAL);
 
         AHand hand = manos.get(hid);
 
@@ -351,6 +351,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void bust(Hid hid) {
+        LOG.info("BUST for hid = "+hid);
+        
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Bust);
@@ -360,7 +362,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         money.decrease(hid.getAmt());
 
         if (hid.getSeat() != Seat.DEALER) {
-            SoundFactory.make(Effect.BUST);
+            SoundFactory.play(Effect.BUST);
             looserCount++;
         }
     }
@@ -439,7 +441,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         money.increase(hid.getAmt());
 
         if (hid.getSeat() != Seat.DEALER) {
-            SoundFactory.make(Effect.BJ);
+            SoundFactory.play(Effect.BJ);
 
             winnerCount++;
         }
@@ -462,7 +464,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         money.increase(hid.getAmt());
 
-        SoundFactory.make(Effect.CHARLIE);
+        SoundFactory.play(Effect.CHARLIE);
 
         winnerCount++;
     }
@@ -544,11 +546,11 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         frame.enablePlay(false);
 
         if (winnerCount == numHands - 1) {
-            SoundFactory.make(Effect.NICE);
+            SoundFactory.play(Effect.NICE);
         } else if (looserCount == numHands - 1) {
-            SoundFactory.make(Effect.TOUGH);
+            SoundFactory.play(Effect.TOUGH);
         } else if (pushCount == numHands - 1) {
-            SoundFactory.make(Effect.PUSH);
+            SoundFactory.play(Effect.PUSH);
         }
     }
 

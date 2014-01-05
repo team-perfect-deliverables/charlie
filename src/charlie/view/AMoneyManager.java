@@ -4,6 +4,8 @@
  */
 package charlie.view;
 
+import charlie.audio.Effect;
+import charlie.audio.SoundFactory;
 import charlie.view.sprite.Chip;
 import charlie.view.sprite.BetAmtSprite;
 import charlie.view.sprite.Button;
@@ -173,6 +175,8 @@ public class AMoneyManager {
                 chips.add(chip);
                 
                 betAmt.increase(amounts[i]);
+                
+                SoundFactory.play(Effect.CHIPS_IN);
             }
         }
         
@@ -180,6 +184,7 @@ public class AMoneyManager {
         if(this.betAmt.isPressed(x, y)) {
             this.betAmt.zero();
             chips.clear();
+            SoundFactory.play(Effect.CHIPS_OUT);
         }
     }
     

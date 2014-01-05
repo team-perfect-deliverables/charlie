@@ -43,7 +43,7 @@ public class Sound02 {
 
     @Test
     public void test() {
-        SoundFactory.make(Effect.PUSH);
+        SoundFactory.play(Effect.PUSH);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {

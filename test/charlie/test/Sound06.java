@@ -42,7 +42,7 @@ public class Sound06 {
     
     @Test
     public void test() {
-        SoundFactory.make(Effect.CHARLIE);
+        SoundFactory.play(Effect.CHARLIE);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {

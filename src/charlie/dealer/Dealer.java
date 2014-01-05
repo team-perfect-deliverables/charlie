@@ -67,6 +67,7 @@ public class Dealer implements Serializable {
     protected IPlayer active = null;
     protected Hand dealerHand;
     private HoleCard holeCard;
+    private boolean gameOver = false;
     
     /**
      * Constructor
@@ -212,6 +213,9 @@ public class Dealer implements Serializable {
      */
     protected void startGame() {
         LOG.info("starting a game");
+        
+        gameOver = false;
+        
         try {
             // Gather up all the initial hands (ie, not including splits)
             List<Hid> hids = new ArrayList<>();
@@ -223,7 +227,7 @@ public class Dealer implements Serializable {
             // Include the dealer's hand
             hids.add(dealerHand.getHid());
           
-            LOG.info("hands at table + dealer = "+hids.size()+1);
+            LOG.info("hands at table + dealer = "+hids.size());
             
             // Tell each player we're starting a game
             for(IPlayer player: playerSequence)              
@@ -308,8 +312,9 @@ public class Dealer implements Serializable {
                 Thread.sleep(Constant.DEAL_DELAY);
                 
                 // Distribute the hard to everyone, even if it's not theirs
-                for (IPlayer _player : playerSequence)
+                for (IPlayer _player : playerSequence) {
                     _player.deal(hid, card, hand.getValues());
+                }
                 
                 // If player has blackjack -- they win automatically!
                 if (hand.isBlackjack()) {
@@ -459,16 +464,19 @@ public class Dealer implements Serializable {
                 LOG.info("sending turn "+hid+" to "+player);
                 player.play(hid);
             }
-
-            return;
         }
-
-        // If there are no more hands, close out game with dealer
-        // making last play.
-        closeGame();
+        else
+            // If there are no more hands, close out game with dealer
+            // making last play.
+            closeGame();
     }
     
     protected void closeGame() { 
+        if(gameOver)
+            return;
+        
+        gameOver = true;
+        
         // Tell everyone it's dealer's turn
         signal();
         
@@ -507,7 +515,7 @@ public class Dealer implements Serializable {
             if(hand.isBroke() || hand.isCharlie() || hand.isBlackjack())
                 continue;
 
-            // If hand less than dealer and dealer not isBroke, hand lost
+            // If hand less than dealer and dealer not isBroke, hand LOST
             if(hand.getValue() < dealerHand.getValue() && !dealerHand.isBroke()) {
                 house.updateBankroll(players.get(hid),hid.getAmt(),LOSS);
                 
@@ -515,7 +523,7 @@ public class Dealer implements Serializable {
                     player.loose(hid);
             }
             // If hand less than dealer and dealer isBroke OR...
-            //    hand greater than dealer and dealer NOT isBroke => hand won
+            //    hand greater than dealer and dealer NOT isBroke => hand WON
             else if(hand.getValue() < dealerHand.getValue() && dealerHand.isBroke() ||
                     hand.getValue() > dealerHand.getValue() && !dealerHand.isBroke()) {
                 
