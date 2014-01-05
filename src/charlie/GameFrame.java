@@ -82,6 +82,7 @@ public class GameFrame extends javax.swing.JFrame {
 
         enablePlay(false);
 
+        // Prime the audio player
         SoundFactory.play(Effect.DEAL);
     }
 
