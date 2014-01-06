@@ -41,6 +41,7 @@ import java.awt.Image;
  */
 public class ACard extends Sprite {
     protected final static int SPEED = 15;
+
     protected Point home = new Point(Constant.SHOE_X, Constant.SHOE_Y);
     protected Image back;
     protected Image front;
@@ -179,5 +180,13 @@ public class ACard extends Sprite {
         return home;
     }
     
-    
+    /**
+     * Converts a card to an animated card.
+     * @param card Card
+     * @return ACard
+     */
+    public static ACard animate(Card card) {
+        Point pos = new Point(Constant.SHOE_X, Constant.SHOE_Y);
+        return new ACard(card, pos);
+    }    
 }

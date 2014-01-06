@@ -335,7 +335,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         }
 
         // Convert card to an animated card and hit the hand
-        ACard acard = AHandsManager.animate(card);
+        ACard acard = ACard.animate(card);
 
         hand.hit(acard);
     }

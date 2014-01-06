@@ -124,9 +124,37 @@ These are the basic ideas.
 There is a system-wide properties file: _charlie.props_.
 It configures several important parameters.
 
+###Cards
+There are two types of cards: *Card* which is used
+by the server and client and *ACard* by the client only. The client
+ACard is an "animated" card and has an image of a card.
+The client translates from Card to ACard since the dealer
+only sends Card instances.
+
+Instances of Card have a rank and a suit. The following snippet constructs
+a three of spades:
+
+    Card card = new Card(3, Card.Suit.SPADES)
+
+To make an Ace of spades, do this:
+
+    Card card = new Card(Card.ACE, Card.Suit.SPADES)
+
+Card has various methods to inquire about itself, like its value,
+whether it is a face card (J<, K, Q), an Ace, etc.
+
+In theory, this is no need to construct an ACard.
+THere is a public static method, _animate_, on ACard to convert from 
+Card to ACard.
+
 ###Shoes
 The first thing to know before developing bots is how to control the cards which
 come from a _shoe_.
 There is a property, _charlie.shoe_. The value must be a fully qualified
-subclass of *Shoe*.
+subclass of *Shoe*. Here's an example
+
+    charlie.shoe charlie.card.Shoe00
+
+When the dealer starts, it looks for this property and constructs a _charlie.card.Shoe00_.
 You then just need to add cards to *cards* which is a *List<Card>*.
+Dealer then uses this shoe.

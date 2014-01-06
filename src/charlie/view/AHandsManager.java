@@ -94,11 +94,6 @@ public class AHandsManager {
         hands.clear();
     }
     
-    public static ACard animate(Card card) {
-        Point pos = new Point(Constant.SHOE_X, Constant.SHOE_Y);
-        return new ACard(card,pos);
-    }
-    
     public AHandsManager(String name, Point center) {
         this.name = name;
         this.center = center;

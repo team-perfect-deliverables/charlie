@@ -22,7 +22,6 @@
  */
 package charlie.card;
 
-import charlie.card.Card;
 
 /**
  * This class implements a test scenario.
