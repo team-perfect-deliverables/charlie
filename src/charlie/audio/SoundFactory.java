@@ -27,8 +27,8 @@ import static charlie.audio.Effect.PUSH;
 import java.util.Random;
 
 /**
- *
- * @author roncoleman125
+ * This class implements the factory pattern for managing and playing sounds.
+ * @author Ron Coleman
  */
 public class SoundFactory {   
     private static Sound dealSound0 = new Sound("audio/PlayingCardsPo_eOnFelt01_87.wav");

@@ -20,10 +20,45 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.audio;
+package charlie.view.sprite;
+
+import charlie.util.Constant;
+import java.awt.Graphics2D;
+import javax.swing.ImageIcon;
 
 /**
- * This class contains the sound effect types
+ * This class implements the player turn indicator.
  * @author Ron Coleman
  */
-public enum Effect { DEAL, CHARLIE, BJ, NICE, TOUGH, PUSH, BUST, CHIPS_IN, CHIPS_OUT, SHUFFLING };
+public class TurnIndicator extends Sprite {  
+    private boolean visible = false;
+    
+    /**
+     * Constructor
+     */
+    public TurnIndicator() {
+        String path = Constant.DIR_IMGS + "arrow-180-1.png";
+        
+        ImageIcon icon = new ImageIcon(path);
+
+        img = icon.getImage();
+    }
+    
+    /**
+     * Renders the indicator.
+     * @param g Graphics context
+     */
+    @Override
+    public void render(Graphics2D g) {
+        if(visible)
+            super.render(g);
+    }
+    
+    /**
+     * Toggles the indicator visibility.
+     * @param b Boolean true/false
+     */
+    public void show(boolean b) {
+        this.visible = b;
+    }
+}

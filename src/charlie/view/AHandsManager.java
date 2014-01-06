@@ -5,7 +5,6 @@
 package charlie.view;
 
 import charlie.card.Card;
-import charlie.util.Config;
 import charlie.util.Constant;
 import charlie.util.Point;
 import java.awt.Graphics2D;
@@ -58,7 +57,7 @@ public class AHandsManager {
     public static Image getImage(Card card) {
         String name = card.toString() + ".png";
         
-        String path = Config.DIR_CARD_IMGS + name;
+        String path = Constant.DIR_CARD_IMGS + name;
 
         Image img = imgCache.get(path);
 
@@ -74,7 +73,7 @@ public class AHandsManager {
     }
     
     public static Image getBackImage() {     
-        String path = Config.DIR_CARD_IMGS + "back.png";
+        String path = Constant.DIR_CARD_IMGS + "back.png";
 
         Image img = imgCache.get(path);
 

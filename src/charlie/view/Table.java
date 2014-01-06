@@ -22,7 +22,7 @@
  */
 package charlie.view;
 
-import charlie.view.sprite.TurnSprite;
+import charlie.view.sprite.TurnIndicator;
 import charlie.GameFrame;
 import charlie.audio.Effect;
 import charlie.audio.SoundFactory;
@@ -35,11 +35,10 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.dealer.Seat;
-import charlie.util.Config;
+import charlie.util.Constant;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -63,7 +62,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     protected AHandsManager b9 = new AHandsManager(b9s[ran.nextInt(b9s.length)], new Point(450, 150));
     protected AHandsManager aaf709 = new AHandsManager(aaf709s[ran.nextInt(aaf709s.length)], new Point(25, 150));
     protected AHandsManager[] handsManager = {you, dealer, b9, aaf709};
-    protected TurnSprite turnSprite = new TurnSprite();
+    protected TurnIndicator turnSprite = new TurnIndicator();
     protected AHand turn = null;
     protected HashMap<Seat, AHandsManager> seats = new HashMap<Seat, AHandsManager>() {
         {
@@ -122,9 +121,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         this.addNotify();
 
-        this.instrImg = new ImageIcon(Config.DIR_IMGS + "dealer-stands-0.png").getImage();
-        this.shoeImg = new ImageIcon(Config.DIR_IMGS + "shoe-0.png").getImage();
-        this.trayImg = new ImageIcon(Config.DIR_IMGS + "tray-0.png").getImage();
+        this.instrImg = new ImageIcon(Constant.DIR_IMGS + "dealer-stands-0.png").getImage();
+        this.shoeImg = new ImageIcon(Constant.DIR_IMGS + "shoe-0.png").getImage();
+        this.trayImg = new ImageIcon(Constant.DIR_IMGS + "tray-0.png").getImage();
     }
 
     /**

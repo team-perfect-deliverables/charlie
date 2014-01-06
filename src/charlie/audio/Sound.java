@@ -1,6 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie.audio;
 
@@ -18,7 +36,20 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
- * See http://www.jsresources.org/examples/audio_playing_recording.html
+ * This class is a facade for the Java sound API. It was modified from the
+ * Tritonus library to be play the sound multiple times without having to
+ * reload the file. Thus, it is memory inefficient. It handles only WAV
+ * formats.
+ * See http://www.jsresources.org/examples/audio_playing_recording.html.
+ * The file must have the following characteristics:
+ * characteristics:<br>
+ * Dynamic range: 16-bits<br>
+ * Sample rate: 8K samples/s<br>
+ * Channels: 1 (mono)<br>
+ * For some samples I also normalized the audio
+ * (see http://www.learndigitalaudio.com/blog/normalize-audio) although
+ * I don't see how this is necessary.<br>
+ * 
  * @author Ron Coleman
  */
 public class Sound {
@@ -34,6 +65,10 @@ public class Sound {
         s.play();
     }
 
+    /**
+     * Constructor
+     * @param filename File name
+     */
     public Sound(String filename) {
         File soundFile = new File(filename);
 

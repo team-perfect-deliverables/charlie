@@ -24,7 +24,7 @@ package charlie.view;
 
 import charlie.card.Hand;
 import charlie.card.Hid;
-import charlie.view.sprite.TurnSprite;
+import charlie.view.sprite.TurnIndicator;
 import charlie.util.Constant;
 import charlie.util.Point;
 import java.awt.Color;
@@ -60,7 +60,7 @@ public class AHand {
     protected Point home;
     protected String name = "NOBODY";
     protected Outcome outcome = Outcome.None; 
-    protected TurnSprite turnSprite = new TurnSprite();
+    protected TurnIndicator turnSprite = new TurnIndicator();
     protected final Hid hid;
 
     /**

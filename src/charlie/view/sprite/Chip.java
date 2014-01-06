@@ -25,22 +25,37 @@ package charlie.view.sprite;
 import java.awt.Image;
 
 /**
- *
- * @author roncoleman125
+ * This class implements a chip sprite.
+ * @author Ron Coleman
  */
 public class Chip extends Sprite {
-    private final int amt;
+    protected final int amt;
     
+    /**
+     * Copy constructor
+     * @param chip Chip
+     */
     public Chip(Chip chip) {
         this(chip.img,chip.x,chip.y,chip.amt);
     }
     
+    /**
+     * Constructor
+     * @param img Image
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param amt Amount
+     */
     public Chip(Image img, int x, int y, int amt) {
         super(x,y);
         super.img = img;
         this.amt = amt;
     }
 
+    /**
+     * Gets the chip amount.
+     * @return Dollar amount
+     */
     public int getAmt() {
         return amt;
     }   
