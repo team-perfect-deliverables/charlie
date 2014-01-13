@@ -22,14 +22,17 @@
  */
 package charlie.dealer;
 
+import charlie.plugin.IPlayer;
+import charlie.plugin.IBot;
 import charlie.card.Hand;
-import charlie.card.Shoe;
 import charlie.actor.House;
 import charlie.actor.RealPlayer;
 import charlie.card.Card;
 import charlie.card.HoleCard;
 import charlie.card.Hid;
 import charlie.card.ShoeFactory;
+import charlie.plugin.IShoe;
+import charlie.plugin.ISideRule;
 import charlie.util.Constant;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,12 +55,14 @@ import org.slf4j.LoggerFactory;
  * @author Ron Coleman
  */
 public class Dealer implements Serializable { 
-    public final static Double BLACKJACK_PAYS = 3/2.;
-    public final static Double CHARLIE_PAYS = 2/1.;
+    private final Logger LOG = LoggerFactory.getLogger(Dealer.class);  
+    protected final String SIDE_BET_RULE = "charlie.sidebet.rule";    
+    protected final static Double BLACKJACK_PAYS = 3/2.;
+    protected final static Double CHARLIE_PAYS = 2/1.;
     protected final static Double PROFIT = 1.0;
-    protected final static Double LOSS = -1.0;    
-    private final Logger LOG = LoggerFactory.getLogger(Dealer.class);
-    protected Shoe shoe;
+    protected final static Double LOSS = -1.0;   
+    protected final static Double PUSH = 0.0;
+    protected IShoe shoe;
     protected HashMap<Hid,Hand> hands = new HashMap<>();
     protected HashMap<Hid,IPlayer> players = new HashMap<>();
     protected List<Hid> handSequence = new ArrayList<>();
@@ -65,9 +70,10 @@ public class Dealer implements Serializable {
     protected final House house;
     protected Integer handSeqIndex = 0;
     protected IPlayer active = null;
+    protected ISideRule sideRule = null;
     protected Hand dealerHand;
-    private HoleCard holeCard;
-    private boolean gameOver = false;
+    protected HoleCard holeCard;
+    protected boolean gameOver = false;
     
     /**
      * Constructor
@@ -87,6 +93,8 @@ public class Dealer implements Serializable {
         shoe.init();
         
         LOG.info("shoe = "+shoe);
+        
+        loadSideRule();
     }
     
     /**
@@ -319,8 +327,8 @@ public class Dealer implements Serializable {
                 // If player has blackjack -- they win automatically!
                 if (hand.isBlackjack()) {
                     hid.multiplyAmt(BLACKJACK_PAYS);
-                    
-                    house.updateBankroll(players.get(hid), hid.getAmt(), PROFIT);
+
+                    updateBankroll(hid,PROFIT);
 
                     for (IPlayer player_ : playerSequence) {
                         player_.blackjack(hid);
@@ -355,7 +363,7 @@ public class Dealer implements Serializable {
         
         // If the hand isBroke, we're done with this hand
         if(hand.isBroke()) {
-            house.updateBankroll(player,hid.getAmt(),LOSS);
+            updateBankroll(hid,LOSS);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
@@ -366,7 +374,8 @@ public class Dealer implements Serializable {
         // If hand got a isCharlie, we're done with this hand
         else if(hand.isCharlie()) {
             hid.multiplyAmt(CHARLIE_PAYS);
-            house.updateBankroll(player,hid.getAmt(),PROFIT);
+            
+            updateBankroll(hid,PROFIT);
             
             // Tell everyone what happened
             for (IPlayer _player : playerSequence)
@@ -427,7 +436,7 @@ public class Dealer implements Serializable {
         
         // If hand broke, update the account and tell everyone
         if(hand.isBroke()) {
-            house.updateBankroll(player,hid.getAmt(),LOSS);
+            updateBankroll(hid,LOSS);
             
             for (IPlayer _player : playerSequence)
                 _player.bust(hid);
@@ -516,8 +525,8 @@ public class Dealer implements Serializable {
                 continue;
 
             // If hand less than dealer and dealer not isBroke, hand LOST
-            if(hand.getValue() < dealerHand.getValue() && !dealerHand.isBroke()) {
-                house.updateBankroll(players.get(hid),hid.getAmt(),LOSS);
+            if(hand.getValue() < dealerHand.getValue() && !dealerHand.isBroke()) {              
+                updateBankroll(hid,LOSS);
                 
                 for (IPlayer player: playerSequence)
                     player.loose(hid);
@@ -527,17 +536,19 @@ public class Dealer implements Serializable {
             else if(hand.getValue() < dealerHand.getValue() && dealerHand.isBroke() ||
                     hand.getValue() > dealerHand.getValue() && !dealerHand.isBroke()) {
                 
-                house.updateBankroll(players.get(hid),hid.getAmt(),PROFIT);
+                updateBankroll(hid,PROFIT);
                 
                 for (IPlayer player: playerSequence)
                     player.win(hid);   
             }
             // If player and dealer hands same, hand pushed
-            else if(hand.getValue() == dealerHand.getValue())
+            else if(hand.getValue() == dealerHand.getValue()) {
+                updateBankroll(hid,PUSH);
+                
                 for (IPlayer player: playerSequence)
                     player.push(hid);
-//            else
-//                LOG.error("bad outcome");
+            }
+
 
         }
         
@@ -581,18 +592,35 @@ public class Dealer implements Serializable {
         
         return false;
     }
+
+    /**
+     * Updates the players bankroll.
+     * @param hid Hand id
+     * @param gain Profit and loss factor
+     */
+    protected void updateBankroll(Hid hid,double gain) {
+        applySideBet(hid);
+        
+        house.updateBankroll(players.get(hid), hid, gain);      
+    }
     
-//    /**
-//     * Double the bet amount in a hand id
-//     * @param hid 
-//     */
-//    protected void dubble(Hid hid) {
-//        int match = this.handSequence.indexOf(hid);
-//        
-//        Hid hid_ = handSequence.get(match);
-//        
-//        hid_.setAmt(hid_.getAmt());        
-//    }
+    /**
+     * Applies side bet rule, if there is one.
+     * @param hid Hand id
+     */
+    protected void applySideBet(Hid hid) {
+        if(sideRule == null)
+            return;
+        
+        Hand hand = hands.get(hid);
+        
+        double payout = sideRule.apply(hand);
+        
+        if(payout == 0)
+            return;
+        
+        hid.setSideAmt(payout);
+    }
     
     /**
      * Validates a hand.
@@ -612,5 +640,29 @@ public class Dealer implements Serializable {
             return null;
         
         return hand;
+    }
+    
+    /**
+     * Loads the side bet rule.
+     */
+    protected final void loadSideRule() {        
+        String className = house.getProps().getProperty(SIDE_BET_RULE);
+        
+        if(className == null) 
+            return;
+        
+        LOG.info("attempting to load side bet rule = "+SIDE_BET_RULE);
+        
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+
+            this.sideRule = (ISideRule) clazz.newInstance();
+            
+            LOG.info("successfully loaded side bet rule");
+            
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            LOG.error("caught exception: " + ex);
+        }       
     }
 }

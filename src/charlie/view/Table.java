@@ -35,12 +35,14 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.dealer.Seat;
+import charlie.plugin.ISideView;
 import charlie.util.Constant;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import org.slf4j.Logger;
@@ -53,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class Table extends JPanel implements Runnable, IUi, MouseListener {
     private final Logger LOG = LoggerFactory.getLogger(Table.class);
-    
+    protected final String SIDE_BET_VIEW = "charlie.sidebet.view";    
     protected Random ran = new Random();
     protected String[] b9s = {"Apollo", "Zeus", "Talos"};
     protected String[] aaf709s = {"Hera", "Athena", "Hecate"};
@@ -79,6 +81,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             put(Seat.LEFT, new ABotMoneyManager());
         }
     };
+    
     protected HashMap<Hid, AHand> manos = new HashMap<>();
     private Thread gameLoop;
     private static Color COLOR_FELT = new Color(0, 153, 100);
@@ -94,6 +97,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     private int looserCount;
     private int pushCount;
     private int winnerCount;
+    protected ISideView sideBetView;
+    private Properties props = new Properties();    
 
     /**
      * Constructor
@@ -124,6 +129,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         this.instrImg = new ImageIcon(Constant.DIR_IMGS + "dealer-stands-0.png").getImage();
         this.shoeImg = new ImageIcon(Constant.DIR_IMGS + "shoe-0.png").getImage();
         this.trayImg = new ImageIcon(Constant.DIR_IMGS + "tray-0.png").getImage();
+        
+        this.loadSideView();
     }
 
     /**
@@ -171,6 +178,11 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         for (int i = 0; i < handsManager.length; i++) {
             handsManager[i].render(g);
         }
+        
+        // Render the side bet
+        if(sideBetView != null)
+            sideBetView.render(g)
+                    ;
         // Java tool related stuff
         Toolkit.getDefaultToolkit().sync();
 
@@ -185,7 +197,11 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         for (int i = 0; i < handsManager.length; i++) {
             handsManager[i].update();
         }
-
+        
+        // Update the side bet
+        if(sideBetView != null)
+            sideBetView.update(); 
+        
         // If it's my turn, I didn't break, and my cards have isLanded,
         // then enable enable to play
         if (turn != null
@@ -200,6 +216,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             // Enable the buttons
             frame.enablePlay(true);
         }
+       
     }
 
     /**
@@ -575,6 +592,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         int y = e.getY();
 
         monies.get(Seat.YOU).click(x, y);
+        
+        /// Ditto for the side bet system
+        if(sideBetView != null)
+            sideBetView.click(x, y);
     }
 
     /**
@@ -594,4 +615,27 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     @Override
     public void mouseExited(MouseEvent e) {
     }
+    
+    /**
+     * Loads the side bet rule.
+     */
+    protected void loadSideView() {                
+        String className = props.getProperty(SIDE_BET_VIEW);
+        
+        if(className == null)
+            return;
+        
+        LOG.info("attempting to load side bet "+SIDE_BET_VIEW);
+        
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+
+            this.sideBetView = (ISideView) clazz.newInstance();
+            
+            LOG.info("successfully loaded side bet rule");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            LOG.error("caught exception: " + ex);
+        }       
+    }    
 }

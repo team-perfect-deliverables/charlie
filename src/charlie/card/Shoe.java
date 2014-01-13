@@ -24,6 +24,7 @@ package charlie.card;
 
 import charlie.card.Card;
 import charlie.card.Card.Suit;
+import charlie.plugin.IShoe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.Random;
  * This class is also the base class for all other shoes.
  * @author Ron Coleman
  */
-public class Shoe  {
+public class Shoe  implements IShoe {
     protected Integer numDecks = 6;
     protected List<Card> cards = new ArrayList<>();
     protected Integer index = 0;
@@ -59,6 +60,7 @@ public class Shoe  {
     /**
      * Initializes the shoe.
      */
+    @Override
     public void init() {
         ran = new Random(System.currentTimeMillis());
         
@@ -82,6 +84,7 @@ public class Shoe  {
     /**
      * Shuffles cards in the shoe.
      */
+    @Override
     public final void shuffle() {
         Collections.shuffle(cards,ran);
         
@@ -94,6 +97,7 @@ public class Shoe  {
      * Gets the next card.
      * @return A card, if there is one
      */
+    @Override
     public Card next() {
         if(index >= cards.size())
             return null;
@@ -113,6 +117,7 @@ public class Shoe  {
      * Tests if shoe needs shuffling.
      * @return True if we've reach the burn card, false otherwise.
      */
+    @Override
     public boolean shuffleNeeded() {
         return burnIndex < index;
     }
@@ -121,6 +126,7 @@ public class Shoe  {
      * Gets number of cards still in the shoe.
      * @return Number cards in shoe
      */
+    @Override
     public int size() {
         return cards.size() - index;
     }

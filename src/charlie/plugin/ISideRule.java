@@ -20,36 +20,19 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.card;
+package charlie.plugin;
 
-import charlie.plugin.IShoe;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import charlie.card.Hand;
 
 /**
- * This class implements the shoe factory.
+ * This interface defines the behavior of a side bet rule.
  * @author Ron Coleman
  */
-public class ShoeFactory {     
-    private static final Logger LOG = LoggerFactory.getLogger(ShoeFactory.class);
+public interface ISideRule {
     /**
-     * Gets an instance of a shoe based on a scenario.
-     * @param scenario Scenario
-     * @return Shoe
+     * Gives the apply amount as <0 (loose), 0 (not play), or >0 (win)
+     * @param hand Hand
+     * @return Payout
      */
-    public static IShoe getInstance(String scenario) {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(scenario);
-            
-            IShoe shoe = (IShoe) clazz.newInstance();
-            
-            return shoe;
-        }
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            LOG.error("failed to instantiate shoe '"+scenario+"': " + ex);
-        }
-        
-        return null;
-    }
+    public double apply(Hand hand);
 }

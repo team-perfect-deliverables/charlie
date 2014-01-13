@@ -28,7 +28,7 @@ import charlie.message.view.from.Hit;
 import charlie.card.Hid;
 import charlie.dealer.Dealer;
 import charlie.card.Hand;
-import charlie.dealer.IPlayer;
+import charlie.plugin.IPlayer;
 import charlie.message.view.from.DoubleDown;
 import charlie.message.view.from.Request;
 import charlie.message.view.from.Stay;

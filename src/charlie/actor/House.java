@@ -22,8 +22,9 @@
  */
 package charlie.actor;
 
+import charlie.card.Hid;
 import charlie.dealer.Dealer;
-import charlie.dealer.IPlayer;
+import charlie.plugin.IPlayer;
 import charlie.message.view.from.Arrival;
 import charlie.server.GameServer;
 import charlie.server.Ticket;
@@ -40,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * This class implements the house.
  * @author Ron Coleman
  */
 public class House implements Serializable {
@@ -135,13 +136,13 @@ public class House implements Serializable {
      * @param hid Hand
      * @param gain P&L
      */
-    public void updateBankroll(IPlayer player,Double amt,Double gain) {      
+    public void updateBankroll(IPlayer player,Hid hid,Double gain) {      
         if(player == null || !accounts.containsKey(player))
             return;
         
         Ticket ticket = accounts.get(player);
         
-        Double bankroll = ticket.getBankroll() + gain * amt;
+        Double bankroll = ticket.getBankroll() + gain * hid.getAmt() + hid.getSideAmt();
         
         ticket.setBankroll(bankroll);
     }

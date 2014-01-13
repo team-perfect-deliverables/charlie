@@ -20,20 +20,32 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.view;
+package charlie.plugin;
 
-import charlie.actor.Courier;
-import charlie.dealer.IPlayer;
-import charlie.view.AMoneyIndicator;
-import java.awt.Graphics2D;
+import charlie.card.Hand;
+import charlie.dealer.Dealer;
+import charlie.dealer.Seat;
 
 /**
- * This interface defines the behavior of an artificial person.
+ * This is an interface for bot players running in the server.
  * @author Ron Coleman
  */
-public interface IArtificialPerson extends IPlayer {
-    public void setCourier(Courier courier);
-    public void setMoneyIndicator(AMoneyIndicator mi);
-    public void update();
-    public void render(Graphics2D g);
+public interface IBot extends IPlayer {
+    /**
+     * Gets the bots hand.
+     * @return Hand
+     */
+    public Hand getHand();
+    
+    /**
+     * Sets the dealer for the bot.
+     * @param dealer Dealer
+     */
+    public void setDealer(Dealer dealer);
+    
+    /**
+     * Sits the bot in seat.
+     * @param seat Seat
+     */
+    public void sit(Seat seat);
 }

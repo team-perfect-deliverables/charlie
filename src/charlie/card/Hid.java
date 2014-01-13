@@ -43,7 +43,8 @@ public class Hid implements Serializable {
     private Long key;
     private String host = "UNKNOWN";
     private Seat seat;
-    protected Double amt;
+    protected double amt = 0.0;
+    protected double sideAmt = 0.0;
     
     /**
      * Copy constructor
@@ -59,7 +60,7 @@ public class Hid implements Serializable {
      * Constructor
      * @param seat Hand id for this seat
      */
-    public Hid(Seat seat,Double amt) {
+    public Hid(Seat seat,double amt) {
         try {       
             this.amt = amt;
             this.key = Math.abs(ran.nextLong());
@@ -82,7 +83,7 @@ public class Hid implements Serializable {
      * Gets the amount for this hand.
      * @return Amount
      */
-    public Double getAmt() {
+    public double getAmt() {
         return amt;
     }
 
@@ -90,7 +91,7 @@ public class Hid implements Serializable {
      * Sets the amount for this hand.
      * @param amt Amount
      */
-    public void setAmt(Double amt) {
+    public void setAmt(double amt) {
         this.amt = amt;
     }
     
@@ -98,7 +99,7 @@ public class Hid implements Serializable {
      * Multiplies bet by some factor.
      * @param factor the multiplier
      */
-    public void multiplyAmt(Double factor) {
+    public void multiplyAmt(double factor) {
         this.amt *= factor;
     }
     
@@ -123,6 +124,22 @@ public class Hid implements Serializable {
      */
     public void setSeat(Seat seat) {
         this.seat = seat;
+    }
+
+    /**
+     * Gets the side bet amount.
+     * @return Double
+     */
+    public Double getSideAmt() {
+        return sideAmt;
+    }
+
+    /**
+     * Sets the side bet amount.
+     * @param side Side bet amount
+     */
+    public void setSideAmt(double sideAmt) {
+        this.sideAmt = sideAmt;
     }
     
     /**
