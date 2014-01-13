@@ -81,8 +81,8 @@ public class Courier {
         player.send(new DoubleDown(hid));
     }    
     
-    public Hid bet(Integer amt) {
-        Hid hid = new Hid(Seat.YOU,(double)amt);
+    public Hid bet(Integer amt, Integer sideAmt) {
+        Hid hid = new Hid(Seat.YOU,amt,sideAmt);
         
         player.send(new Bet(hid));
         

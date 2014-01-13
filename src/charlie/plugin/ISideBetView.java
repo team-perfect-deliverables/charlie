@@ -12,7 +12,7 @@ import java.awt.Graphics2D;
  *
  * @author roncoleman125
  */
-public interface ISideView {
+public interface ISideBetView {
     /**
      * Handles clicks in this region of the UI.
      * @param x X coordinate
@@ -39,6 +39,8 @@ public interface ISideView {
      * @param chip Chip
      */
     public void setUnit(Chip chip);
+    
+    public Integer getAmt();
     
     /**
      * Updates the side bet

@@ -55,14 +55,18 @@ public class Hid implements Serializable {
         this.host =  hid.host;
         this.seat = hid.seat;
         this.amt = hid.amt;
+        this.sideAmt = hid.sideAmt;
     }
     /**
      * Constructor
      * @param seat Hand id for this seat
+     * @param amt Main bet amount
+     * @param sideAmt Side bet amount
      */
-    public Hid(Seat seat,double amt) {
+    public Hid(Seat seat,double amt,double sideAmt) {
         try {       
             this.amt = amt;
+            this.sideAmt = sideAmt;
             this.key = Math.abs(ran.nextLong());
             this.seat = seat;
             
@@ -76,7 +80,7 @@ public class Hid implements Serializable {
     }
     
     public Hid(Seat seat) {
-        this(seat,0.0);
+        this(seat,0.0,0.0);
     }
 
     /**

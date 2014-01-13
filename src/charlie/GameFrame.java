@@ -1,6 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (c) 2014 Ron Coleman
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package charlie;
 
@@ -62,7 +80,7 @@ public class GameFrame extends javax.swing.JFrame {
     private boolean dubblable;
 
     /**
-     * Creates new form GameFrame
+     * Constructor
      */
     public GameFrame() {
         initComponents();
@@ -71,6 +89,9 @@ public class GameFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Initializes the frame.
+     */
     protected final void init() {
         panel = new Table(this, this.surface);
 
@@ -82,8 +103,8 @@ public class GameFrame extends javax.swing.JFrame {
 
         enablePlay(false);
 
-        // Prime the audio player
-        SoundFactory.play(Effect.DEAL);
+//        // Prime the audio player
+//        SoundFactory.play(Effect.SHUFFLING);
     }
 
     /**
@@ -330,7 +351,10 @@ public class GameFrame extends javax.swing.JFrame {
                                 "Successfully connected to server.",
                                 "Status",
                                 JOptionPane.INFORMATION_MESSAGE);
-
+                        
+                        // Prime the audio player
+                        SoundFactory.play(Effect.SHUFFLING);
+                        
                         frame.accessButton.setText("Logout");
                         frame.enableDeal(true);
                     } else {
@@ -366,8 +390,10 @@ public class GameFrame extends javax.swing.JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                
+                Integer sideAmt = frame.panel.getSideAmt();
 
-                Hid hid = courier.bet(amt);
+                Hid hid = courier.bet(amt,sideAmt);
 
                 hids.add(hid);
 

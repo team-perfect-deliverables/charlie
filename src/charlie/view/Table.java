@@ -35,7 +35,7 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.dealer.Seat;
-import charlie.plugin.ISideView;
+import charlie.plugin.ISideBetView;
 import charlie.util.Constant;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -97,7 +97,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     private int looserCount;
     private int pushCount;
     private int winnerCount;
-    protected ISideView sideBetView;
+    protected ISideBetView sideBetView;
     private Properties props = new Properties();    
 
     /**
@@ -134,13 +134,24 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     }
 
     /**
-     * Gets the bet amount on the table.
+     * Gets the main bet amount on the table.
      *
-     * @return
+     * @return Bet amount
      */
     public Integer getBetAmt() {
         Integer amt = this.monies.get(Seat.YOU).getAmount();
         return amt;
+    }
+    
+    /**
+     * Gets the side bet amount on the table.
+     * @return Side bet amount
+     */
+    public Integer getSideAmt() {
+        if(this.sideBetView == null)
+            return 0;
+        
+        return this.sideBetView.getAmt();
     }
 
     /**
@@ -395,7 +406,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         AMoneyIndicator money = this.monies.get(hid.getSeat());
 
-        money.increase(hid.getAmt());
+        money.increase(hid.getAmt()+hid.getSideAmt());
 
         winnerCount++;
     }
@@ -415,7 +426,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         AMoneyIndicator money = this.monies.get(hid.getSeat());
 
-        money.decrease(hid.getAmt());
+        money.decrease(hid.getAmt()-hid.getSideAmt());
 
         looserCount++;
     }
@@ -433,6 +444,10 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Push);
 
+        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        
+        money.increase(hid.getSideAmt());
+        
         ++pushCount;
     }
 
@@ -451,7 +466,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         AMoneyIndicator money = this.monies.get(hid.getSeat());
 
-        money.increase(hid.getAmt());
+        money.increase(hid.getAmt()+hid.getSideAmt());
 
         if (hid.getSeat() != Seat.DEALER) {
             SoundFactory.play(Effect.BJ);
@@ -475,7 +490,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         AMoneyIndicator money = this.monies.get(hid.getSeat());
 
-        money.increase(hid.getAmt());
+        money.increase(hid.getAmt()+hid.getSideAmt());
 
         SoundFactory.play(Effect.CHARLIE);
 
@@ -631,7 +646,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         try {
             clazz = Class.forName(className);
 
-            this.sideBetView = (ISideView) clazz.newInstance();
+            this.sideBetView = (ISideBetView) clazz.newInstance();
             
             LOG.info("successfully loaded side bet rule");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {

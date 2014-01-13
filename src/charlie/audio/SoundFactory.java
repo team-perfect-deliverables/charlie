@@ -41,12 +41,16 @@ public class SoundFactory {
     private static Sound[] bustSounds = { new Sound("audio/ouch.wav") };
     private static Sound chipsIn = new Sound("audio/Games_Poker_Chip_08950004.wav");
     private static Sound chipsOut = new Sound("audio/Games_Poker_Chip_08950003.wav");
+    private static Sound shuffle = new Sound("audio/013012_Casino-Cards_28_A1.wav");
     
     private static long lastTime = System.currentTimeMillis();   
     protected static Random toss = new Random();
 
     public static void play(Effect e) {
         switch(e) {
+            case SHUFFLING:
+                shuffle.play();
+                break;
             case DEAL:
                 backgroundPlay(dealSound1);
                 break;

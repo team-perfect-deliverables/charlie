@@ -32,7 +32,7 @@ import charlie.card.HoleCard;
 import charlie.card.Hid;
 import charlie.card.ShoeFactory;
 import charlie.plugin.IShoe;
-import charlie.plugin.ISideRule;
+import charlie.plugin.ISideBetRule;
 import charlie.util.Constant;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class Dealer implements Serializable {
     protected final House house;
     protected Integer handSeqIndex = 0;
     protected IPlayer active = null;
-    protected ISideRule sideRule = null;
+    protected ISideBetRule sideRule = null;
     protected Hand dealerHand;
     protected HoleCard holeCard;
     protected boolean gameOver = false;
@@ -101,11 +101,13 @@ public class Dealer implements Serializable {
      * Receives a bet request from a "real" you. Don't invoke this method
      * for a bot. Bots are instantiated directly by this class.
      * @param you Player
-     * @param yours Hand
+     * @param hid Hand
      * @param bet Bet amount
      */
-    public void bet(RealPlayer you,Hid yours) {
-        LOG.info("got new bet = "+yours.getAmt()+" from "+you+" for hid = "+yours);
+    public void bet(RealPlayer you,Hid hid) {
+        LOG.info("got new bet = "+ hid.getAmt() +
+                " side bet = "+ hid.getSideAmt() +
+                " from " + you + " for hid = " + hid);
         
         // Clear out old hands, if any
         reset();
@@ -114,7 +116,7 @@ public class Dealer implements Serializable {
         // B9 Robby
         sit("B9",Seat.RIGHT);
         
-        sit(you,yours);
+        sit(you,hid);
         
         // AAF709 / Rhoda
         sit("B9",Seat.LEFT);
@@ -657,7 +659,7 @@ public class Dealer implements Serializable {
         try {
             clazz = Class.forName(className);
 
-            this.sideRule = (ISideRule) clazz.newInstance();
+            this.sideRule = (ISideBetRule) clazz.newInstance();
             
             LOG.info("successfully loaded side bet rule");
             

@@ -28,7 +28,7 @@ import charlie.card.Hand;
  * This interface defines the behavior of a side bet rule.
  * @author Ron Coleman
  */
-public interface ISideRule {
+public interface ISideBetRule {
     /**
      * Gives the apply amount as <0 (loose), 0 (not play), or >0 (win)
      * @param hand Hand
