@@ -347,15 +347,16 @@ public class GameFrame extends javax.swing.JFrame {
                     connected = frame.connect(panel);
 
                     if (connected) {
+                        // Prime the audio player
+                        SoundFactory.prime();
+                        
                         JOptionPane.showMessageDialog(frame,
                                 "Successfully connected to server.",
                                 "Status",
                                 JOptionPane.INFORMATION_MESSAGE);
                         
-                        // Prime the audio player
-                        SoundFactory.play(Effect.SHUFFLING);
-                        
                         frame.accessButton.setText("Logout");
+                                                
                         frame.enableDeal(true);
                     } else {
                         JOptionPane.showMessageDialog(frame,

@@ -30,6 +30,8 @@ import charlie.util.Point;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.HashMap;
+import javax.swing.ImageIcon;
 
 /**
  * This class implements an animated card that moves through the game world.
@@ -41,6 +43,52 @@ import java.awt.Image;
  */
 public class ACard extends Sprite {
     protected final static int SPEED = 15;
+    static int cardWidth = -1;
+    static Card SAMPLE_CARD = new Card(Card.ACE, Card.Suit.SPADES);
+    static int cardHeight = -1;
+    static HashMap<String, Image> imgCache = new HashMap<>();
+    public static final Integer HANDS_Y = 100;
+
+    public static Image getBackImage() {
+        String path = Constant.DIR_CARD_IMGS + "back.png";
+        Image img = imgCache.get(path);
+        if (img == null) {
+            ImageIcon icon = new ImageIcon(path);
+            img = icon.getImage();
+            imgCache.put(path, img);
+        }
+        return img;
+    }
+
+    public static Image getImage(Card card) {
+        String name = card.toString() + ".png";
+        String path = Constant.DIR_CARD_IMGS + name;
+        Image img = imgCache.get(path);
+        if (img == null) {
+            ImageIcon icon = new ImageIcon(path);
+            img = icon.getImage();
+            imgCache.put(path, img);
+        }
+        return img;
+    }
+
+    public static int getCardHeight() {
+        if (cardHeight != -1) {
+            return cardHeight;
+        }
+        Image img = getImage(SAMPLE_CARD);
+        cardHeight = img.getHeight(null);
+        return cardHeight;
+    }
+
+    public static int getCardWidth() {
+        if (cardWidth != -1) {
+            return cardWidth;
+        }
+        Image img = getImage(SAMPLE_CARD);
+        cardWidth = img.getWidth(null);
+        return cardWidth;
+    }
 
     protected Point home = new Point(Constant.SHOE_X, Constant.SHOE_Y);
     protected Image back;
@@ -54,10 +102,10 @@ public class ACard extends Sprite {
      * @param pos Position in world
      */
     public ACard(Card card, Point pos) {
-        front = AHandsManager.getImage(card);
+        front = getImage(card);
 
         if (card instanceof HoleCard) {
-            this.back = AHandsManager.getBackImage();
+            this.back = getBackImage();
             up = false;
         }
 
@@ -77,6 +125,13 @@ public class ACard extends Sprite {
         this.x = card.getX();
         this.y = card.getY();
         this.home = home;
+    }
+    
+    public ACard(Image img, Point home, Point pos) {
+        this.front = this.back = img;
+        this.home = home;
+        this.x = pos.getX();
+        this.y = pos.getY();
     }
 
     /**

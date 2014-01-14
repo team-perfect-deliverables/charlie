@@ -31,6 +31,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -165,6 +166,7 @@ public class Sound {
          activated.
          */
         line.start();
+        
 
         /*
          Ok, finally the line is prepared. Now comes the real
@@ -210,6 +212,20 @@ public class Sound {
         //         */
 //                line.close();        
 
+    }
+    
+    /**
+     * Sets the volume in relative decibels.<br>
+     * See http://stackoverflow.com/questions/953598/audio-volume-control-increase-or-decrease-in-java
+     * @param db Decibels
+     */
+    public void setVolume(float db) {
+        FloatControl gainControl =
+                (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+        
+        gainControl.setValue(db);
+
+        gainControl.getValue();
     }
 }
 

@@ -87,7 +87,7 @@ public class House implements Serializable {
 
         LOG.info("validated ticket = "+ticket);
         
-        // Get a dealer for this myAddress
+        // Get a dealer for this player
         // Note: if we were allocating dealers from a pool, this is the place
         // to implement that logic. For now we'll just spawn dealers without
         // restriction.
@@ -108,10 +108,14 @@ public class House implements Serializable {
         
         player.setMyAddress(playerAddress);
         
-        // Inform channel we're ready
+        // Inform player we're ready
         player.ready();        
     }
 
+    /**
+     * Gets the house properties
+     * @return Properties
+     */
     public Properties getProps() {
         return props;
     }

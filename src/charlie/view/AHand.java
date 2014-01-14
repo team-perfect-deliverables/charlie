@@ -110,7 +110,7 @@ public class AHand {
         try {
             // Paint the turn indicator
             int indicatorWidth = turnSprite.getImage().getWidth(null);
-            int cardWidth = AHandsManager.getCardWidth();
+            int cardWidth = ACard.getCardWidth();
             
             int xoff = cardWidth / 2 - indicatorWidth / 2;
             int yoff = -turnSprite.getImage().getHeight(null) - 5;
@@ -143,7 +143,7 @@ public class AHand {
                 outcomeText += " " + outcome.toString().toUpperCase() + " ! "; 
             
             // Calculate the outcome position
-            int cardHeight = AHandsManager.getCardHeight();
+            int cardHeight = ACard.getCardHeight();
             x = cards.get(sz-1).getHome().getX() + cardWidth - 15;
             y = cards.get(sz-1).getHome().getY() + cardHeight / 2; 
             

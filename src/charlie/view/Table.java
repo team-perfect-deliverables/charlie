@@ -93,6 +93,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     private Image instrImg;
     private Image shoeImg;
     private Image trayImg;
+    private ABurnCard burnCard = new ABurnCard();
     private int numHands;
     private int looserCount;
     private int pushCount;
@@ -192,8 +193,11 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         
         // Render the side bet
         if(sideBetView != null)
-            sideBetView.render(g)
-                    ;
+            sideBetView.render(g);
+
+        if(burnCard.getX()> 0)
+            burnCard.render(g);
+        
         // Java tool related stuff
         Toolkit.getDefaultToolkit().sync();
 
@@ -227,6 +231,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             // Enable the buttons
             frame.enablePlay(true);
         }
+        
+        burnCard.update();
        
     }
 
@@ -350,6 +356,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public synchronized void deal(Hid hid, Card card, int[] handValues) {
+        // Get the burn card off the table
+        burnCard.clear();
+        
         SoundFactory.play(Effect.DEAL);
 
         AHand hand = manos.get(hid);
@@ -505,7 +514,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void starting(List<Hid> hids, int shoeSize) {
-        // Clear out everything from last game 
+        // Clear out everything from last game        
         numHands = hids.size();
 
         winnerCount = looserCount = pushCount = 0;
@@ -584,6 +593,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     @Override
     public void shuffling() {
+        burnCard.setHome(new Point(225,225));
+        burnCard.setXY(new Point(Constant.SHOE_X,Constant.SHOE_Y));
+        SoundFactory.play(Effect.SHUFFLING);
     }
 
     @Override

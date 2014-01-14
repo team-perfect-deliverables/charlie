@@ -20,19 +20,13 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.plugin;
+package charlie.message.view.to;
 
-import charlie.actor.Courier;
-import charlie.view.AMoneyIndicator;
-import java.awt.Graphics2D;
+import charlie.message.Message;
 
 /**
- * This interface defines the behavior of an artificial person.
+ * This class implements the shuffle message.
  * @author Ron Coleman
  */
-public interface IArtificialPerson extends IPlayer {
-    public void setCourier(Courier courier);
-    public void setMoneyIndicator(AMoneyIndicator mi);
-    public void update();
-    public void render(Graphics2D g);
+public class Shuffle extends Message {
 }

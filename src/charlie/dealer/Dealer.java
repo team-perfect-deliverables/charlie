@@ -126,9 +126,6 @@ public class Dealer implements Serializable {
         // Create the dealer hand
         dealerHand = new Hand(new Hid(Seat.DEALER));
         
-        // Shuffle cards
-        shuffle();
-        
         // Let the game begin!
         startGame();
     }
@@ -208,14 +205,16 @@ public class Dealer implements Serializable {
     /**
      * Shuffles the shoe, if necessary.
      */
-    protected void shuffle() {
+    protected void shuffle() throws InterruptedException {
         if (shoe.shuffleNeeded()) {
             shoe.shuffle();
 
             for (IPlayer player : playerSequence) {
                 player.shuffling();
             }
-        }      
+            
+            Thread.sleep(3000);
+        }   
     }
     
     /**
@@ -239,9 +238,12 @@ public class Dealer implements Serializable {
           
             LOG.info("hands at table + dealer = "+hids.size());
             
+            
             // Tell each player we're starting a game
             for(IPlayer player: playerSequence)              
                 player.startGame(hids,shoe.size());
+            
+            shuffle();
             
             Thread.sleep(250);
             

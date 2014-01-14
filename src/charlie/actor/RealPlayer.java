@@ -42,6 +42,7 @@ import charlie.message.view.to.Ready;
 import charlie.message.view.to.Play;
 import charlie.message.view.to.Push;
 import charlie.message.view.to.GameStart;
+import charlie.message.view.to.Shuffle;
 import charlie.message.view.to.Win;
 import com.googlecode.actorom.Actor;
 import com.googlecode.actorom.Address;
@@ -209,7 +210,7 @@ public class RealPlayer implements IPlayer {
      */
     @Override
     public void shuffling() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        courier.send(new Shuffle());
     }
 
     /**

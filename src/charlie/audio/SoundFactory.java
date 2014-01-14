@@ -46,13 +46,36 @@ public class SoundFactory {
     private static long lastTime = System.currentTimeMillis();   
     protected static Random toss = new Random();
 
+    /**
+     * Primes the sound line
+     */
+    public static void prime() {
+        // Get any sound
+        Sound sound = niceSounds[0];
+        
+        // Set volume to allowed minimum
+        sound.setVolume(-80.0f);
+        
+        // Play the sound
+        sound.play();
+        
+        // Restore volume to allowed maximum
+        sound.setVolume(6.0f);
+    }
+    
+    /**
+     * Plays a sound
+     * @param e Effect
+     */
     public static void play(Effect e) {
         switch(e) {
             case SHUFFLING:
-                shuffle.play();
+//                shuffle.play();
+//                shuffle.play();
+                backgroundPlay(shuffle,2);
                 break;
             case DEAL:
-                backgroundPlay(dealSound1);
+                backgroundPlay(dealSound1,1);
                 break;
             case CHARLIE:
                 charlieSounds[toss.nextInt(charlieSounds.length)].play();
@@ -73,15 +96,15 @@ public class SoundFactory {
                 bustSounds[toss.nextInt(bustSounds.length)].play();
                 break; 
             case CHIPS_IN:
-                backgroundPlay(chipsIn);
+                backgroundPlay(chipsIn,1);
                 break;
             case CHIPS_OUT:
-                backgroundPlay(chipsOut);
+                backgroundPlay(chipsOut,1);
                 break;                
         }        
     }
     
-    protected static void backgroundPlay(final Sound sound) {
+    protected static void backgroundPlay(final Sound sound,final int loop) {
         long now = System.currentTimeMillis();
         
         if(now - lastTime < 500)
@@ -92,7 +115,8 @@ public class SoundFactory {
         new Thread(new Runnable() { 
             @Override
             public void run() {
-                sound.play();
+                for(int i=0; i < loop; i++)
+                    sound.play();
             }
         }).start();
     } 

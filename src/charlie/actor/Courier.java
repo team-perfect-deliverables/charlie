@@ -42,6 +42,7 @@ import charlie.message.view.to.Outcome;
 import charlie.message.view.to.Play;
 import charlie.message.view.to.Push;
 import charlie.message.view.to.GameStart;
+import charlie.message.view.to.Shuffle;
 import charlie.message.view.to.Win;
 import charlie.util.Constant;
 import com.googlecode.actorom.Actor;
@@ -170,6 +171,12 @@ public class Courier {
     public void onReceive(GameOver ending) {
         LOG.info("received ending shoe size = "+ending.getShoeSize());
         ui.ending(ending.getShoeSize());
+    }
+    
+    @OnMessage(type = Shuffle.class)
+    public void onReceive(Shuffle shuffle) {
+        LOG.info("received shuffle");
+        ui.shuffling();
     }
     
     @OnMessage(type = String.class)

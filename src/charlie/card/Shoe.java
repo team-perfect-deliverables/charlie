@@ -22,7 +22,6 @@
  */
 package charlie.card;
 
-import charlie.card.Card;
 import charlie.card.Card.Suit;
 import charlie.plugin.IShoe;
 import java.util.ArrayList;

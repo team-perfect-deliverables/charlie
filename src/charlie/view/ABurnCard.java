@@ -20,19 +20,48 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.plugin;
+package charlie.view;
 
-import charlie.actor.Courier;
-import charlie.view.AMoneyIndicator;
+import charlie.util.Constant;
+import charlie.util.Point;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 
 /**
- * This interface defines the behavior of an artificial person.
+ *
  * @author Ron Coleman
  */
-public interface IArtificialPerson extends IPlayer {
-    public void setCourier(Courier courier);
-    public void setMoneyIndicator(AMoneyIndicator mi);
-    public void update();
-    public void render(Graphics2D g);
+public class ABurnCard extends ACard {
+    public ABurnCard() {
+        super(ABurnCard.getBurnImage(),new Point(0,0),new Point(0,0));
+    }
+
+    public void clear() {
+        this.home.setX(-100);
+    }
+//    
+//    @Override
+//    public void render(Graphics2D g) {
+//        if(img == null)
+//            return;
+//        
+//        g.drawImage(this.img,x,y,null);
+//    }
+    
+    public static Image getBurnImage() {
+        String path = Constant.DIR_IMGS + "burn-card-1.png";
+        
+        Image img = imgCache.get(path);
+        
+        if (img == null) {
+            ImageIcon icon = new ImageIcon(path);
+            
+            img = icon.getImage();
+            
+            imgCache.put(path, img);
+        }
+        
+        return img;
+    }    
 }

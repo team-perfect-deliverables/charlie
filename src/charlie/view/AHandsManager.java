@@ -20,73 +20,9 @@ import javax.swing.ImageIcon;
  */
 public class AHandsManager { 
     private List<AHand> hands = new ArrayList<>();
-    private static int cardWidth = -1;
-    private static int cardHeight = -1;
-    private int handInset = cardWidth;
+    private int handInset = ACard.cardWidth;
     
     private final Point center;
-    public final static Integer HANDS_Y = 100;
-
-    private static HashMap<String, Image> imgCache = new HashMap<>();
-    private static Card SAMPLE_CARD = new Card(Card.ACE, Card.Suit.SPADES);
-
-    public static int getCardWidth() {
-        if (cardWidth != -1) {
-            return cardWidth;
-        }
-
-        Image img = getImage(SAMPLE_CARD);
-
-        cardWidth = img.getWidth(null);
-
-        return cardWidth;
-    }
-    
-    public static int getCardHeight() {
-        if (cardHeight != -1) {
-            return cardHeight;
-        }
-
-        Image img = getImage(SAMPLE_CARD);
-
-        cardHeight = img.getHeight(null);
-
-        return cardHeight;
-    }
-
-    public static Image getImage(Card card) {
-        String name = card.toString() + ".png";
-        
-        String path = Constant.DIR_CARD_IMGS + name;
-
-        Image img = imgCache.get(path);
-
-        if (img == null) {
-            ImageIcon icon = new ImageIcon(path);
-
-            img = icon.getImage();
-
-            imgCache.put(path, img);
-        }
-
-        return img;
-    }
-    
-    public static Image getBackImage() {     
-        String path = Constant.DIR_CARD_IMGS + "back.png";
-
-        Image img = imgCache.get(path);
-
-        if (img == null) {
-            ImageIcon icon = new ImageIcon(path);
-
-            img = icon.getImage();
-
-            imgCache.put(path, img);
-        }
-
-        return img;
-    }
     
     private final String name;
     
@@ -165,7 +101,7 @@ public class AHandsManager {
         // Select the offset relative to the current unsplit hand.
         // Note: to keep the cards even laid out along the player's center
         // the offset size depends on the rank of hands.
-        int offset = hands.size() % 2 == 0 ? cardWidth : cardWidth / 2;
+        int offset = hands.size() % 2 == 0 ? ACard.cardWidth : ACard.cardWidth / 2;
         
         // Move all the hands further to the left
         int x = hands.get(0).getHome().getX() - offset;
@@ -176,7 +112,7 @@ public class AHandsManager {
             
             hand.setHome(newhome);
             
-            x += (cardWidth + handInset);
+            x += (ACard.cardWidth + handInset);
         }
     }
     

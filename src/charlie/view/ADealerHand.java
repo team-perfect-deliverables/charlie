@@ -58,7 +58,7 @@ public class ADealerHand extends AHand {
         // The idea is to move the cards such that the original 
         // center remains the same regards of how many cards
         // are in the hand with a little space between the cards.
-        int cardWidth = AHandsManager.getCardWidth();
+        int cardWidth = ACard.getCardWidth();
 
         int sz = cards.size();
 
@@ -106,7 +106,7 @@ public class ADealerHand extends AHand {
         int textWidth = fm.charsWidth(text.toCharArray(), 0, text.length());
         
         int x = cards.get(0).getX() + getPileWidth() / 2 - textWidth / 2;
-        int y = AHandsManager.getCardHeight() + fm.getHeight();
+        int y = ACard.getCardHeight() + fm.getHeight();
         
         g.setColor(stateColor);
         g.setFont(stateFont);
@@ -127,7 +127,7 @@ public class ADealerHand extends AHand {
         
         ACard lastCard = cards.get(sz-1);
         x = cards.get(0).getX() + getPileWidth() - 15;
-        y = lastCard.getY() + AHandsManager.getCardHeight() * 2 / 3;
+        y = lastCard.getY() + ACard.getCardHeight() * 2 / 3;
         
         int outcomeWidth = fm.charsWidth(outcomeText.toCharArray(), 0, outcomeText.length());
         int outcomeHeight = fm.getHeight(); 
@@ -156,7 +156,7 @@ public class ADealerHand extends AHand {
 
         int sz = cards.size();
         
-        int cardWidth = AHandsManager.getCardWidth();
+        int cardWidth = ACard.getCardWidth();
         
         int pw = cardWidth * sz + (sz - 1) * HOME_OFFSET_X / 2;
         
@@ -169,7 +169,7 @@ public class ADealerHand extends AHand {
             return 0;
         }
 
-        return AHandsManager.getCardHeight();
+        return ACard.getCardHeight();
     }
     
     @Override
