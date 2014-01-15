@@ -114,12 +114,12 @@ public class Dealer implements Serializable {
 
         // Insert the player -- IN THIS ORDER
         // B9 Robby
-        sit("B9",Seat.RIGHT);
+        sit("b9",Seat.RIGHT);
         
         sit(you,hid);
         
         // AAF709 / Rhoda
-        sit("B9",Seat.LEFT);
+        sit("n6",Seat.LEFT);
       
         handSeqIndex = 0;        
 

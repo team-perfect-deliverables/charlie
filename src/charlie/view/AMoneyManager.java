@@ -42,7 +42,7 @@ import javax.swing.ImageIcon;
  * chips and money at stake on the table.
  * @author Ron Coleman
  */
-public class AMoneyIndicator {
+public class AMoneyManager {
     // Home base for the money indicators
     public final static int HOME_X = 210;
     public final static int HOME_Y = 355;
@@ -79,7 +79,7 @@ public class AMoneyIndicator {
     protected Integer xDeposit = 0;
     protected boolean dubble = false;
     
-    public AMoneyIndicator() {
+    public AMoneyManager() {
         ImageIcon icon = new ImageIcon(Constant.DIR_IMGS+UP_FILES[0]);
 
         Image img = icon.getImage();
@@ -95,7 +95,7 @@ public class AMoneyIndicator {
         }
         
         xDeposit = HOME_X + xoff + 5;
-        bankroll = new ABankroll(xDeposit,HOME_Y+5,0.0);
+        bankroll = new ABankroll(xDeposit,HOME_Y+25,0.0);
     }
     
     public Integer getAmount() {

@@ -26,4 +26,16 @@ package charlie.audio;
  * This class contains the sound effect types
  * @author Ron Coleman
  */
-public enum Effect { DEAL, CHARLIE, BJ, NICE, TOUGH, PUSH, BUST, CHIPS_IN, CHIPS_OUT, SHUFFLING };
+public enum Effect {
+    DEAL,
+    CHARLIE,
+    BJ,
+    NICE,
+    TOUGH,
+    PUSH,
+    BUST,
+    CHIPS_IN,
+    CHIPS_OUT,
+    SHUFFLING,
+    TURN
+};

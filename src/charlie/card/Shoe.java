@@ -89,7 +89,7 @@ public class Shoe  implements IShoe {
         
         index = 0;
                 
-        burnIndex = cards.size() - ran.nextInt(52);
+        burnIndex = cards.size() - ran.nextInt(26);
     }
     
     /**
@@ -118,7 +118,7 @@ public class Shoe  implements IShoe {
      */
     @Override
     public boolean shuffleNeeded() {
-        return burnIndex < index;
+        return index >= burnIndex;
     }
     
     /**

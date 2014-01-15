@@ -23,7 +23,7 @@
 package charlie.plugin;
 
 import charlie.actor.Courier;
-import charlie.view.AMoneyIndicator;
+import charlie.view.AMoneyManager;
 import java.awt.Graphics2D;
 
 /**
@@ -32,7 +32,7 @@ import java.awt.Graphics2D;
  */
 public interface IArtificialPerson extends IPlayer {
     public void setCourier(Courier courier);
-    public void setMoneyIndicator(AMoneyIndicator mi);
+    public void setMoneyIndicator(AMoneyManager mi);
     public void update();
     public void render(Graphics2D g);
 }

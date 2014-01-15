@@ -39,7 +39,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="stayButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="betButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="dealButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="accessButton" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -56,7 +56,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="accessButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="betButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="dealButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="hitButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="stayButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="ddownButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -93,13 +93,13 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="accessButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="betButton">
+    <Component class="javax.swing.JButton" name="dealButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Deal"/>
         <Property name="actionCommand" type="java.lang.String" value=" Bet "/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="betButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dealButtonActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="hitButton">

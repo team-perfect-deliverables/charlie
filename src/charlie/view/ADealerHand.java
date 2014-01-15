@@ -120,7 +120,7 @@ public class ADealerHand extends AHand {
         String outcomeText = ""; 
         if(isBlackjack())
             outcomeText += " BLACKJACK ! ";
-        else
+        else if(isBroke())
             outcomeText += " BUST ! ";
         
         int sz = cards.size();
@@ -134,14 +134,14 @@ public class ADealerHand extends AHand {
                 
         if(isBlackjack())
             g.setColor(bjBgColor);
-        else
+        else if(isBroke())
             g.setColor(bustBgColor);
         
         g.fillRoundRect(x, y-outcomeHeight+5, outcomeWidth,outcomeHeight, 5, 5);
         
         if(isBlackjack())
             g.setColor(bjFgColor);
-        else
+        else if(isBroke())
             g.setColor(bustFgColor);
         
         g.setFont(outcomeFont);

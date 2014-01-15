@@ -29,7 +29,7 @@ import charlie.audio.SoundFactory;
 import charlie.message.view.from.Arrival;
 import charlie.server.Login;
 import charlie.server.Ticket;
-import charlie.view.Table;
+import charlie.view.ATable;
 import com.googlecode.actorom.Actor;
 import com.googlecode.actorom.Address;
 import com.googlecode.actorom.Topology;
@@ -69,7 +69,7 @@ public class GameFrame extends javax.swing.JFrame {
     private final Integer HOUSE_PORT = 1234;
     private Actor house;
     private Courier courier;
-    private Table panel;
+    private ATable panel;
     private boolean connected = false;
     private final String CHANNEL_ACTOR = "CHANNEL";
     private Topology serverTopology;
@@ -93,7 +93,7 @@ public class GameFrame extends javax.swing.JFrame {
      * Initializes the frame.
      */
     protected final void init() {
-        panel = new Table(this, this.surface);
+        panel = new ATable(this, this.surface);
 
         surface.add(panel);
 
@@ -113,7 +113,7 @@ public class GameFrame extends javax.swing.JFrame {
      * @param panel Panel courier perceives.
      * @return True if connected, false if connect attempt fails.
      */
-    private boolean connect(Table panel) {
+    private boolean connect(ATable panel) {
         try {
             // Login to the server to get the house address
             Socket client = new Socket(GAME_SERVER, GAME_SERVER_PORT);
@@ -186,7 +186,7 @@ public class GameFrame extends javax.swing.JFrame {
     }
 
     public void enableDeal(boolean deal) {
-        this.betButton.setEnabled(deal);
+        this.dealButton.setEnabled(deal);
 
         this.panel.enableBetting(deal);
 
@@ -232,7 +232,7 @@ public class GameFrame extends javax.swing.JFrame {
 
         surface = new javax.swing.JPanel();
         accessButton = new javax.swing.JButton();
-        betButton = new javax.swing.JButton();
+        dealButton = new javax.swing.JButton();
         hitButton = new javax.swing.JButton();
         stayButton = new javax.swing.JButton();
         ddownButton = new javax.swing.JButton();
@@ -260,11 +260,11 @@ public class GameFrame extends javax.swing.JFrame {
             }
         });
 
-        betButton.setText("Deal");
-        betButton.setActionCommand(" Bet ");
-        betButton.addActionListener(new java.awt.event.ActionListener() {
+        dealButton.setText("Deal");
+        dealButton.setActionCommand(" Bet ");
+        dealButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                betButtonActionPerformed(evt);
+                dealButtonActionPerformed(evt);
             }
         });
 
@@ -313,7 +313,7 @@ public class GameFrame extends javax.swing.JFrame {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(stayButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(betButton)
+                        .add(dealButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(accessButton)))
                 .addContainerGap())
@@ -326,7 +326,7 @@ public class GameFrame extends javax.swing.JFrame {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(accessButton)
-                    .add(betButton)
+                    .add(dealButton)
                     .add(hitButton)
                     .add(stayButton)
                     .add(ddownButton)
@@ -375,7 +375,7 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_accessButtonActionPerformed
 
-    private void betButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_betButtonActionPerformed
+    private void dealButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dealButtonActionPerformed
         hids.clear();
 
         this.handIndex = 0;
@@ -386,6 +386,9 @@ public class GameFrame extends javax.swing.JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                // Clear out old bets, stats, etc.
+                frame.panel.clear();
+                
                 Integer amt = frame.panel.getBetAmt();
 
                 if (amt <= 0) {
@@ -395,9 +398,12 @@ public class GameFrame extends javax.swing.JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
+                
+                // Get player side wager on table
                 Integer sideAmt = frame.panel.getSideAmt();
 
+                // Tell courier to send bet to dealer which gives us a hand id
+                // since bets are only associated with hands
                 Hid hid = courier.bet(amt, sideAmt);
 
                 hids.add(hid);
@@ -406,7 +412,7 @@ public class GameFrame extends javax.swing.JFrame {
             }
         });
 
-    }//GEN-LAST:event_betButtonActionPerformed
+    }//GEN-LAST:event_dealButtonActionPerformed
 
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
         courier.stay(hids.get(this.handIndex));
@@ -481,8 +487,8 @@ public class GameFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton accessButton;
-    private javax.swing.JButton betButton;
     private javax.swing.JButton ddownButton;
+    private javax.swing.JButton dealButton;
     private javax.swing.JButton hitButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton splitButton;

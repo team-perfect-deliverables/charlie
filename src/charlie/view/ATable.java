@@ -53,8 +53,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ron Coleman
  */
-public final class Table extends JPanel implements Runnable, IUi, MouseListener {
-    private final Logger LOG = LoggerFactory.getLogger(Table.class);
+public final class ATable extends JPanel implements Runnable, IUi, MouseListener {
+    private final Logger LOG = LoggerFactory.getLogger(ATable.class);
     protected final String SIDE_BET_VIEW = "charlie.sidebet.view";    
     protected Random ran = new Random();
     protected String[] b9s = {"Apollo", "Zeus", "Talos"};
@@ -74,9 +74,9 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             put(Seat.DEALER, dealer);
         }
     };
-    private final HashMap<Seat, AMoneyIndicator> monies = new HashMap<Seat, AMoneyIndicator>() {
+    private final HashMap<Seat, AMoneyManager> monies = new HashMap<Seat, AMoneyManager>() {
         {
-            put(Seat.YOU, new AMoneyIndicator());
+            put(Seat.YOU, new AMoneyManager());
             put(Seat.RIGHT, new ABotMoneyManager());
             put(Seat.LEFT, new ABotMoneyManager());
         }
@@ -107,7 +107,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      * @param frame Main game frame
      * @param parent Parent panel containing this one.
      */
-    public Table(GameFrame frame, JPanel parent) {
+    public ATable(GameFrame frame, JPanel parent) {
         this.frame = frame;
 
         setSize(parent.getWidth(), parent.getHeight());
@@ -133,14 +133,35 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
         
         this.loadSideView();
     }
+    
+    /**
+     * Clears table of old bets, etc.
+     */
+    public void clear() {
+        winnerCount = looserCount = pushCount = 0;
+
+        for (Hid hid : manos.keySet()) {
+            AMoneyManager money = monies.get(hid.getSeat());
+
+            // Skip dealer since it doesn't have a money manager
+            if (money == null)
+                continue;
+
+            money.undubble();
+        }
+    }
 
     /**
-     * Gets the main bet amount on the table.
-     *
+     * Gets the main bet amount on the table.<br>
+     * This should only be requested when making a bet but before the table
+     * has been cleared
      * @return Bet amount
      */
     public Integer getBetAmt() {
-        Integer amt = this.monies.get(Seat.YOU).getAmount();
+        AMoneyManager money = this.monies.get(Seat.YOU);
+        
+        Integer amt = money.getAmount();
+        
         return amt;
     }
     
@@ -292,12 +313,12 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
     }
 
     /**
-     * Double the bet on the panel.
+     * Double bet on the table.
      *
      * @param hid Hand id
      */
     public void dubble(Hid hid) {
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
 
         money.dubble();
     }
@@ -326,6 +347,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
             this.frame.enableTrucking(false);
             this.frame.enablePlay(false);
         } else {
+            SoundFactory.play(Effect.TURN);
+            
             // Disable old hand
             if (turn != null) {
                 turn.enablePlaying(false);
@@ -384,13 +407,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void bust(Hid hid) {
-        LOG.info("BUST for hid = "+hid);
+        LOG.info("BUST for hid = "+hid+" amt = "+hid.getAmt());
         
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Bust);
 
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
 
         money.decrease(hid.getAmt());
 
@@ -407,13 +430,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void win(Hid hid) {
-        LOG.info("WIN for hid = "+hid);
+        LOG.info("WIN for hid = "+hid+" amt = "+hid.getAmt());
         
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Win);
 
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
 
         money.increase(hid.getAmt()+hid.getSideAmt());
 
@@ -427,13 +450,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void loose(Hid hid) {
-        LOG.info("LOOSE for hid = "+hid);
+        LOG.info("LOOSE for hid = "+hid+" amt = "+hid.getAmt());
         
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Loose);
 
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
 
         money.decrease(hid.getAmt()-hid.getSideAmt());
 
@@ -447,13 +470,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void push(Hid hid) {
-        LOG.info("PUSH for hid = "+hid);
+        LOG.info("PUSH for hid = "+hid+" amt = "+hid.getAmt());
         
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Push);
 
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
         
         money.increase(hid.getSideAmt());
         
@@ -467,13 +490,13 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void blackjack(Hid hid) {
-        LOG.info("BJ for hid = "+hid);
+        LOG.info("BJ for hid = "+hid+" amt = "+hid.getAmt());
         
         AHand hand = manos.get(hid);
 
         hand.setOutcome(AHand.Outcome.Blackjack);
 
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
 
         money.increase(hid.getAmt()+hid.getSideAmt());
 
@@ -497,7 +520,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
         hand.setOutcome(AHand.Outcome.Charlie);
 
-        AMoneyIndicator money = this.monies.get(hid.getSeat());
+        AMoneyManager money = this.monies.get(hid.getSeat());
 
         money.increase(hid.getAmt()+hid.getSideAmt());
 
@@ -514,22 +537,8 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
      */
     @Override
     public void starting(List<Hid> hids, int shoeSize) {
-        // Clear out everything from last game        
         numHands = hids.size();
-
-        winnerCount = looserCount = pushCount = 0;
-
-        for (Hid hid : manos.keySet()) {
-            AMoneyIndicator money = monies.get(hid.getSeat());
-
-            // Skip the dealer since it doesn't have a money manager
-            if (money == null) {
-                continue;
-            }
-
-            money.undubble();
-        }
-
+        
         for (AHandsManager animator : seats.values()) {
             animator.clear();
         }

@@ -42,6 +42,7 @@ public class SoundFactory {
     private static Sound chipsIn = new Sound("audio/Games_Poker_Chip_08950004.wav");
     private static Sound chipsOut = new Sound("audio/Games_Poker_Chip_08950003.wav");
     private static Sound shuffle = new Sound("audio/013012_Casino-Cards_28_A1.wav");
+    private static Sound turn = new Sound("audio/blip2.wav");
     
     private static long lastTime = System.currentTimeMillis();   
     protected static Random toss = new Random();
@@ -69,6 +70,9 @@ public class SoundFactory {
      */
     public static void play(Effect e) {
         switch(e) {
+            case TURN:
+                turn.play();
+                break;
             case SHUFFLING:
 //                shuffle.play();
 //                shuffle.play();
