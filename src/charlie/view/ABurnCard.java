@@ -24,12 +24,13 @@ package charlie.view;
 
 import charlie.util.Constant;
 import charlie.util.Point;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
 /**
- *
+ * This class implements the "burn" card.
  * @author Ron Coleman
  */
 public class ABurnCard extends ACard {
@@ -37,17 +38,34 @@ public class ABurnCard extends ACard {
         super(ABurnCard.getBurnImage(),new Point(0,0),new Point(0,0));
     }
 
+    /**
+     * Clear card from the table
+     */
     public void clear() {
         this.home.setX(-100);
     }
-//    
-//    @Override
-//    public void render(Graphics2D g) {
-//        if(img == null)
-//            return;
-//        
-//        g.drawImage(this.img,x,y,null);
-//    }
+    
+    /**
+     * Send card to table
+     */
+    public void launch() {
+        this.home = new Point(375,150);
+        this.x = Constant.SHOE_X;
+        this.y = Constant.SHOE_Y;
+       
+    }
+    
+    @Override
+    public void render(Graphics2D g) {
+        super.render(g);
+        
+        int w = img.getWidth(null);
+        int h = img.getHeight(null);
+
+        g.setColor(Color.RED);
+
+        g.drawRect(x, y, w, h);
+    }
     
     public static Image getBurnImage() {
         String path = Constant.DIR_IMGS + "burn-card-1.png";

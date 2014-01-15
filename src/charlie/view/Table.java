@@ -593,8 +593,7 @@ public final class Table extends JPanel implements Runnable, IUi, MouseListener 
 
     @Override
     public void shuffling() {
-        burnCard.setHome(new Point(225,225));
-        burnCard.setXY(new Point(Constant.SHOE_X,Constant.SHOE_Y));
+        burnCard.launch();
         SoundFactory.play(Effect.SHUFFLING);
     }
 

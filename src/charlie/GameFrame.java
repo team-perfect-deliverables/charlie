@@ -309,9 +309,9 @@ public class GameFrame extends javax.swing.JFrame {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(ddownButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(stayButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(hitButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(stayButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(betButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -341,6 +341,8 @@ public class GameFrame extends javax.swing.JFrame {
     private void accessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessButtonActionPerformed
         final GameFrame frame = this;
         if (!connected) {
+            frame.accessButton.setEnabled(false);
+            
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -349,14 +351,14 @@ public class GameFrame extends javax.swing.JFrame {
                     if (connected) {
                         // Prime the audio player
                         SoundFactory.prime();
-                        
+
                         JOptionPane.showMessageDialog(frame,
                                 "Successfully connected to server.",
                                 "Status",
                                 JOptionPane.INFORMATION_MESSAGE);
-                        
+
                         frame.accessButton.setText("Logout");
-                                                
+
                         frame.enableDeal(true);
                     } else {
                         JOptionPane.showMessageDialog(frame,
@@ -364,6 +366,8 @@ public class GameFrame extends javax.swing.JFrame {
                                 "Status",
                                 JOptionPane.ERROR_MESSAGE);
                     }
+
+                    frame.accessButton.setEnabled(true);
                 }
             });
         } else {
@@ -391,10 +395,10 @@ public class GameFrame extends javax.swing.JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 Integer sideAmt = frame.panel.getSideAmt();
 
-                Hid hid = courier.bet(amt,sideAmt);
+                Hid hid = courier.bet(amt, sideAmt);
 
                 hids.add(hid);
 
