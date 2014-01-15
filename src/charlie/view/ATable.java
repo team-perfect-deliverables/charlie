@@ -160,7 +160,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
     public Integer getBetAmt() {
         AMoneyManager money = this.monies.get(Seat.YOU);
         
-        Integer amt = money.getAmount();
+        Integer amt = money.getWager();
         
         return amt;
     }

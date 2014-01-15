@@ -72,13 +72,16 @@ public class AMoneyManager {
     
     protected List<ChipButton> buttons = new ArrayList<>();
     
-    protected AtStakeSprite betAmt = new AtStakeSprite(STAKE_HOME_X,STAKE_HOME_Y,0);
+    protected AtStakeSprite wager = new AtStakeSprite(STAKE_HOME_X,STAKE_HOME_Y,0);
     protected List<Chip> chips = new ArrayList<>();
     private final int width;
     protected ABankroll bankroll;
     protected Integer xDeposit = 0;
     protected boolean dubble = false;
     
+    /**
+     * Constructor
+     */
     public AMoneyManager() {
         ImageIcon icon = new ImageIcon(Constant.DIR_IMGS+UP_FILES[0]);
 
@@ -98,10 +101,17 @@ public class AMoneyManager {
         bankroll = new ABankroll(xDeposit,HOME_Y+25,0.0);
     }
     
-    public Integer getAmount() {
-        return this.betAmt.getAmt();
+    /**
+     * Gets the wager.
+     * @return 
+     */
+    public Integer getWager() {
+        return this.wager.getAmt();
     }
     
+    /**
+     * Doubles the wager.
+     */
     public void dubble() {
         // Can double only once
         if(dubble)
@@ -124,11 +134,14 @@ public class AMoneyManager {
                 chips.add(chip);                        
         }
         
-        this.betAmt.dubble();
+        this.wager.dubble();
         
         dubble = true;
     }
     
+    /**
+     * Undoubles the wager in the case of double down.
+     */
     public void undubble() {
         if(!this.dubble)
             return;
@@ -136,7 +149,7 @@ public class AMoneyManager {
         // Get a new chip set
         List<Chip> newChips = new ArrayList<>();
        
-        this.betAmt.zero();
+        this.wager.zero();
         
         int sz = chips.size();
         
@@ -144,7 +157,7 @@ public class AMoneyManager {
         for(int i=0; i < sz / 2; i++) {
             newChips.add(chips.get(i));
             
-            betAmt.increase(chips.get(i).getAmt());
+            wager.increase(chips.get(i).getAmt());
         }
         
         // Make new the current chip set
@@ -154,22 +167,42 @@ public class AMoneyManager {
         dubble = false;
     }
     
+    /**
+     * Increases bankroll from a win.
+     * @param amt Amount
+     */
     public void increase(Double amt) {
         bankroll.increase(amt);
     }
     
+    /**
+     * Increases bankroll with a chip earning.
+     * @param chip Chip
+     */
     public void increase(Chip chip) {
-        betAmt.increase(chip.getAmt());
+        wager.increase(chip.getAmt());
     }
     
+    /**
+     * Decreases bankroll from a loss.
+     * @param amt Amount
+     */
     public void decrease(Double amt) {
         bankroll.decrease(amt);
     }    
 
+    /**
+     * Sets the bankroll
+     * @param amt Amount
+     */
     public void setBankroll(Double amt) {
         bankroll.setAmount(amt);
     }    
     
+    /**
+     * Renders the money on table.
+     * @param g 
+     */
     public void render(Graphics2D g) {
         for(int i=0; i < buttons.size(); i++) {
             ChipButton button = buttons.get(i);
@@ -181,10 +214,15 @@ public class AMoneyManager {
             chip.render(g);
         }
         
-        this.betAmt.render(g);
+        this.wager.render(g);
         this.bankroll.render(g);
     }
     
+    /**
+     * Handles if the manager is clicked.
+     * @param x Mouse x
+     * @param y Mouse y
+     */
     public void click(int x, int y) {
         for(int i=0; i < buttons.size(); i++) {
             ChipButton button = buttons.get(i);
@@ -199,20 +237,25 @@ public class AMoneyManager {
                 
                 chips.add(chip);
                 
-                betAmt.increase(amounts[i]);
+                wager.increase(amounts[i]);
                 
                 SoundFactory.play(Effect.CHIPS_IN);
             }
         }
         
-        // Check for bet reset
-        if(this.betAmt.isPressed(x, y)) {
-            this.betAmt.zero();
+        // Check for wager reset
+        if(this.wager.isPressed(x, y)) {
+            this.wager.zero();
+            
             chips.clear();
+            
             SoundFactory.play(Effect.CHIPS_OUT);
         }
     }
     
+    /**
+     * Handles unclicking mouse.
+     */
     public void unclick() {
         for(int i=0; i < buttons.size(); i++) {
             ChipButton button = buttons.get(i);

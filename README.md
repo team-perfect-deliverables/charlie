@@ -72,7 +72,7 @@ After a "real" player logs in and establishes a connection, an instance of *Hous
 an instance of *Dealer* for the player. The player is bound to this *Dealer* until the player
 logs out.
 
-Games are multiplayer except real players do not play one another.  
+Charlie games are multiplayer except real players do not play one another.  
 Instead, depending on the configuration,
 *Dealer* may allocate bots that simulate real players.
 If no bots have been configured, the game is "heads up," that is, the player
@@ -89,7 +89,8 @@ is of course a Blackjack.
 However, the player doesn't have to determine this. Dealer
 broadcasts "blackjack" to all players.
 
-A key design feature is hands are not passed around among player.
+A key design feature is hands themselves are not passed around among players
+or over the network.
 Instead, Charlie uses _hand ids_.
 A hand id is a unique key for a hand.
 Each player has one or more hands, as far as the dealer is concerned.
@@ -108,53 +109,121 @@ just needs to wait for Dealer before making the next player.
 Dealer only deals with instances of *IPlayer*, a Java interface.
 Thus, Dealer mostly doesn't know or care if IPlayer is a real player or a bot.
 The exception is when placing bets. Dealer starts a new game only when 
-Dealer receives a bet from *RealPlayer* which is an imiplementation of IPlayer.
+Dealer receives a bet from *RealPlayer* which is an implementation of IPlayer.
 However, RealPlayer could also be a bot. It's just in practice RealPlayer
 is associated with a "real" player on the client.
 
-Bots implement *IBot*, sub-interface of IPlayer.
-IBot instances run on the server.
-Real player bots, that is,
-bots that play and bet and run on the client, implement *IArtificialPerson*, 
-a sub-interface of IPlayer.
+###Plugins
+Charlie has five (5) types of plugins:
+1. Shoes
+2. B9 bots
+3. N6 bots
+4. Side bets
+5. Rachel bots
 
-These are the basic ideas.
- 
-###Config file
-There is a system-wide properties file: _charlie.props_.
-It configures several important parameters.
+There is a system-wide properties file: _charlie.props_. It contains plugin
+declarations.
+
+###Shoes
+A _shoe_ contains instances of *Card* objects from which Dealer deals to players.
+A shoe must implement the behaviors give by *IShoe*.
+There is a concrete class, *Shoe*, which implements IShoe.
+Shoe has six randomly shuffled decks for "serious" play and/or training.
+In general, however, an IShoe may contain as many or as few cards
+as necessary. Thus, shoes are very useful for debugging purposes.
+
+There is a property, _charlie.shoe_ in charlie.props. The value must be a fully qualified
+subclass of *Shoe*. Here's an example
+
+    charlie.shoe charlie.card.Shoe01
+
+It turns out the *Shoe01* is a one-deck shoe which I've found helpful for testing.
+
+When Dealer starts, it looks for this property and constructs a _charlie.card.Shoe00_.
+You then just need to add cards to *cards* which is a *List<Card>*.
+Dealer then uses this shoe.
+If you use your own shoe, you just have to make sure the class is in the Charlie project
+class path via a jar file or source in the IDE.
 
 ###Cards
-There are two types of cards: *Card* which is used
-by the server and client and *ACard* by the client only. The client
-ACard is an "animated" card and has an image of a card.
-The client translates from Card to ACard since the dealer
-only sends Card instances.
+There are two types of cards: *Card* and *ACard*.
+Card is used
+by the controller (i.e., the server) and view (i.e., the client)
+to implement the play rules.
 
-Instances of Card have a rank and a suit. The following snippet constructs
-a three of spades:
+Card objects have rank and suit.
+
+The following snippet constructs a three of spades:
 
     Card card = new Card(3, Card.Suit.SPADES)
 
-To make an Ace of spades, do this:
+Here's how to make an Ace of spades:
 
     Card card = new Card(Card.ACE, Card.Suit.SPADES)
+
+Once you have a Card, you add it to the shoe as follows:
+
+    cards.add(card)
 
 Card has various methods to inquire about itself, like its value,
 whether it is a face card (J<, K, Q), an Ace, etc.
 
-In theory, this is no need to construct an ACard.
-THere is a public static method, _animate_, on ACard to convert from 
-Card to ACard.
+ACard is the "animated" analog of Card.
+It is a subclass of *Sprite*. ACard objects
+move around the table and have front and back faces.
+They are in many way more sophisticated than a Card.
+They key things to know are that an ACard constructs
+itself from a Card, has a home position on the table, and a current position
+on the table. ACard always seeks its home position starting
+from wherever it is on the table. The card motion is along a Euclidena
+straight line.
 
-###Shoes
-The first thing to know before developing bots is how to control the cards which
-come from a _shoe_.
-There is a property, _charlie.shoe_. The value must be a fully qualified
-subclass of *Shoe*. Here's an example
+###B9 & N6 bots
+These not only act like a player.
+They implement *IBot* which is a sub-interface of IPlayer.
+In other words, they implement IPlayer.
+As far as Dealer is concerned,
+they are players.
+The only thing is they run on the server, not the client.
+This means they have special access to the server and
+can crash the server.
 
-    charlie.shoe charlie.card.Shoe00
+You specify these bots in the charlie.props file with the
+keys _charlie.bot.b9_ and _charlie.bot.n6_ respectively.
+The key must declare the fully qualified class names.
 
-When the dealer starts, it looks for this property and constructs a _charlie.card.Shoe00_.
-You then just need to add cards to *cards* which is a *List<Card>*.
-Dealer then uses this shoe.
+On the table, Dealer plays B9 in the left seat and N6, the right seat.
+RealPlayer is in the middle or heads-up seat.
+ 
+Dealer implicitly assumes IPlayer instances are an independent
+threads. What does this mean?
+An IBot must create its own thread to invoke Dealer.
+For instance, IBot defines through IPlayer the behavior, _play_.
+Dealer invokes this method only once on IBot when it is the
+player's turn.
+IBot needs to respond by invoking _hit_, _stay_, etc. on Dealer.
+However, it cannot invoke these methods on Dealer
+in the same thread that's running
+the play method.
+IBot must instead spawn (or wakeup) a worker thread and return to Dealer which is
+waiting passively for a response.
+The worker thread then can invoke methods Dealer.
+
+I will just point out that if IBot, in its worker thread,
+invokes _hit_, Dealer responds in turn by invoking _deal_ on IBot.
+Here again, IBot must use a worker thread to respond to the
+new card.
+
+For all practical purposes, B9 and N6 bots are identical from Dealer's point of
+view except for the seating.
+The intent of having these two bots was to also employ different play
+strategies. For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/blackjack/)
+21 cell strategy where N6 might use the 420 cell strategy.
+BTW, the Dealer does not, at the moment, support splits and that fact cuts down
+on the number of cells.
+
+###Side bets
+
+###Rachel bots
+
+

@@ -30,7 +30,7 @@ import java.awt.Graphics2D;
  * This interface defines the behavior of an artificial person.
  * @author Ron Coleman
  */
-public interface IArtificialPerson extends IPlayer {
+public interface IRachel extends IPlayer {
     public void setCourier(Courier courier);
     public void setMoneyIndicator(AMoneyManager mi);
     public void update();

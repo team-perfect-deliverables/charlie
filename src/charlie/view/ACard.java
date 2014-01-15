@@ -43,13 +43,21 @@ import javax.swing.ImageIcon;
  */
 public class ACard extends Sprite {
     protected final static int SPEED = 15;
+    protected Point home = new Point(Constant.SHOE_X, Constant.SHOE_Y);
+    protected Image back;
+    protected Image front;
+    protected boolean up = true;    
     static int cardWidth = -1;
     static Card SAMPLE_CARD = new Card(Card.ACE, Card.Suit.SPADES);
     static int cardHeight = -1;
     static HashMap<String, Image> imgCache = new HashMap<>();
     public static final Integer HANDS_Y = 100;
 
-    public static Image getBackImage() {
+    /**
+     * Gets the card back face.
+     * @return Image
+     */
+    public static Image getBackFace() {
         String path = Constant.DIR_CARD_IMGS + "back.png";
         Image img = imgCache.get(path);
         if (img == null) {
@@ -60,7 +68,12 @@ public class ACard extends Sprite {
         return img;
     }
 
-    public static Image getImage(Card card) {
+    /**
+     * Gets the front face image for a card
+     * @param card Card
+     * @return Image
+     */
+    public static Image getIFrontFace(Card card) {
         String name = card.toString() + ".png";
         String path = Constant.DIR_CARD_IMGS + name;
         Image img = imgCache.get(path);
@@ -72,28 +85,36 @@ public class ACard extends Sprite {
         return img;
     }
 
+    /**
+     * Gets the card height in pixels.
+     * @return Card height
+     */
     public static int getCardHeight() {
-        if (cardHeight != -1) {
+        if (cardHeight != -1)
             return cardHeight;
-        }
-        Image img = getImage(SAMPLE_CARD);
+
+        Image img = getIFrontFace(SAMPLE_CARD);
+        
         cardHeight = img.getHeight(null);
+        
         return cardHeight;
     }
 
+    /**
+     * Gets the card width in pixels.
+     * @return Card width
+     */    
     public static int getCardWidth() {
-        if (cardWidth != -1) {
+        if (cardWidth != -1)
             return cardWidth;
-        }
-        Image img = getImage(SAMPLE_CARD);
+
+        Image img = getIFrontFace(SAMPLE_CARD);
+        
         cardWidth = img.getWidth(null);
+        
         return cardWidth;
     }
 
-    protected Point home = new Point(Constant.SHOE_X, Constant.SHOE_Y);
-    protected Image back;
-    protected Image front;
-    protected boolean up = true;
 
     /**
      * Constructor<p>
@@ -102,10 +123,10 @@ public class ACard extends Sprite {
      * @param pos Position in world
      */
     public ACard(Card card, Point pos) {
-        front = getImage(card);
+        front = getIFrontFace(card);
 
         if (card instanceof HoleCard) {
-            this.back = getBackImage();
+            this.back = getBackFace();
             up = false;
         }
 
@@ -116,7 +137,7 @@ public class ACard extends Sprite {
     /**
      * Copy constructor
      * @param card Card to copy
-     * @param home 
+     * @param home Home position
      */
     public ACard(ACard card, Point home) {
         this.front = card.front;
