@@ -24,7 +24,6 @@ package charlie;
 
 import charlie.card.Hid;
 import charlie.actor.Courier;
-import charlie.audio.Effect;
 import charlie.audio.SoundFactory;
 import charlie.message.view.from.Arrival;
 import charlie.server.Login;
@@ -448,7 +447,7 @@ public class GameFrame extends javax.swing.JFrame {
         hid.dubble();
 
         // Send this off to the dealer
-        courier.ddown(hid);
+        courier.dubble(hid);
 
         // Double the bet on the panel
         panel.dubble(hid);

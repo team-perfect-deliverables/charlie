@@ -78,7 +78,7 @@ public class Courier {
         player.send(new Hit(hid));
     }
     
-    public void ddown(Hid hid) {
+    public void dubble(Hid hid) {
         player.send(new DoubleDown(hid));
     }    
     

@@ -33,20 +33,31 @@ import javax.swing.ImageIcon;
  * This class implements the "burn" card.
  * @author Ron Coleman
  */
-public class ABurnCard extends ACard {
+public final class ABurnCard extends ACard {
     public ABurnCard() {
         super(ABurnCard.getBurnImage(),new Point(0,0),new Point(0,0));
+        
+        clear();
     }
 
     /**
-     * Clear card from the table
+     * Tests whether card is on the table.
+     * @return True if the card is on the table, false otherwise
      */
-    public void clear() {
-        this.home.setX(-100);
+    public boolean isVisible() {
+        return x+ACard.getCardWidth() > 0;
     }
     
     /**
-     * Send card to table
+     * Clears card from the table.
+     */
+    public void clear() {
+        // Setting the home causes the card to (re)seek its home
+        this.home.setX(-2*ACard.getCardWidth());
+    }
+    
+    /**
+     * Sends card to table.
      */
     public void launch() {
         this.home = new Point(375,150);
@@ -55,16 +66,24 @@ public class ABurnCard extends ACard {
        
     }
     
+    /**
+     * Renders the card
+     * @param g 
+     */
     @Override
     public void render(Graphics2D g) {
-        super.render(g);
+//        super.render(g);
+//        
+//        int w = img.getWidth(null);
+//        int h = img.getHeight(null);
+//
+//        g.setColor(Color.RED);
+//
+//        g.drawRect(x, y, w, h);
+        if(img == null)
+            return;
         
-        int w = img.getWidth(null);
-        int h = img.getHeight(null);
-
-        g.setColor(Color.RED);
-
-        g.drawRect(x, y, w, h);
+        g.drawImage(img, x, y,null);
     }
     
     public static Image getBurnImage() {

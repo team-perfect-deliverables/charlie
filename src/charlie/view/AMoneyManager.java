@@ -262,4 +262,12 @@ public class AMoneyManager {
             button.release();
         }        
     }
+    
+    /**
+     * Gets the chip buttons.
+     * @return Buttons
+     */
+    public List<ChipButton> getButtons() {
+        return this.buttons;
+    }
 }

@@ -35,6 +35,7 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.dealer.Seat;
+import charlie.plugin.IRachel;
 import charlie.plugin.ISideBetView;
 import charlie.util.Constant;
 import java.awt.Image;
@@ -99,7 +100,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
     private int pushCount;
     private int winnerCount;
     protected ISideBetView sideBetView;
-    private Properties props = new Properties();    
+    private Properties props = new Properties(); 
+    private IRachel rachel;
 
     /**
      * Constructor
@@ -216,7 +218,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         if(sideBetView != null)
             sideBetView.render(g);
 
-        if(burnCard.getX()> 0)
+        // Render the burn card
+        if(burnCard.isVisible())
             burnCard.render(g);
         
         // Java tool related stuff
@@ -340,7 +343,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
                 turn.enablePlaying(false);
             }
 
-            // Reveal the hole card
+            // Reveal dealer's hole card
             hand.get(0).flip();
 
             // Disable player input
@@ -350,9 +353,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             SoundFactory.play(Effect.TURN);
             
             // Disable old hand
-            if (turn != null) {
+            if (turn != null)
                 turn.enablePlaying(false);
-            }
 
             // Enable new hand
             turn = hand;
@@ -366,8 +368,12 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
                 enable = false;
             }
 
-            this.frame.enableTrucking(enable);
-            this.frame.enablePlay(enable);
+            if (rachel == null) {
+                this.frame.enableTrucking(enable);
+                this.frame.enablePlay(enable);
+            }
+            else
+                rachel.play(hid);
         }
     }
 
@@ -398,6 +404,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         ACard acard = ACard.animate(card);
 
         hand.hit(acard);
+        
+        if(rachel != null)
+            rachel.deal(hid, card, handValues);
     }
 
     /**
@@ -421,6 +430,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             SoundFactory.play(Effect.BUST);
             looserCount++;
         }
+        
+        if(rachel != null)
+            rachel.bust(hid);
     }
 
     /**
@@ -441,6 +453,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         money.increase(hid.getAmt()+hid.getSideAmt());
 
         winnerCount++;
+        
+        if(rachel != null)
+            rachel.win(hid);
     }
 
     /**
@@ -461,6 +476,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         money.decrease(hid.getAmt()-hid.getSideAmt());
 
         looserCount++;
+        
+        if(rachel != null)
+            rachel.loose(hid);
     }
 
     /**
@@ -481,6 +499,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         money.increase(hid.getSideAmt());
         
         ++pushCount;
+        
+        if(rachel != null)
+            rachel.push(hid);
     }
 
     /**
@@ -505,6 +526,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
             winnerCount++;
         }
+        
+        if(rachel != null)
+            rachel.blackjack(hid);
     }
 
     /**
@@ -527,6 +551,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         SoundFactory.play(Effect.CHARLIE);
 
         winnerCount++;
+        
+        if(rachel != null)
+            rachel.charlie(hid);
     }
 
     /**
@@ -564,6 +591,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             // Put the hand in its mano cache for quick look up later
             manos.put(hid, hand);
         }
+        
+        if(rachel != null)
+            rachel.startGame(hids, shoeSize);
     }
 
     /**
@@ -584,12 +614,16 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         // Update the shoe size
         this.shoeSize = shoeSize;
 
-        // Enable betting and dealing again
-        frame.enableDeal(true);
-        this.bettable = true;
+        if (rachel == null) {
+            // Enable betting and dealing again
+            frame.enableDeal(true);
+            this.bettable = true;
 
-        // Disable play -- we must wait for player to bet and request deal
-        frame.enablePlay(false);
+            // Disable play -- we must wait for player to bet and request deal
+            frame.enablePlay(false);
+        }
+        else
+            rachel.endGame(shoeSize);
 
         if (winnerCount == numHands - 1) {
             SoundFactory.play(Effect.NICE);
@@ -600,10 +634,17 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         }
     }
 
+    /**
+     * Handles shuffling from dealer.
+     */
     @Override
     public void shuffling() {
         burnCard.launch();
+        
         SoundFactory.play(Effect.SHUFFLING);
+        
+        if(rachel != null)
+            rachel.shuffling();
     }
 
     @Override
@@ -617,6 +658,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      */
     @Override
     public void mousePressed(MouseEvent e) {
+        if(rachel != null)
+            return;
+        
         if (!bettable) {
             return;
         }
@@ -640,6 +684,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      */
     @Override
     public void mouseReleased(MouseEvent e) {
+        if(rachel != null)
+            return;
+        
         monies.get(Seat.YOU).unclick();
     }
 

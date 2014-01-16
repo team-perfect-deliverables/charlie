@@ -215,15 +215,61 @@ Here again, IBot must use a worker thread to respond to the
 new card.
 
 For all practical purposes, B9 and N6 bots are identical from Dealer's point of
-view except for the seating.
+view. The only difference is seating as I mentioned above.
 The intent of having these two bots was to also employ different play
-strategies. For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/blackjack/)
+strategies.
+For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/blackjack/)
 21 cell strategy where N6 might use the 420 cell strategy.
 BTW, the Dealer does not, at the moment, support splits and that fact cuts down
-on the number of cells.
-
-###Side bets
+on the number of cells on both cases.
 
 ###Rachel bots
+These bots implement *IRachel* which is a sub-interface of IPlayer.
+Rachel bots run with a view on the client-side.
+They are intended to implement the most sophisticated play and bet strategies
+to maximize player returns.
+It might be best, for Rachel, to start with the 420 cell play strategy
+and stay with a balanced, level-one system like the [Hi-Lo](http://en.wikipedia.org/wiki/Card_counting) 
+or unbalanced, level-one
+system like [Knock Out](http://www.koblackjack.com/).
+
+Rachel play like a human. That is, it must appear to think before making a decision.
+Otherwise, things will happen too fast and we won't be able to see or know
+what it really did or why.
+
+When Rachel is in charge, it must also behave since otherwise it will crash
+the client.
+
+Here are the steps to starting a game a bet:
+
+1. Send the clear message to the table.
+2. Get the wager from the table. If there isn't a wager, then use the money manager, _click_
+to create one. (Note: you'll have to get the chips from the money manager and use the
+chip coordinates to select the amount.
+The chips are 100, 25, and 5 from left to right on the table.)
+3. Invoke the *Courier* to send the bet to Dealer. The returned Hid is the hand
+id for the hand.
+4. Wait for _startGame_. At this point Rachel can only observe the game until 
+it is its turn.
+This is an opportunity for Rachel to count cards since every card is sent
+to all players bound for the respective hand identified by the hand id.
+6. When Rachel receives _play_, it must respond with hit, double-down, or stay.
+Hits arrive via the _deal_ message.
+7. After Rachel stays, busts, gets a blackjack, or Charlie,
+it must wait for _endGame_ when the game is over.
+8. Go to step 1.
+
+To play a double-down, Rachel does the following:
+
+1. Invoke _dubble_ on the hand id. This doubles the bet in the hand.
+2. Invoke _dubble_ on Courier. This send the play to the Dealer.
+3. Invoke _dubble_ on the table. This doubles the wager on the table.
+
+Of course, after double-down,  Rachel is done for the game and just waits
+for endGame.
+
+
+
+###Side bets
 
 
