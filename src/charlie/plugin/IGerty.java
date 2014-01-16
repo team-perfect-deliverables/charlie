@@ -28,10 +28,10 @@ import charlie.view.ATable;
 import java.awt.Graphics2D;
 
 /**
- * This interface defines the behavior of an artificial person.
+ * This interface defines the behavior of an artificial player.
  * @author Ron Coleman
  */
-public interface IRachel extends IPlayer {
+public interface IGerty extends IPlayer {
     public void setTable(ATable table);
     public void setCourier(Courier courier);
     public void setMoneyManager(AMoneyManager mi);

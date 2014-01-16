@@ -118,7 +118,7 @@ Charlie has five (5) types of plugins:
 1. Shoes
 2. B9 bots
 3. N6 bots
-4. Rachel bots
+4. Gerty bots
 5. Side bets
 
 There is a system-wide properties file: _charlie.props_. It contains plugin
@@ -223,22 +223,24 @@ For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/bl
 BTW, the Dealer does not, at the moment, support splits and that fact cuts down
 on the number of cells on both cases.
 
-###Rachel bots
-These bots implement *IRachel* which is a sub-interface of IPlayer.
-Rachel bots run with a view on the client-side.
-They are intended to implement the most sophisticated play and bet strategies
+###Gerty bots
+These bots implement *IGerty* which is a sub-interface of IPlayer.
+Gerty bots run with a view on the client-side.
+They replace the human player. 
+The Gerty bot has the potential to implement the most sophisticated play and bet strategies
 to maximize player returns.
-It might be best, for Rachel, to start with the 420 cell play strategy
+It might be best, for Gerty, to start with the 420 cell play strategy
 and stay with a balanced, level-one system like the [Hi-Lo](http://en.wikipedia.org/wiki/Card_counting) 
 or unbalanced, level-one
 system like [Knock Out](http://www.koblackjack.com/).
 
-Rachel play like a human. That is, it must appear to think before making a decision.
+When Gerty is playing, it must behave. That is, be one good
+behavior dealing with exception, etc. since otherwise it may
+crash the client.
+Gerty is also supposed to play like a human.
+For instance, it must take its time making a decision.
 Otherwise, things will happen too fast and we won't be able to see or know
 what it really did or why.
-
-When Rachel is in charge, it must also behave since otherwise it will crash
-the client.
 
 Here are the steps to starting a game a bet:
 
@@ -249,23 +251,23 @@ chip coordinates to select the amount.
 The chips are 100, 25, and 5 from left to right on the table.)
 3. Invoke the *Courier* to send the bet to Dealer. The returned Hid is the hand
 id for the hand.
-4. Wait for _startGame_. At this point Rachel can only observe the game until 
+4. Wait for _startGame_. At this point Gerty can only observe the game until 
 it is its turn.
-This is an opportunity for Rachel to count cards since every card is sent
+This is an opportunity for Gerty to count cards since every card is sent
 to all players bound for the respective hand identified by the hand id.
-6. When Rachel receives _play_, it must respond with hit, double-down, or stay.
+6. When Gerty receives _play_, it must respond with hit, double-down, or stay.
 Hits arrive via the _deal_ message.
-7. After Rachel stays, busts, gets a blackjack, or Charlie,
+7. After Gerty stays, busts, gets a blackjack, or Charlie,
 it must wait for _endGame_ when the game is over.
 8. Go to step 1.
 
-To play a double-down, Rachel does the following:
+To play a double-down, Gerty does the following:
 
 1. Invoke _dubble_ on the hand id. This doubles the bet in the hand.
 2. Invoke _dubble_ on Courier. This send the play to the Dealer.
 3. Invoke _dubble_ on the table. This doubles the wager on the table.
 
-Of course, after double-down,  Rachel is done for the game and just waits
+Of course, after double-down,  Gerty is done for the game and just waits
 for endGame.
 
 

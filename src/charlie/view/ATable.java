@@ -35,7 +35,7 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 import charlie.util.Point;
 import charlie.dealer.Seat;
-import charlie.plugin.IRachel;
+import charlie.plugin.IGerty;
 import charlie.plugin.ISideBetView;
 import charlie.util.Constant;
 import java.awt.Image;
@@ -84,24 +84,24 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
     };
     
     protected HashMap<Hid, AHand> manos = new HashMap<>();
-    private Thread gameLoop;
-    private static Color COLOR_FELT = new Color(0, 153, 100);
-    private final int DELAY = 50;
-    private final GameFrame frame;
-    private boolean bettable = false;
-    private boolean gameOver = true;
-    private int shoeSize;
-    private Image instrImg;
-    private Image shoeImg;
-    private Image trayImg;
-    private ABurnCard burnCard = new ABurnCard();
-    private int numHands;
-    private int looserCount;
-    private int pushCount;
-    private int winnerCount;
+    protected Thread gameLoop;
+    protected static Color COLOR_FELT = new Color(0, 153, 100);
+    protected final int DELAY = 50;
+    protected final GameFrame frame;
+    protected boolean bettable = false;
+    protected boolean gameOver = true;
+    protected int shoeSize;
+    protected Image instrImg;
+    protected Image shoeImg;
+    protected Image trayImg;
+    protected ABurnCard burnCard = new ABurnCard();
+    protected int numHands;
+    protected int looserCount;
+    protected int pushCount;
+    protected int winnerCount;
     protected ISideBetView sideBetView;
-    private Properties props = new Properties(); 
-    private IRachel rachel;
+    protected Properties props = new Properties(); 
+    protected IGerty gerty;
 
     /**
      * Constructor
@@ -368,12 +368,12 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
                 enable = false;
             }
 
-            if (rachel == null) {
+            if (gerty == null) {
                 this.frame.enableTrucking(enable);
                 this.frame.enablePlay(enable);
             }
             else
-                rachel.play(hid);
+                gerty.play(hid);
         }
     }
 
@@ -405,8 +405,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         hand.hit(acard);
         
-        if(rachel != null)
-            rachel.deal(hid, card, handValues);
+        if(gerty != null)
+            gerty.deal(hid, card, handValues);
     }
 
     /**
@@ -431,8 +431,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             looserCount++;
         }
         
-        if(rachel != null)
-            rachel.bust(hid);
+        if(gerty != null)
+            gerty.bust(hid);
     }
 
     /**
@@ -454,8 +454,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         winnerCount++;
         
-        if(rachel != null)
-            rachel.win(hid);
+        if(gerty != null)
+            gerty.win(hid);
     }
 
     /**
@@ -477,8 +477,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         looserCount++;
         
-        if(rachel != null)
-            rachel.loose(hid);
+        if(gerty != null)
+            gerty.loose(hid);
     }
 
     /**
@@ -500,8 +500,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         
         ++pushCount;
         
-        if(rachel != null)
-            rachel.push(hid);
+        if(gerty != null)
+            gerty.push(hid);
     }
 
     /**
@@ -527,8 +527,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             winnerCount++;
         }
         
-        if(rachel != null)
-            rachel.blackjack(hid);
+        if(gerty != null)
+            gerty.blackjack(hid);
     }
 
     /**
@@ -552,8 +552,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         winnerCount++;
         
-        if(rachel != null)
-            rachel.charlie(hid);
+        if(gerty != null)
+            gerty.charlie(hid);
     }
 
     /**
@@ -592,8 +592,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             manos.put(hid, hand);
         }
         
-        if(rachel != null)
-            rachel.startGame(hids, shoeSize);
+        if(gerty != null)
+            gerty.startGame(hids, shoeSize);
     }
 
     /**
@@ -614,7 +614,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         // Update the shoe size
         this.shoeSize = shoeSize;
 
-        if (rachel == null) {
+        if (gerty == null) {
             // Enable betting and dealing again
             frame.enableDeal(true);
             this.bettable = true;
@@ -623,7 +623,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             frame.enablePlay(false);
         }
         else
-            rachel.endGame(shoeSize);
+            gerty.endGame(shoeSize);
 
         if (winnerCount == numHands - 1) {
             SoundFactory.play(Effect.NICE);
@@ -643,8 +643,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         
         SoundFactory.play(Effect.SHUFFLING);
         
-        if(rachel != null)
-            rachel.shuffling();
+        if(gerty != null)
+            gerty.shuffling();
     }
 
     @Override
@@ -658,7 +658,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      */
     @Override
     public void mousePressed(MouseEvent e) {
-        if(rachel != null)
+        if(gerty != null)
             return;
         
         if (!bettable) {
@@ -684,7 +684,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      */
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(rachel != null)
+        if(gerty != null)
             return;
         
         monies.get(Seat.YOU).unclick();
