@@ -237,7 +237,7 @@ public class GameFrame extends javax.swing.JFrame {
         stayButton = new javax.swing.JButton();
         ddownButton = new javax.swing.JButton();
         splitButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        adviseButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -291,7 +291,8 @@ public class GameFrame extends javax.swing.JFrame {
 
         splitButton.setText("Split");
 
-        jButton1.setText("Auto (on)");
+        adviseButton.setText("Advise (off)");
+        adviseButton.setEnabled(false);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -303,8 +304,8 @@ public class GameFrame extends javax.swing.JFrame {
                     .add(surface, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(6, 6, 6)
-                        .add(jButton1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 210, Short.MAX_VALUE)
+                        .add(adviseButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 196, Short.MAX_VALUE)
                         .add(splitButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(ddownButton)
@@ -331,7 +332,7 @@ public class GameFrame extends javax.swing.JFrame {
                     .add(stayButton)
                     .add(ddownButton)
                     .add(splitButton)
-                    .add(jButton1))
+                    .add(adviseButton))
                 .addContainerGap())
         );
 
@@ -487,10 +488,10 @@ public class GameFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton accessButton;
+    private javax.swing.JButton adviseButton;
     private javax.swing.JButton ddownButton;
     private javax.swing.JButton dealButton;
     private javax.swing.JButton hitButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton splitButton;
     private javax.swing.JButton stayButton;
     private javax.swing.JPanel surface;

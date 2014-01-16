@@ -29,8 +29,8 @@
                   <Component id="surface" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="210" max="32767" attributes="0"/>
+                      <Component id="adviseButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="196" max="32767" attributes="0"/>
                       <Component id="splitButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ddownButton" min="-2" max="-2" attributes="0"/>
@@ -61,7 +61,7 @@
                   <Component id="stayButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="ddownButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="splitButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="adviseButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -131,9 +131,10 @@
         <Property name="text" type="java.lang.String" value="Split"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="adviseButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Auto (on)"/>
+        <Property name="text" type="java.lang.String" value="Advise (off)"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>

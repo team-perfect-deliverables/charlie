@@ -31,19 +31,38 @@ import java.util.Random;
  * @author Ron Coleman
  */
 public class SoundFactory {   
-    private static Sound dealSound0 = new Sound("audio/PlayingCardsPo_eOnFelt01_87.wav");
-    private static Sound dealSound1 = new Sound("audio/tap.wav");
-    private static Sound[] charlieSounds = { new Sound("audio/shazam2.wav") };
-    private static Sound[] bjSounds = { new Sound("audio/you-can-do-it.wav"), new Sound("audio/you-got-it-1.wav")};
-    private static Sound[] niceSounds = { new Sound("audio/wow.wav"), new Sound("audio/austin_yeahbaby_converted.wav") };
-    private static Sound[] toughSounds = { new Sound("audio/evil_laf.wav"), new Sound("audio/aaaah.wav"), new Sound("audio/bone_converted.wav") };
-    private static Sound[] pushSounds = { new Sound("audio/trap.wav") };
-    private static Sound[] bustSounds = { new Sound("audio/ouch.wav") };
-    private static Sound chipsIn = new Sound("audio/Games_Poker_Chip_08950004.wav");
-    private static Sound chipsOut = new Sound("audio/Games_Poker_Chip_08950003.wav");
-    private static Sound shuffle = new Sound("audio/013012_Casino-Cards_28_A1.wav");
-    private static Sound turn = new Sound("audio/blip2.wav");
-    
+    private final static Sound dealSound0 = new Sound("audio/PlayingCardsPo_eOnFelt01_87.wav");
+    private final static Sound dealSound1 = new Sound("audio/tap.wav");
+    private final static Sound[] charlieSounds = { 
+        new Sound("audio/shazam2.wav")
+    };
+    private final static Sound[] bjSounds = { 
+        new Sound("audio/you-can-do-it.wav"), 
+        new Sound("audio/you-got-it-1.wav"),
+        new Sound("audio/wahoo.wav")
+    };
+    private final static Sound[] niceSounds = { 
+        new Sound("audio/wow.wav"), 
+        new Sound("audio/austin_yeahbaby_converted.wav"),
+        new Sound("audio/woow.wav")
+    };
+    private final static Sound[] toughSounds = {
+        new Sound("audio/evil_laf.wav"), 
+        new Sound("audio/aaaah.wav"), 
+        new Sound("audio/bone_converted.wav"), 
+        new Sound("audio/glass.wav"),
+//        new Sound("audio/vplaugh.wav")
+    };
+    private final static Sound[] pushSounds ={ 
+        new Sound("audio/trap.wav") 
+    };
+    private final static Sound[] bustSounds = { 
+        new Sound("audio/ouch.wav")
+    };
+    private final static Sound chipsIn = new Sound("audio/Games_Poker_Chip_08950004.wav");
+    private final static Sound chipsOut = new Sound("audio/Games_Poker_Chip_08950003.wav");
+    private final static Sound shuffle = new Sound("audio/013012_Casino-Cards_28_A1.wav");
+    private final static Sound turn = new Sound("audio/blip2.wav");
     private static long lastTime = System.currentTimeMillis();   
     protected static Random toss = new Random();
 

@@ -118,8 +118,8 @@ Charlie has five (5) types of plugins:
 1. Shoes
 2. B9 bots
 3. N6 bots
-4. Side bets
-5. Rachel bots
+4. Rachel bots
+5. Side bets
 
 There is a system-wide properties file: _charlie.props_. It contains plugin
 declarations.
