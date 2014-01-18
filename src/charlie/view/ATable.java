@@ -22,6 +22,7 @@
  */
 package charlie.view;
 
+import charlie.plugin.IUi;
 import charlie.view.sprite.TurnIndicator;
 import charlie.GameFrame;
 import charlie.audio.Effect;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ATable extends JPanel implements Runnable, IUi, MouseListener {
     private final Logger LOG = LoggerFactory.getLogger(ATable.class);
-    protected final String SIDE_BET_VIEW = "charlie.sidebet.view";    
+    protected final String SIDE_BET_VIEW_PROPERTY = "charlie.sidebet.view";    
     protected Random ran = new Random();
     protected String[] b9s = {"Apollo", "Zeus", "Talos"};
     protected String[] aaf709s = {"Hera", "Athena", "Hecate"};
@@ -151,6 +152,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
             money.undubble();
         }
+        
+        if(sideBetView != null)
+            sideBetView.reset();        
     }
 
     /**
@@ -396,9 +400,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         // If card is null, this is not a "real" hit but only
         // updating the respective hand value.
-        if (card == null) {
+        if (card == null)
             return;
-        }
 
         // Convert card to an animated card and hit the hand
         ACard acard = ACard.animate(card);
@@ -431,6 +434,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             looserCount++;
         }
         
+        if(sideBetView != null)
+            sideBetView.setHid(hid);
+        
         if(gerty != null)
             gerty.bust(hid);
     }
@@ -453,6 +459,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         money.increase(hid.getAmt()+hid.getSideAmt());
 
         winnerCount++;
+        
+        if(sideBetView != null)
+            sideBetView.setHid(hid);
         
         if(gerty != null)
             gerty.win(hid);
@@ -477,6 +486,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         looserCount++;
         
+        if(sideBetView != null)
+            sideBetView.setHid(hid);
+        
         if(gerty != null)
             gerty.loose(hid);
     }
@@ -499,6 +511,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         money.increase(hid.getSideAmt());
         
         ++pushCount;
+        
+        if(sideBetView != null)
+            sideBetView.setHid(hid);
         
         if(gerty != null)
             gerty.push(hid);
@@ -527,6 +542,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             winnerCount++;
         }
         
+        if(sideBetView != null)
+            sideBetView.setHid(hid);
+        
         if(gerty != null)
             gerty.blackjack(hid);
     }
@@ -551,6 +569,9 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         SoundFactory.play(Effect.CHARLIE);
 
         winnerCount++;
+        
+        if(sideBetView != null)
+            sideBetView.setHid(hid);
         
         if(gerty != null)
             gerty.charlie(hid);
@@ -612,8 +633,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         gameOver = true;
 
         // Update the shoe size
-        this.shoeSize = shoeSize;
-
+        this.shoeSize = shoeSize;   
+        
         if (gerty == null) {
             // Enable betting and dealing again
             frame.enableDeal(true);
@@ -661,9 +682,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         if(gerty != null)
             return;
         
-        if (!bettable) {
+        if (!bettable)
             return;
-        }
 
         // Get the coordinates of the mouse and let bet manager
         // determine whether this is a bet and how much.
@@ -702,12 +722,12 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      * Loads the side bet rule.
      */
     protected void loadSideView() {                
-        String className = props.getProperty(SIDE_BET_VIEW);
+        String className = props.getProperty(SIDE_BET_VIEW_PROPERTY);
         
         if(className == null)
             return;
         
-        LOG.info("attempting to load side bet "+SIDE_BET_VIEW);
+        LOG.info("attempting to load side bet "+SIDE_BET_VIEW_PROPERTY);
         
         Class<?> clazz;
         try {

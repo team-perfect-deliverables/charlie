@@ -25,7 +25,7 @@ package charlie.actor;
 import charlie.card.Card;
 import charlie.card.HoleCard;
 import charlie.message.view.to.Ready;
-import charlie.view.IUi;
+import charlie.plugin.IUi;
 import charlie.card.Hid;
 import charlie.dealer.Seat;
 import charlie.message.view.from.Bet;

@@ -25,7 +25,10 @@ package charlie;
 import charlie.card.Hid;
 import charlie.actor.Courier;
 import charlie.audio.SoundFactory;
+import charlie.card.Card;
+import charlie.card.Hand;
 import charlie.message.view.from.Arrival;
+import charlie.plugin.IAdvisor;
 import charlie.server.Login;
 import charlie.server.Ticket;
 import charlie.view.ATable;
@@ -34,6 +37,8 @@ import com.googlecode.actorom.Address;
 import com.googlecode.actorom.Topology;
 import com.googlecode.actorom.remote.ClientTopology;
 import com.googlecode.actorom.remote.ServerTopology;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -41,20 +46,21 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author roncoleman125
+ * This class implements the main game frame.
+ * @author Ron Coleman
  */
 public class GameFrame extends javax.swing.JFrame {
-
     static {
         Properties props = System.getProperties();
         props.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
@@ -70,13 +76,17 @@ public class GameFrame extends javax.swing.JFrame {
     private Courier courier;
     private ATable panel;
     private boolean connected = false;
-    private final String CHANNEL_ACTOR = "CHANNEL";
+    private final String COURIER_ACTOR = "CHANNEL";
+    private final String ADVISOR_PROPERTY = "charlie.advisor";
     private Topology serverTopology;
     private Topology clientTopology;
     private List<Hid> hids = new ArrayList<>();
+    private HashMap<Hid,Hand> hands = new HashMap<>();
     private int handIndex = 0;
     private boolean trucking = false;
     private boolean dubblable;
+    private IAdvisor advisor;
+
 
     /**
      * Constructor
@@ -85,7 +95,6 @@ public class GameFrame extends javax.swing.JFrame {
         initComponents();
 
         init();
-
     }
 
     /**
@@ -102,8 +111,33 @@ public class GameFrame extends javax.swing.JFrame {
 
         enablePlay(false);
 
-//        // Prime the audio player
-//        SoundFactory.play(Effect.SHUFFLING);
+        loadAdvisor();
+    }
+    
+    protected void loadAdvisor() {
+        try {
+            Properties props = new Properties();
+            
+            props.load(new FileInputStream("charlie.props"));
+            
+            String className = props.getProperty(ADVISOR_PROPERTY);
+
+            if (className == null)
+                return;
+             
+            LOG.info("attempting to load advisor "+ADVISOR_PROPERTY);
+            Class<?> clazz;
+            clazz = Class.forName(className);
+
+            this.advisor = (IAdvisor) clazz.newInstance();
+            
+            LOG.info("successfully loaded advisor");            
+            
+        } catch (FileNotFoundException ex) {
+            LOG.error(ex.toString());
+        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            LOG.error(ex.toString());
+        }
     }
 
     /**
@@ -144,7 +178,7 @@ public class GameFrame extends javax.swing.JFrame {
 
             serverTopology = new ServerTopology(MY_HOST, MY_PORT);
 
-            Address me = serverTopology.spawnActor(CHANNEL_ACTOR, courier);
+            Address me = serverTopology.spawnActor(COURIER_ACTOR, courier);
             LOG.info("spawned my addr = " + me);
 
             courier.setMyAddress(me);
@@ -182,6 +216,12 @@ public class GameFrame extends javax.swing.JFrame {
 
             return false;
         }
+    }
+    
+    public void deal(Hid hid, Card card, int[] handValues) {      
+        Hand hand = hands.get(hid);
+        
+        hand.hit(card);
     }
 
     public void enableDeal(boolean deal) {
@@ -407,6 +447,8 @@ public class GameFrame extends javax.swing.JFrame {
                 Hid hid = courier.bet(amt, sideAmt);
 
                 hids.add(hid);
+                
+                hands.put(hid, new Hand(hid));
 
                 enableDeal(false);
             }
@@ -421,14 +463,45 @@ public class GameFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_stayButtonActionPerformed
 
     private void hitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitButtonActionPerformed
-        // NOTE: this isables double down on all hids and will have to be
-        // fixed when splitting hids
-        this.dubblable = false;
+        final GameFrame frame = this;
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Hid hid = hids.get(frame.handIndex);
+                
+                Hand hand = hands.get(hid);
+                
+                String advice = advisor.advise(hand);
+                
+                if (advice != null) {
+                    Object[] options = {
+                        "Continue with HIT",
+                        "Cancel"};
+                    int n = JOptionPane.showOptionDialog(frame,
+                            "I suggest " + advice,
+                            "Confirmation",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[2]);
+                    
+                    if(n == 1)
+                        return;
+                }
+                
+                // NOTE: this isables double down on all hids and will have to be
+                // fixed when splitting hids
+                frame.dubblable = false;
 
-        // Disable play until the card arrives
-        enablePlay(false);
+                // Disable play until the card arrives
+                enablePlay(false);
 
-        courier.hit(hids.get(this.handIndex));
+                courier.hit(hids.get(frame.handIndex));
+            }
+        });
+
     }//GEN-LAST:event_hitButtonActionPerformed
 
     private void ddownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ddownButtonActionPerformed

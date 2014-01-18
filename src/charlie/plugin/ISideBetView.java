@@ -40,6 +40,10 @@ public interface ISideBetView {
     
     /**
      * Sets the hand id for the side bet.
+     * The view uses this to determine the outcome.
+     * If the side bet amount is &lt;0, the player lost.
+     * If the side bet amount is >&gt;0 the player won.
+     * If the side bet amount is 0, there was no side bet.
      * @param hid Hand id
      */
     public void setHid(Hid hid);
@@ -58,6 +62,10 @@ public interface ISideBetView {
      */
     public void setUnit(Chip chip);
     
+    /**
+     * Gets the side bet amount in dollars
+     * @return Side bet amount.
+     */
     public Integer getAmt();
     
     /**

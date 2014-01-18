@@ -179,8 +179,9 @@ from wherever it is on the table. The card motion is along a Euclidena
 straight line.
 
 ###B9 & N6 bots
-These not only act like a player.
-They implement *IBot* which is a sub-interface of IPlayer.
+Name after Robot B9 from _Lost in Space (1965)_ and
+Nexus 6 in _Blade Runner (1981)_,
+these bots implement *IBot* which is a sub-interface of IPlayer.
 In other words, they implement IPlayer.
 As far as Dealer is concerned,
 they are players.
@@ -224,7 +225,8 @@ BTW, the Dealer does not, at the moment, support splits and that fact cuts down
 on the number of cells on both cases.
 
 ###Gerty bots
-These bots implement *IGerty* which is a sub-interface of IPlayer.
+Named after the robot Gerty 3000 in _Moon (2009)_,
+these bots implement *IGerty* which is a sub-interface of IPlayer.
 Gerty bots run with a view on the client-side.
 They replace the human player. 
 The Gerty bot has the potential to implement the most sophisticated play and bet strategies
@@ -270,8 +272,50 @@ To play a double-down, Gerty does the following:
 Of course, after double-down,  Gerty is done for the game and just waits
 for endGame.
 
-
-
 ###Side bets
+A side bet is a bet in addition to the
+the main bet that depends on certain
+card combinations.
+Perhaps the most common one is so-called "insurance" which
+is a bet that the dealer, showing an Ace has a 10 in the hole.
+It pays 2:1 which is even money because you have the main bet
+and the insurance premium. So if you win the side bet you also loose
+the main bet.
+The Basic Strategy does not recommend buying insurance.
+The side bets I'm writing about here, however, are of the non-insurance kind.
+The [Wizard of Odds](http://wizardofodds.com/games/blackjack/appendix/8/)
+gives a raft of side bets from which to choose.
 
+From a plugin perspective, there are two interfaces *ISideBetRule* and *ISideBetView*.
+Dealer invokes ISideBetRule when the hand is done and reports the result to
+IPlayer via the outcome and the side bet amount in the hand id.
+The hand id contains the wager.
+For the main bet, the wager is always positive and the outcome,
+win, loose, etc. determines the P&L.
+In the case of Blackjack or Charlie, the odds have already been calculated in
+the main bet amount in the hand id.
+For instance, if the main wager is 5 and IPlayer gets a Charlie, the bet amount
+in hand id is 10.
+
+For the side bet the P&L, that is, the direction positive or negative,
+is already in the side bet.
+For instance suppose the side bet is a seven on the first card.
+The player makes two bets: 10 for the main bet and 5 for the side bet of seven
+on the first card
+The [Wizard of Odds](http://wizardofodds.com/games/blackjack/appendix/8/) says
+seven on first card pays 3:1.
+But the player gets a Blackjack. Dealer pays 3:2 on the 10 and sets
+the bet amount in the hand id to 15.
+Dealer invokes the side rule which finds no seven on first card
+and the side bet rule sets -5 as the side bet.
+IPlayer receives the blackjack message and adds 15 minus 5 or 10 to the bankroll.
+The table invokes _setHid_ on ISideBetView to signal the side bet outcome.
+
+###A quasi-plugin
+There is one other plugin-like interface: *IUi*.
+*ATable* implements IUi as the interface to Courier.
+While I don't expect any other UI, e.g., a command line interface,
+to be very useful, the interface is there nonetheless.
+
+###Future plugins
 

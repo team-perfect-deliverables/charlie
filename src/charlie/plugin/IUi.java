@@ -20,14 +20,14 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package charlie.view;
+package charlie.plugin;
 
 import charlie.card.Hid;
 import charlie.card.Card;
 import java.util.List;
 
 /**
- * Messages to the UI.
+ * This is the interface to the UI from Courier's point of view.
  * @author Ron Coleman
  */
 public interface IUi {
