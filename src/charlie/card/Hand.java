@@ -47,6 +47,26 @@ public class Hand implements Serializable {
     }
     
     /**
+     * Gets a card in the hand.
+     * @param k Index
+     * @return Card
+     */
+    public Card getCard(int k) {
+        if(k >= cards.size() || k < 0)
+            return null;
+        
+        return cards.get(k);
+    }
+    
+    /**
+     * Gets the number of cards in the hand.
+     * @return Number of cards in hand
+     */
+    public int size() {
+        return cards.size();
+    }
+    
+    /**
      * Tests if the hand is broke.
      * @return True if hand > 21
      */
