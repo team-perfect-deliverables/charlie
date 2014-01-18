@@ -27,6 +27,7 @@ import charlie.actor.Courier;
 import charlie.audio.SoundFactory;
 import charlie.card.Card;
 import charlie.card.Hand;
+import charlie.dealer.Seat;
 import charlie.message.view.from.Arrival;
 import charlie.plugin.IAdvisor;
 import charlie.server.Login;
@@ -50,7 +51,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
@@ -86,7 +86,8 @@ public class GameFrame extends javax.swing.JFrame {
     private boolean trucking = false;
     private boolean dubblable;
     private IAdvisor advisor;
-
+    private boolean advising;
+    private Hand dealerHand;
 
     /**
      * Constructor
@@ -131,13 +132,47 @@ public class GameFrame extends javax.swing.JFrame {
 
             this.advisor = (IAdvisor) clazz.newInstance();
             
-            LOG.info("successfully loaded advisor");            
-            
+            LOG.info("successfully loaded advisor");              
         } catch (FileNotFoundException ex) {
             LOG.error(ex.toString());
         } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             LOG.error(ex.toString());
         }
+    }
+    
+    /**
+     * Confirm play with advisor
+     * @param hid
+     * @param play
+     * @return True if advising, false otherwise
+     */
+    protected boolean confirmed(Hid hid,String play) {
+        if(!advising || advisor == null)
+            return true;
+        
+        Hand myHand = hands.get(hid);
+
+        String advice = advisor.advise(myHand,dealerHand);
+
+        if (advising && !advice.equals(play)) {
+            Object[] options = {
+                play,
+                "Cancel"};
+            int n = JOptionPane.showOptionDialog(this,
+                    "I suggest " + advice + ".",
+                    "Advisor",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+
+            if (n == 1) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /**
@@ -221,6 +256,15 @@ public class GameFrame extends javax.swing.JFrame {
     public void deal(Hid hid, Card card, int[] handValues) {      
         Hand hand = hands.get(hid);
         
+        if(hand == null) {
+            hand = new Hand(hid);
+            
+            hands.put(hid, hand);
+            
+            if(hid.getSeat() == Seat.DEALER)
+                this.dealerHand = hand;
+        }
+            
         hand.hit(card);
     }
 
@@ -332,6 +376,11 @@ public class GameFrame extends javax.swing.JFrame {
 
         adviseButton.setText("Advise (off)");
         adviseButton.setEnabled(false);
+        adviseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adviseButtonActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -400,6 +449,9 @@ public class GameFrame extends javax.swing.JFrame {
                         frame.accessButton.setText("Logout");
 
                         frame.enableDeal(true);
+                        
+                        if(advisor != null)
+                            frame.adviseButton.setEnabled(true);
                     } else {
                         JOptionPane.showMessageDialog(frame,
                                 "Failed to connect to server.",
@@ -417,6 +469,8 @@ public class GameFrame extends javax.swing.JFrame {
 
     private void dealButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dealButtonActionPerformed
         hids.clear();
+        
+        hands.clear();
 
         this.handIndex = 0;
 
@@ -442,7 +496,7 @@ public class GameFrame extends javax.swing.JFrame {
                 // Get player side wager on table
                 Integer sideAmt = frame.panel.getSideAmt();
 
-                // Tell courier to send bet to dealer which gives us a hand id
+                // Tell courier to send bet to dealer which gives us a myHand id
                 // since bets are only associated with hands
                 Hid hid = courier.bet(amt, sideAmt);
 
@@ -457,9 +511,21 @@ public class GameFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_dealButtonActionPerformed
 
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
-        courier.stay(hids.get(this.handIndex));
-        enableTrucking(false);
-        enablePlay(false);
+        final GameFrame frame = this;
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Hid hid = hids.get(frame.handIndex);
+
+                if (!confirmed(hid, "STAY"))
+                    return;
+
+                courier.stay(hids.get(frame.handIndex));
+                enableTrucking(false);
+                enablePlay(false);
+            }
+        });        
     }//GEN-LAST:event_stayButtonActionPerformed
 
     private void hitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitButtonActionPerformed
@@ -470,26 +536,8 @@ public class GameFrame extends javax.swing.JFrame {
             public void run() {
                 Hid hid = hids.get(frame.handIndex);
                 
-                Hand hand = hands.get(hid);
-                
-                String advice = advisor.advise(hand);
-                
-                if (advice != null) {
-                    Object[] options = {
-                        "Continue with HIT",
-                        "Cancel"};
-                    int n = JOptionPane.showOptionDialog(frame,
-                            "I suggest " + advice,
-                            "Confirmation",
-                            JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            options,
-                            options[2]);
-                    
-                    if(n == 1)
-                        return;
-                }
+                if(!confirmed(hid,"HIT"))
+                    return;
                 
                 // NOTE: this isables double down on all hids and will have to be
                 // fixed when splitting hids
@@ -498,34 +546,52 @@ public class GameFrame extends javax.swing.JFrame {
                 // Disable play until the card arrives
                 enablePlay(false);
 
-                courier.hit(hids.get(frame.handIndex));
+                courier.hit(hid);
             }
         });
 
     }//GEN-LAST:event_hitButtonActionPerformed
 
     private void ddownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ddownButtonActionPerformed
-        // Disable further playing since this is ouble-down
-        enableTrucking(false);
+       final GameFrame frame = this;
 
-        enablePlay(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Hid hid = hids.get(frame.handIndex);
 
-        // No further dubbling until the next bet made
-        dubblable = false;
+                if (!confirmed(hid, "DOUBLE-DOWN"))
+                    return;
 
-        // Double the bet in the hand using a copy since this
-        // is a transient bet.
-        Hid hid = new Hid(hids.get(handIndex));
+                // Disable further playing since this is ouble-down
+                enableTrucking(false);
 
-        hid.dubble();
+                enablePlay(false);
 
-        // Send this off to the dealer
-        courier.dubble(hid);
+                // No further dubbling until the next bet made
+                dubblable = false;
 
-        // Double the bet on the panel
-        panel.dubble(hid);
+                // Double the bet in the myHand using a copy since this
+                // is a transient bet.
+                hid.dubble();
 
+                // Send this off to the dealer
+                courier.dubble(hid);
+
+                // Double the bet on the panel
+                panel.dubble(hid);
+            }
+        });
     }//GEN-LAST:event_ddownButtonActionPerformed
+
+    private void adviseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adviseButtonActionPerformed
+        if(advising)
+            this.adviseButton.setText("Advise (off)");
+        else
+            this.adviseButton.setText("Advise (on)");
+        
+        advising = !advising;
+    }//GEN-LAST:event_adviseButtonActionPerformed
 
     /**
      * Main starting point of app.

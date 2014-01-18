@@ -408,6 +408,10 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
 
         hand.hit(acard);
         
+        // Let the advisor, if it exists, know what's going on
+        frame.deal(hid, card, handValues);
+        
+        // Let Gerty, if it exists, know what's going on
         if(gerty != null)
             gerty.deal(hid, card, handValues);
     }

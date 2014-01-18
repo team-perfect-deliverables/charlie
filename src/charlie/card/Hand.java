@@ -80,6 +80,20 @@ public class Hand implements Serializable {
         return false;
     }
     
+    /**
+     * Tests if the had is a pair.
+     * @return True if hand has 2+2, 3+3, etc.
+     */
+    public boolean isPair() {
+        if(cards.size() != 2)
+            return false;
+        
+        return cards.get(0).rank == cards.get(1).rank;
+    }
+    
+    /**
+     * Doubles the bet in the hand.
+     */
     public void dubble() {
         this.hid.dubble();
     }

@@ -11,5 +11,5 @@ import charlie.card.Hand;
  * @author roncoleman125
  */
 public interface IAdvisor {
-    public String advise(Hand hand);
+    public String advise(Hand myHand,Hand dealerHand);
 }
