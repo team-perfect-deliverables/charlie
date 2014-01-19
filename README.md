@@ -114,12 +114,13 @@ However, RealPlayer could also be a bot. It's just in practice RealPlayer
 is associated with a "real" player on the client.
 
 ###Plugins
-Charlie has five (5) types of plugins:
+Charlie has six (6) types of plugins:
 1. Shoes
 2. B9 bots
 3. N6 bots
 4. Gerty bots
 5. Side bets
+6. Advisor
 
 There is a system-wide properties file: _charlie.props_. It contains plugin
 declarations.
@@ -310,6 +311,32 @@ Dealer invokes the side rule which finds no seven on first card
 and the side bet rule sets -5 as the side bet.
 IPlayer receives the blackjack message and adds 15 minus 5 or 10 to the bankroll.
 The table invokes _setHid_ on ISideBetView to signal the side bet outcome.
+
+###Advisor
+This plugin passively monitors the player and when a play discrepancy is
+detected, it issues a warning.
+For instance, suppose we have Ace vs. 10+6. The Basic Strategy says hit.
+However, if the player presses stay, Advisor offers it advice to hit.
+
+The plugin, as with the others, is in charlie.props:
+
+    charlie.advisor
+
+As with the other plugins, the class must be the fully qualified
+class name.
+
+The allowed responses from advisor are the strings:
+* HIT
+* STAY
+* DOUBLE-DOWN
+* SPLIT
+
+Note uppercase is required.
+
+By default is no advising even if Advisor has been successfully loaded.
+The player must enable advising.
+
+When
 
 ###A quasi-plugin
 There is one other plugin-like interface: *IUi*.
