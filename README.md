@@ -1,70 +1,82 @@
 ##Project Charlie
-Everyone probably knows about the famous winning hand, Blackjack, Ace+10.
-Then, there's the less famous, less probable but more profitable
-five-card Charlie which is a hand of five cards that does not break.
+Everyone probably knows about the winning hand, Blackjack.
+Then, there's the less famous, less probable but more profitable,
+*Charlie* which is a hand of five cards that does not break.
 
-Name after that winning hand,
 Project Charlie is an extensible, actor-based Blackjack system for teaching purposes.
-Charlie is extensible in the sense that parts of it are built on plug-in modules that can be programmed
-without having to rebuild the entire system. Charlie uses [actors](http://en.wikipedia.org/wiki/Actor_model)
-as its model of distributed computing. In other words, Charlie is a client-server system
-that runs on multiple hosts and can exploit hyper-threaded, multicore processors.
+It is a client-server system
+that runs on multiple hosts and can exploit
+(hyper-threading)[http://en.wikipedia.org/wiki/Hyper-threading].
 
-Games are
-powerful tools in their own right for teaching; in fact, when playing games or in this case developing them,
-blurs the line between learning and playing. Are we learning or playing?
-Let others decide.
+harlie is built on plug-in modules that it installs at run-time
+rather compile time.
+The big advantage of plugins is that Charlie can be extended without modifying
+its core functionality. The plugins are defined by Java interfaces and
+reflection.
 
-Blackjack is an example of an excellent game design.
-Namely, it is easy to play yet difficult to master.
+Finally, Carlie uses [actors](http://en.wikipedia.org/wiki/Actor_model)
+as its model of distributed computing.
+Actors are a very elegant in concept and they have been making a big
+comeback in recent years as an alternative to other communications /
+synchronization methods.
+However, the actors are bottom of the Charlie software stack, far below the
+plugins. So plugin developers will almost never the actors or need to know
+much about them.
 
-###What could Charlie teach?
+###Why Blackjack?
+Games are powerful tools in their own right for teaching.
+Blackjack, in particular, is an example of an excellent game design.
+Namely, Blackjack is easy to play yet difficult to master.
 
-* History
-* Game theory
-* Utility theory and risk taking
-* Probability theory, statistics
-* Concurrency and threads
-* Hyper-threading concepts
-* Synchronization and communication
-* Actors
-* Network programming
-* Serialization
-* User interface design
-* Artificial intelligence
-* Object-oriented principles
-* Animation
-* Version control
-* Server design
-* Software testing
-* Diagnostic logging
-* Even markdown (in the case of this document)
-* How to look like you know what you're doing should you get stuck in Vegas
+Yet Blackjack has the potential to teach many things, including
+but not limited to game theory, probability and statistical theory,
+and in the case of Charlie, concurrency, threads, synchronization,
+Artificial Intelligence, real-time computing, animation, etc.
+While I hope Charlie can teach all these things, the plain truth is
+Blackjack is fun and may prove useful if you're ever stuck in Vegas, or
+wherever your travels may take you.
 
-The rest of this document describes the Charlie design and how to extend it.
-I will not describe in detail the rules Blackjack.
-Readers that find lots of Blackjack info in books and/or the Internet.
-I will mention, however, not only _how_ to play Blackjack but also how
-bets.
+I will not teach Blackjack. There's tons of information in
+books and on the Internet for that which I will reference.
+My primary focus is to explore how to extend Charlie through its
+plugin system.
 
 ###A brief history of Blackjack
-The roots of Blackjack roots go back to Don Quixote and Seville and the 17th century.
-Serious study of Blackjack began in the 1950s with long-running computer simulations to discover what is
-called the _Basic Strategy_, about which we shall have much to say. By the 1960s, E.O. Thorp, the famous
-MIT professor, published, _Beat the Dealer_, which for a while caused casinos to change the game design
-to counteract the methods described therein. However, the casino tactics slowed down the game play and customers
-stopped coming. It forced casinos to go back to simpler rules and look for other means to thwart
-the Basic Strategy and card counting. Peter Griffin published _The Theory of Blackjack_ in the late 1990s. It laid
-out what some might regard as the definitive mathematical treatment of Blackjack and player opportunities.
-In 2003, Ben Mezrich, _Bringing Down the House_, published a true story of the exploits of students
+It will help to start with a brief history of Blackjack to set the stage
+for how the plugins work.
+The roots of Blackjack roots go back to Don Quixote and Seville and the 17th
+century.
+However, Serious study of Blackjack began in the 1950s with long-running computer
+simulations at IBM to discover the _Basic Strategy_, 
+which gives the rules of "correct" play.
+Issues of how to bet are not covered by the Basic Strategy but instead
+something known as (Kelly's criterion)[http://en.wikipedia.org/wiki/Kelly_criterion]
+which was itself set out in the 1950s, though not for Blackjack specifically.
+By the 1960s, MIT professor, E.O. Thorpe, published,
+(Beat the Dealer)[http://goo.gl/BDQ83E], which for a while caused casinos to
+change the Blackjack game design
+to counteract the methods the Basic Strategy.
+However, the casino tactics backfired as the countermeasures
+slowed the game which turned off customers who stopped coming to play.
+It forced casinos to go back to simpler rules and look for other means to thwart
+player opportunities without slowing the game.
+Peter Griffin published (The Theory of Blackjack)[http://goo.gl/kHQWjy] in the late 1990s.
+It laid
+out what some might regard as the definitive mathematical treatment of Blackjack from
+the player's perspective.
+In 2003, Ben Mezrich, (Bringing Down the House)[http://goo.gl/HJK5KN],
+published the exploits of students
 and their MIT professor in Las Vegas. The story was dramatized by the popular
-2008 movie, _21_.
-In my own case, I studied Blackjack indepth, asking whether a machine could learn to play
-and count cards. The published papers are [here](http://foxweb.marist.edu/users/ron.coleman/).
-In 2010, I developed a related
-system in [Scala](www.scala-lang.org). However, having to teach Scala, too,
-in addition to teaching some Blackjack, proved to be too much of a distraction. Thus, the 
-goal here is to focus more on Blackjack and Java.
+2008 film, (21)[http://goo.gl/oEB8sv].
+
+In my own case, I studied Blackjack in-depth, asking whether a machine could learn to play
+and bet. The published papers are [here](http://foxweb.marist.edu/users/ron.coleman/).
+In 2010, I developed a 
+(system)[https://code.google.com/p/scaly/] related to Charlie
+except written in [Scala](www.scala-lang.org) rather
+than Java.
+Unlike Charlie, the Scala version was not
+fundamentally distributed and had no plugins, GUI, animations, or sounds.
 
 ###Basic ideas
 Charlie is uses a client-server architecture organized around the model view controller (MVC) design pattern.
@@ -325,10 +337,10 @@ The plugin, as with the others, is in charlie.props:
 As with the other plugins, the class must be the fully qualified
 class name.
 
-The allowed responses from advisor are the strings:
+The allowed responses are in the *Play* enum:
 * HIT
 * STAY
-* DOUBLE-DOWN
+* DOUBLE_DOWN
 * SPLIT
 
 Note uppercase is required.
@@ -336,7 +348,6 @@ Note uppercase is required.
 By default is no advising even if Advisor has been successfully loaded.
 The player must enable advising.
 
-When
 
 ###A quasi-plugin
 There is one other plugin-like interface: *IUi*.

@@ -35,8 +35,8 @@ import java.awt.Graphics2D;
  * @author Ron Coleman
  */
 public class ADealerHand extends AHand {
-    protected Color bjFgColor = new Color(116,255,4);
-    protected Color bjBgColor = Color.BLACK;
+    protected Color bjFgColor = Color.BLACK;
+    protected Color bjBgColor = new Color(116,255,4);
     protected Color bustFgColor = Color.WHITE;
     protected Color bustBgColor = new Color(250,58,5);    
     /**
@@ -101,7 +101,7 @@ public class ADealerHand extends AHand {
         if(cards.isEmpty())
             return;
 
-        FontMetrics fm = g.getFontMetrics(stateFont);
+        FontMetrics fm = g.getFontMetrics(outcomeFont);
         
         int textWidth = fm.charsWidth(text.toCharArray(), 0, text.length());
         
@@ -127,17 +127,17 @@ public class ADealerHand extends AHand {
         
         ACard lastCard = cards.get(sz-1);
         x = cards.get(0).getX() + getPileWidth() - 15;
-        y = lastCard.getY() + ACard.getCardHeight() * 2 / 3;
+        y = lastCard.getY() + ACard.getCardHeight() / 2;
         
-        int outcomeWidth = fm.charsWidth(outcomeText.toCharArray(), 0, outcomeText.length());
-        int outcomeHeight = fm.getHeight(); 
+        int w = fm.charsWidth(outcomeText.toCharArray(), 0, outcomeText.length());
+        int h = fm.getHeight(); 
                 
         if(isBlackjack())
             g.setColor(bjBgColor);
         else if(isBroke())
             g.setColor(bustBgColor);
         
-        g.fillRoundRect(x, y-outcomeHeight+5, outcomeWidth,outcomeHeight, 5, 5);
+        g.fillRoundRect(x, y-h+5, w, h, 5, 5);
         
         if(isBlackjack())
             g.setColor(bjFgColor);

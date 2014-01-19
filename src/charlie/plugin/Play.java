@@ -22,12 +22,10 @@
  */
 package charlie.plugin;
 
-import charlie.card.Hand;
-
 /**
- * This is the interface to the advisor
+ * Play from advisor.
  * @author Ron Coleman
  */
-public interface IAdvisor {
-    public Play advise(Hand myHand,Hand dealerHand);
+public enum Play {
+    NONE, HIT, STAY, DOUBLE_DOWN, SPLIT
 }

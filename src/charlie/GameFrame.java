@@ -29,6 +29,7 @@ import charlie.card.Card;
 import charlie.card.Hand;
 import charlie.dealer.Seat;
 import charlie.message.view.from.Arrival;
+import charlie.plugin.Play;
 import charlie.plugin.IAdvisor;
 import charlie.server.Login;
 import charlie.server.Ticket;
@@ -146,15 +147,15 @@ public class GameFrame extends javax.swing.JFrame {
      * @param play
      * @return True if advising, false otherwise
      */
-    protected boolean confirmed(Hid hid,String play) {
+    protected boolean confirmed(Hid hid,Play play) {
         if(!advising || advisor == null)
             return true;
         
         Hand myHand = hands.get(hid);
 
-        String advice = advisor.advise(myHand,dealerHand);
+        Play advice = advisor.advise(myHand,dealerHand);
 
-        if (advising && !advice.equals(play)) {
+        if (advising && advice != play) {
             Object[] options = {
                 play,
                 "Cancel"};
@@ -518,7 +519,7 @@ public class GameFrame extends javax.swing.JFrame {
             public void run() {
                 Hid hid = hids.get(frame.handIndex);
 
-                if (!confirmed(hid, "STAY"))
+                if (!confirmed(hid, Play.STAY))
                     return;
 
                 courier.stay(hids.get(frame.handIndex));
@@ -536,7 +537,7 @@ public class GameFrame extends javax.swing.JFrame {
             public void run() {
                 Hid hid = hids.get(frame.handIndex);
                 
-                if(!confirmed(hid,"HIT"))
+                if(!confirmed(hid,Play.HIT))
                     return;
                 
                 // NOTE: this isables double down on all hids and will have to be
@@ -560,7 +561,7 @@ public class GameFrame extends javax.swing.JFrame {
             public void run() {
                 Hid hid = hids.get(frame.handIndex);
 
-                if (!confirmed(hid, "DOUBLE-DOWN"))
+                if (!confirmed(hid, Play.DOUBLE_DOWN))
                     return;
 
                 // Disable further playing since this is ouble-down
