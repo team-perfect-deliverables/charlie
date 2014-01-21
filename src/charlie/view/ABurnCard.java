@@ -24,7 +24,6 @@ package charlie.view;
 
 import charlie.util.Constant;
 import charlie.util.Point;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -87,7 +86,7 @@ public final class ABurnCard extends ACard {
     }
     
     public static Image getBurnImage() {
-        String path = Constant.DIR_IMGS + "burn-card-1.png";
+        String path = Constant.DIR_IMGS + "burn-card-2.png";
         
         Image img = imgCache.get(path);
         

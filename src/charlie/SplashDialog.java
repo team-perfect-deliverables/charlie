@@ -33,11 +33,13 @@ public class SplashDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form SplashDialog
+     * @param parent
+     * @param modal
      */
     public SplashDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ImageIcon icon = new ImageIcon("images/logo-1.png");
+        ImageIcon icon = new ImageIcon("images/logo-2.png");
         this.jLabel1.setIcon(icon);
         this.getContentPane().setBackground( new Color(173, 149, 245) );
         this.setLocationRelativeTo(null);
@@ -65,14 +67,14 @@ public class SplashDialog extends javax.swing.JDialog {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jLabel1)
-                .addContainerGap(376, Short.MAX_VALUE))
+                .addContainerGap(583, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jLabel1)
-                .addContainerGap(172, Short.MAX_VALUE))
+                .addContainerGap(283, Short.MAX_VALUE))
         );
 
         pack();
@@ -119,9 +121,8 @@ public class SplashDialog extends javax.swing.JDialog {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-
                         try {
-                            Thread.sleep(4000);
+                            Thread.sleep(7000);
 
                             new GameFrame().setVisible(true);
                             
