@@ -67,28 +67,27 @@ public class GameFrame extends javax.swing.JFrame {
         props.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         props.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
     }
-    private final Logger LOG = LoggerFactory.getLogger(GameFrame.class);
-    private final String MY_HOST = "127.0.0.1";
-    private final Integer MY_PORT = 2345;
-    private final String GAME_SERVER = "127.0.0.1";
-    private final Integer GAME_SERVER_PORT = 9000;
-    private final Integer HOUSE_PORT = 1234;
-    private Actor house;
-    private Courier courier;
-    private ATable panel;
-    private boolean connected = false;
-    private final String COURIER_ACTOR = "CHANNEL";
-    private final String ADVISOR_PROPERTY = "charlie.advisor";
-    private Topology serverTopology;
-    private Topology clientTopology;
-    private List<Hid> hids = new ArrayList<>();
-    private HashMap<Hid,Hand> hands = new HashMap<>();
-    private int handIndex = 0;
-    private boolean trucking = false;
-    private boolean dubblable;
-    private IAdvisor advisor;
-    private boolean advising;
-    private Hand dealerHand;
+    protected final Logger LOG = LoggerFactory.getLogger(GameFrame.class);
+    protected final String MY_HOST = "127.0.0.1";
+    protected final Integer MY_PORT = 2345;
+    protected final String GAME_SERVER = "127.0.0.1";
+    protected final Integer GAME_SERVER_PORT = 9000;
+    protected final Integer HOUSE_PORT = 1234;
+    protected Actor house;
+    protected Courier courier;
+    protected ATable panel;
+    protected boolean connected = false;
+    protected final String COURIER_ACTOR = "CHANNEL";
+    protected final String ADVISOR_PROPERTY = "charlie.advisor";
+    protected Topology serverTopology;
+    protected Topology clientTopology;
+    protected final List<Hid> hids = new ArrayList<>();
+    protected final HashMap<Hid,Hand> hands = new HashMap<>();
+    protected int handIndex = 0;
+    protected boolean trucking = false;
+    protected boolean dubblable;
+    protected IAdvisor advisor;
+    protected Hand dealerHand;
 
     /**
      * Constructor
@@ -148,14 +147,14 @@ public class GameFrame extends javax.swing.JFrame {
      * @return True if advising, false otherwise
      */
     protected boolean confirmed(Hid hid,Play play) {
-        if(!advising || advisor == null)
+        if(!this.adviseCheckBox.isSelected() || advisor == null)
             return true;
         
         Hand myHand = hands.get(hid);
 
         Play advice = advisor.advise(myHand,dealerHand);
 
-        if (advising && advice != play) {
+        if (this.adviseCheckBox.isSelected() && advice != play) {
             Object[] options = {
                 play,
                 "Cancel"};
@@ -321,7 +320,7 @@ public class GameFrame extends javax.swing.JFrame {
         stayButton = new javax.swing.JButton();
         ddownButton = new javax.swing.JButton();
         splitButton = new javax.swing.JButton();
-        adviseButton = new javax.swing.JButton();
+        adviseCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -375,11 +374,11 @@ public class GameFrame extends javax.swing.JFrame {
 
         splitButton.setText("Split");
 
-        adviseButton.setText("Advise (off)");
-        adviseButton.setEnabled(false);
-        adviseButton.addActionListener(new java.awt.event.ActionListener() {
+        adviseCheckBox.setText("Advise");
+        adviseCheckBox.setEnabled(false);
+        adviseCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adviseButtonActionPerformed(evt);
+                adviseCheckBoxActionPerformed(evt);
             }
         });
 
@@ -392,9 +391,8 @@ public class GameFrame extends javax.swing.JFrame {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(surface, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(6, 6, 6)
-                        .add(adviseButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 196, Short.MAX_VALUE)
+                        .add(adviseCheckBox)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 244, Short.MAX_VALUE)
                         .add(splitButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(ddownButton)
@@ -421,7 +419,7 @@ public class GameFrame extends javax.swing.JFrame {
                     .add(stayButton)
                     .add(ddownButton)
                     .add(splitButton)
-                    .add(adviseButton))
+                    .add(adviseCheckBox))
                 .addContainerGap())
         );
 
@@ -452,7 +450,7 @@ public class GameFrame extends javax.swing.JFrame {
                         frame.enableDeal(true);
                         
                         if(advisor != null)
-                            frame.adviseButton.setEnabled(true);
+                            frame.adviseCheckBox.setEnabled(true);
                     } else {
                         JOptionPane.showMessageDialog(frame,
                                 "Failed to connect to server.",
@@ -585,14 +583,9 @@ public class GameFrame extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_ddownButtonActionPerformed
 
-    private void adviseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adviseButtonActionPerformed
-        if(advising)
-            this.adviseButton.setText("Advise (off)");
-        else
-            this.adviseButton.setText("Advise (on)");
-        
-        advising = !advising;
-    }//GEN-LAST:event_adviseButtonActionPerformed
+    private void adviseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adviseCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adviseCheckBoxActionPerformed
 
     /**
      * Main starting point of app.
@@ -627,7 +620,7 @@ public class GameFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton accessButton;
-    private javax.swing.JButton adviseButton;
+    private javax.swing.JCheckBox adviseCheckBox;
     private javax.swing.JButton ddownButton;
     private javax.swing.JButton dealButton;
     private javax.swing.JButton hitButton;

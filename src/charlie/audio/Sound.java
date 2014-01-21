@@ -50,6 +50,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * For some samples I also normalized the audio
  * (see http://www.learndigitalaudio.com/blog/normalize-audio) although
  * I don't see how this is necessary.<br>
+ * In any case, see http://audio.online-convert.com/convert-to-wav
+ * convert to WAV format.
  * 
  * @author Ron Coleman
  */

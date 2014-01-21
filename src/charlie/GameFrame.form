@@ -27,10 +27,9 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="surface" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
-                      <Component id="adviseButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="196" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="adviseCheckBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="244" max="32767" attributes="0"/>
                       <Component id="splitButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ddownButton" min="-2" max="-2" attributes="0"/>
@@ -61,7 +60,7 @@
                   <Component id="stayButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="ddownButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="splitButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="adviseButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="adviseCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -131,13 +130,13 @@
         <Property name="text" type="java.lang.String" value="Split"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="adviseButton">
+    <Component class="javax.swing.JCheckBox" name="adviseCheckBox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Advise (off)"/>
+        <Property name="text" type="java.lang.String" value="Advise"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="adviseButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="adviseCheckBoxActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
