@@ -386,6 +386,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      *
      * @param hid Hand id
      * @param card Card hitting the hand
+     * @param handValues Hand values
      */
     @Override
     public synchronized void deal(Hid hid, Card card, int[] handValues) {
@@ -482,7 +483,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         
         AHand hand = manos.get(hid);
 
-        hand.setOutcome(AHand.Outcome.Loose);
+        hand.setOutcome(AHand.Outcome.Lose);
 
         AMoneyManager money = this.monies.get(hid.getSeat());
 
@@ -494,7 +495,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             sideBetView.setHid(hid);
         
         if(gerty != null)
-            gerty.loose(hid);
+            gerty.lose(hid);
     }
 
     /**
@@ -585,6 +586,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
      * Starts a game. Note: we received the initial player bankroll during login
      * which is handled by GameFrame.
      *
+     * @param shoeSize Shoe size
      * @param hids Hand ids
      */
     @Override

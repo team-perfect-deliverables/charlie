@@ -533,7 +533,7 @@ public class Dealer implements Serializable {
                 updateBankroll(hid,LOSS);
                 
                 for (IPlayer player: playerSequence)
-                    player.loose(hid);
+                    player.lose(hid);
             }
             // If hand less than dealer and dealer isBroke OR...
             //    hand greater than dealer and dealer NOT isBroke => hand WON

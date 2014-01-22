@@ -87,7 +87,7 @@ public interface IPlayer {
      * Tells player the hand lost to dealer.
      * @param hid Hand id
      */     
-    abstract public void loose(Hid hid);
+    abstract public void lose(Hid hid);
     
     /**
      * Tells player the hand pushed.
@@ -97,7 +97,6 @@ public interface IPlayer {
     
     /**
      * Tells player the hand pushed.
-     * @param hid Hand id
      */     
     abstract public void shuffling();
     

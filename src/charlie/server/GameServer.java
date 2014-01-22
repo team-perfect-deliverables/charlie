@@ -60,7 +60,7 @@ public class GameServer {
     private final static Integer TOPOLOGY_PORT = 1234;
     private final static Integer LOGIN_PORT = 9000;
     private final static String HOST = "127.0.0.1";
-    private Properties props = new Properties();
+    private final Properties props = new Properties();
     private final List<Ticket> logins = new ArrayList<>();
     public static void main(String[] args) {
         new GameServer().go();

@@ -175,7 +175,7 @@ public class RealPlayer implements IPlayer {
      * @param bet Bet amount lost
      */
     @Override
-    public void loose(Hid hid) {
+    public void lose(Hid hid) {
         courier.send(new Loose(hid));
     }
     

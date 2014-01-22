@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class AHand {
     // Hand outcomes
-    public enum Outcome { None, Blackjack, Win, Push, Loose, Charlie, Bust };
+    public enum Outcome { None, Blackjack, Win, Push, Lose, Charlie, Bust };
     
     // Card offsets to create "staggered" look
     protected final static int HOME_OFFSET_X = 15;
@@ -152,7 +152,7 @@ public class AHand {
             int h = fm.getHeight();
             
             // Paint the outcome background            
-            if (outcome == Outcome.Loose || outcome == Outcome.Bust)
+            if (outcome == Outcome.Lose || outcome == Outcome.Bust)
                 g.setColor(looseColorBg);
             
             else if(outcome == Outcome.Push)
@@ -163,7 +163,7 @@ public class AHand {
             g.fillRoundRect(x, y-h+5, w, h, 5, 5);
             
             // Paint the outcome foreground            
-            if (outcome == Outcome.Loose || outcome == Outcome.Bust)
+            if (outcome == Outcome.Lose || outcome == Outcome.Bust)
                 g.setColor(looseColorFg);
             
             else if(outcome == Outcome.Push)
