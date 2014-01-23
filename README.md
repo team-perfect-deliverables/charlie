@@ -8,7 +8,7 @@ It is a client-server system
 that runs on multiple hosts and can exploit
 (hyper-threading)[http://en.wikipedia.org/wiki/Hyper-threading].
 
-harlie is built on plug-in modules that it installs at run-time
+Charlie is built on plug-in modules that it installs at run-time
 rather compile time.
 The big advantage of plugins is that Charlie can be extended without modifying
 its core functionality. The plugins are defined by Java interfaces and
