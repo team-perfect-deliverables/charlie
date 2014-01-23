@@ -6,7 +6,7 @@ Then, there's the less famous, less probable but more profitable,
 Project Charlie is an extensible, actor-based Blackjack system for teaching purposes.
 It is a client-server system
 that runs on multiple hosts and can exploit
-(hyper-threading)[http://en.wikipedia.org/wiki/Hyper-threading].
+[hyper-threading])(http://en.wikipedia.org/wiki/Hyper-threading).
 
 Charlie is built on plug-in modules that it installs at run-time
 rather compile time.
@@ -14,7 +14,7 @@ The big advantage of plugins is that Charlie can be extended without modifying
 its core functionality. The plugins are defined by Java interfaces and
 reflection.
 
-Finally, Carlie uses [actors](http://en.wikipedia.org/wiki/Actor_model)
+Finally, Charlie uses [actors](http://en.wikipedia.org/wiki/Actor_model)
 as its model of distributed computing.
 Actors are a very elegant in concept and they have been making a big
 comeback in recent years as an alternative to other communications /
