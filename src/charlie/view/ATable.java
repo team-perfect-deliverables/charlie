@@ -29,6 +29,7 @@ import charlie.audio.Effect;
 import charlie.audio.SoundFactory;
 import charlie.card.Hid;
 import charlie.card.Card;
+import charlie.card.HoleCard;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -103,6 +104,8 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
     protected ISideBetView sideBetView;
     protected Properties props = new Properties(); 
     protected IGerty gerty;
+    private Card holeCard;
+    private int[] holeValues;
 
     /**
      * Constructor
@@ -154,7 +157,11 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         }
         
         if(sideBetView != null)
-            sideBetView.reset();        
+            sideBetView.reset();     
+        
+        holeCard = null;
+        
+        holeValues = null;
     }
 
     /**
@@ -245,7 +252,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         if(sideBetView != null)
             sideBetView.update(); 
         
-        // If it's my turn, I didn't break, and my cards have isLanded,
+        // If it's my turn, I didn't break, and my cards have landed,
         // then enable enable to play
         if (turn != null
                 && turn.hid.getSeat() == Seat.YOU
@@ -340,16 +347,20 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         AHand hand = manos.get(hid);
 
         if (hid.getSeat() == Seat.DEALER) {
-            // Turn off the turn signal
-            // Note: "turn" will be null on dealer blackjack in which case
-            // nobody has played.
-            if (turn != null) {
-                turn.enablePlaying(false);
-            }
-
             // Reveal dealer's hole card
             hand.get(0).flip();
-
+            
+            // Inform gety since we bypassed sending this to gerty during the deal
+            // This is really only important at this stage for counting cards.
+            if(gerty != null)
+                gerty.deal(hid, holeCard, holeValues);
+            
+            // Disable the "turn" signal
+            // Note: "turn" will be null on dealer blackjack in which case
+            // nobody has played.
+            if (turn != null)
+                turn.enablePlaying(false);
+            
             // Disable player input
             this.frame.enableTrucking(false);
             this.frame.enablePlay(false);
@@ -412,8 +423,14 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         // Let the advisor, if it exists, know what's going on
         frame.deal(hid, card, handValues);
         
-        // Let Gerty, if it exists, know what's going on
-        if(gerty != null)
+        // Let Gerty, if it exists, know what's going on except for the hole card
+        // which we'll send to Gerty when it's the dealer's turn.
+        if(card instanceof HoleCard) {
+            this.holeValues = handValues;
+            this.holeCard = card;
+        }
+        
+        if(gerty != null && !(card instanceof HoleCard))
             gerty.deal(hid, card, handValues);
     }
 

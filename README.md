@@ -50,29 +50,29 @@ However, Serious study of Blackjack began in the 1950s with long-running compute
 simulations at IBM to discover the _Basic Strategy_, 
 which gives the rules of "correct" play.
 Issues of how to bet are not covered by the Basic Strategy but instead
-something known as (Kelly's criterion)[http://en.wikipedia.org/wiki/Kelly_criterion]
+something known as [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion)]
 which was itself set out in the 1950s, though not for Blackjack specifically.
 By the 1960s, MIT professor, E.O. Thorpe, published,
-(Beat the Dealer)[http://goo.gl/BDQ83E], which for a while caused casinos to
+[Beat the Dealer](http://goo.gl/BDQ83E), which for a while caused casinos to
 change the Blackjack game design
 to counteract the methods the Basic Strategy.
 However, the casino tactics backfired as the countermeasures
 slowed the game which turned off customers who stopped coming to play.
 It forced casinos to go back to simpler rules and look for other means to thwart
 player opportunities without slowing the game.
-Peter Griffin published (The Theory of Blackjack)[http://goo.gl/kHQWjy] in the late 1990s.
+Peter Griffin published [The Theory of Blackjack](http://goo.gl/kHQWjy] in the late 1990s.
 It laid
 out what some might regard as the definitive mathematical treatment of Blackjack from
 the player's perspective.
-In 2003, Ben Mezrich, (Bringing Down the House)[http://goo.gl/HJK5KN],
+In 2003, Ben Mezrich, [Bringing Down the House](http://goo.gl/HJK5KN],
 published the exploits of students
 and their MIT professor in Las Vegas. The story was dramatized by the popular
-2008 film, (21)[http://goo.gl/oEB8sv].
+2008 film, [21](http://goo.gl/oEB8sv).
 
 In my own case, I studied Blackjack in-depth, asking whether a machine could learn to play
 and bet. The published papers are [here](http://foxweb.marist.edu/users/ron.coleman/).
 In 2010, I developed a 
-(system)[https://code.google.com/p/scaly/] related to Charlie
+[system](https://code.google.com/p/scaly/) related to Charlie
 except written in [Scala](www.scala-lang.org) rather
 than Java.
 Unlike Charlie, the Scala version was not
@@ -84,7 +84,7 @@ After a "real" player logs in and establishes a connection, an instance of *Hous
 an instance of *Dealer* for the player. The player is bound to this *Dealer* until the player
 logs out.
 
-Charlie games are multiplayer except real players do not play one another.  
+Charlie games are multi-player except real players do not play one another.  
 Instead, depending on the configuration,
 *Dealer* may allocate bots that simulate real players.
 If no bots have been configured, the game is "heads up," that is, the player

@@ -22,6 +22,7 @@
  */
 package charlie.plugin;
 
+import charlie.card.Card;
 import charlie.card.Hand;
 
 /**
@@ -29,5 +30,5 @@ import charlie.card.Hand;
  * @author Ron Coleman
  */
 public interface IAdvisor {
-    public Play advise(Hand myHand,Hand dealerHand);
+    public Play advise(Hand myHand,Card upCard);
 }

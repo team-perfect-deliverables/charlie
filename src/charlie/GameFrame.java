@@ -147,19 +147,20 @@ public class GameFrame extends javax.swing.JFrame {
      * @return True if advising, false otherwise
      */
     protected boolean confirmed(Hid hid,Play play) {
-        if(!this.adviseCheckBox.isSelected() || advisor == null)
+        if(!this.adviseCheckBox.isSelected() || advisor == null || dealerHand.size() < 2)
             return true;
         
         Hand myHand = hands.get(hid);
 
-        Play advice = advisor.advise(myHand,dealerHand);
+        Play advice = advisor.advise(myHand,dealerHand.getCard(1));
 
         if (this.adviseCheckBox.isSelected() && advice != play) {
             Object[] options = {
                 play,
                 "Cancel"};
+            String msg = "<html><font color=\"blue\" size=\"6\">This is some text!I suggest " + advice + ".</font>";
             int n = JOptionPane.showOptionDialog(this,
-                    "I suggest " + advice + ".",
+                    msg,
                     "Advisor",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE,
