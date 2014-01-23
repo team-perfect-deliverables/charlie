@@ -6,7 +6,7 @@ Then, there's the less famous, less probable but more profitable,
 Project Charlie is an extensible, actor-based Blackjack system for teaching purposes.
 It is a client-server system
 that runs on multiple hosts and can exploit
-[hyper-threading])(http://en.wikipedia.org/wiki/Hyper-threading).
+[hyper-threading](http://en.wikipedia.org/wiki/Hyper-threading).
 
 Charlie is built on plug-in modules that it installs at run-time
 rather compile time.
