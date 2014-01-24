@@ -26,7 +26,7 @@ package charlie.plugin;
 import charlie.card.Card;
 
 /**
- * This interface defines behavior of the shoe.
+ * This interface defines behaviors of the shoe.
  * @author Ron Coleman, Ph.D.
  */
 public interface IShoe {
