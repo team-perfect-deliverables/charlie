@@ -57,7 +57,7 @@ public class Sound09 {
     }
     @Test
     public void test() {
-         Sound sound = new Sound("audio/woow.wav");
+         Sound sound = new Sound("audio/Telemet_33G_HD2-32076.wav");
          
          sound.play();
         try {

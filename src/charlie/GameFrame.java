@@ -66,6 +66,8 @@ public class GameFrame extends javax.swing.JFrame {
         Properties props = System.getProperties();
         props.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         props.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
+        props.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
+        props.setProperty("org.slf4j.simpleLogger.dateTimeFormat","HH:mm:ss");
     }
     protected final Logger LOG = LoggerFactory.getLogger(GameFrame.class);
     protected final String MY_HOST = "127.0.0.1";
@@ -93,9 +95,13 @@ public class GameFrame extends javax.swing.JFrame {
      * Constructor
      */
     public GameFrame() {
+        LOG.info("client started");
+        
         initComponents();
 
         init();
+        
+        LOG.info("init done");
     }
 
     /**
@@ -126,13 +132,13 @@ public class GameFrame extends javax.swing.JFrame {
             if (className == null)
                 return;
              
-            LOG.info("attempting to load advisor "+ADVISOR_PROPERTY);
+            LOG.info("advisor plugin detected: "+className);
             Class<?> clazz;
             clazz = Class.forName(className);
 
             this.advisor = (IAdvisor) clazz.newInstance();
             
-            LOG.info("successfully loaded advisor");              
+            LOG.info("loaded advisor successfully");              
         } catch (FileNotFoundException ex) {
             LOG.error(ex.toString());
         } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
@@ -233,10 +239,10 @@ public class GameFrame extends javax.swing.JFrame {
 
                     panel.setBankroll(bankroll);
 
-                    LOG.info("connected to channel bankroll = " + bankroll);
+                    LOG.info("connected to courier bankroll = " + bankroll);
 
                 } catch (InterruptedException ex) {
-                    LOG.info("failed to connect to channel: " + ex);
+                    LOG.info("failed to connect to courier: " + ex);
 
                     failOver();
 
@@ -254,6 +260,12 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Receives a card.
+     * @param hid Hand id
+     * @param card Card
+     * @param handValues Hand values for the hand.
+     */
     public void deal(Hid hid, Card card, int[] handValues) {      
         Hand hand = hands.get(hid);
         
@@ -269,10 +281,14 @@ public class GameFrame extends javax.swing.JFrame {
         hand.hit(card);
     }
 
-    public void enableDeal(boolean deal) {
-        this.dealButton.setEnabled(deal);
+    /**
+     * Enables dealing in which player can bet but not play (hit, stay, etc.).
+     * @param state State
+     */
+    public void enableDeal(boolean state) {
+        this.dealButton.setEnabled(state);
 
-        this.panel.enableBetting(deal);
+        this.panel.enableBetting(state);
 
         this.hitButton.setEnabled(false);
 
@@ -283,18 +299,29 @@ public class GameFrame extends javax.swing.JFrame {
         this.ddownButton.setEnabled(false);
     }
 
-    public void enablePlay(boolean playing) {
-        this.hitButton.setEnabled(playing && trucking);
+    /**
+     * Enables play (hit, stay, etc.)
+     * @param state State
+     */
+    public void enablePlay(boolean state) {
+        this.hitButton.setEnabled(state && trucking);
 
-        this.stayButton.setEnabled(playing && trucking);
+        this.stayButton.setEnabled(state && trucking);
 
-        this.ddownButton.setEnabled(playing && dubblable && trucking);
+        this.ddownButton.setEnabled(state && dubblable && trucking);
     }
 
-    public void enableTrucking(boolean trucking) {
-        this.trucking = trucking;
+    /**
+     * Enables state, i.e., the player is able to make a play.
+     * @param state State
+     */
+    public void enableTrucking(boolean state) {
+        this.trucking = state;
     }
 
+    /**
+     * Recovers in event we fail catastrophically.
+     */
     protected void failOver() {
         if (serverTopology != null) {
             serverTopology.shutdown();
@@ -426,7 +453,10 @@ public class GameFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Handles case were the player presses the "access" button.
+     * @param evt Button press event.
+     */
     private void accessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessButtonActionPerformed
         final GameFrame frame = this;
         if (!connected) {
@@ -467,6 +497,10 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_accessButtonActionPerformed
 
+    /**
+     * Handles case where player presses deal button.
+     * @param evt Button press event.
+     */
     private void dealButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dealButtonActionPerformed
         hids.clear();
         
@@ -509,7 +543,11 @@ public class GameFrame extends javax.swing.JFrame {
         });
 
     }//GEN-LAST:event_dealButtonActionPerformed
-
+    
+    /**
+     * Handles case where player presses stay button.
+     * @param evt Button press event.
+     */
     private void stayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayButtonActionPerformed
         final GameFrame frame = this;
 
@@ -528,6 +566,10 @@ public class GameFrame extends javax.swing.JFrame {
         });        
     }//GEN-LAST:event_stayButtonActionPerformed
 
+    /**
+     * Handles case where player presses hit button.
+     * @param evt Button press event.
+     */    
     private void hitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitButtonActionPerformed
         final GameFrame frame = this;
         
@@ -552,6 +594,10 @@ public class GameFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_hitButtonActionPerformed
 
+    /**
+     * Handles case where player presses double-down button.
+     * @param evt Button press event.
+     */    
     private void ddownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ddownButtonActionPerformed
        final GameFrame frame = this;
 
@@ -584,13 +630,16 @@ public class GameFrame extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_ddownButtonActionPerformed
 
+    /**
+     * Handles case where player changes the advise state.
+     * @param evt Button press event.
+     */    
     private void adviseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adviseCheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_adviseCheckBoxActionPerformed
 
     /**
      * Main starting point of app.
-     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {

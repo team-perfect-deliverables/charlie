@@ -33,6 +33,7 @@ import java.util.Random;
 public class SoundFactory {   
     private final static Sound dealSound0 = new Sound("audio/PlayingCardsPo_eOnFelt01_87.wav");
     private final static Sound dealSound1 = new Sound("audio/tap.wav");
+    private final static Sound dealSound2 = new Sound("audio/Telemet_33G_HD2-32076.wav");
     private final static Sound[] charlieSounds = { 
         new Sound("audio/shazam2.wav")
     };
@@ -62,9 +63,10 @@ public class SoundFactory {
     private final static Sound chipsIn = new Sound("audio/Games_Poker_Chip_08950004.wav");
     private final static Sound chipsOut = new Sound("audio/Games_Poker_Chip_08950003.wav");
     private final static Sound shuffle = new Sound("audio/013012_Casino-Cards_28_A1.wav");
-    private final static Sound turn = new Sound("audio/blip2.wav");
+    private final static Sound turn = new Sound("audio/Telemet_33G_HD2-32076.wav");
     private static long lastTime = System.currentTimeMillis();   
     protected static Random toss = new Random();
+    private static boolean enabled = true;
 
     /**
      * Primes the sound line
@@ -83,18 +85,23 @@ public class SoundFactory {
         sound.setVolume(6.0f);
     }
     
+    public static void enable(boolean state) {
+        enabled = state;
+    }
+    
     /**
      * Plays a sound
      * @param e Effect
      */
     public static void play(Effect e) {
+        if(!enabled)
+            return;
+        
         switch(e) {
             case TURN:
                 turn.play();
                 break;
             case SHUFFLING:
-//                shuffle.play();
-//                shuffle.play();
                 backgroundPlay(shuffle,2);
                 break;
             case DEAL:

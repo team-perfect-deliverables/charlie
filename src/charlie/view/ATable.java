@@ -61,19 +61,19 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
     protected final String SIDE_BET_VIEW_PROPERTY = "charlie.sidebet.view";    
     protected Random ran = new Random();
     protected String[] b9s = {"Apollo", "Zeus", "Talos"};
-    protected String[] aaf709s = {"Hera", "Athena", "Hecate"};
+    protected String[] n6s = {"Hera", "Athena", "Hecate"};
     protected AHandsManager you = new AHandsManager("You", new Point(225, 225));
     protected AHandsManager dealer = new AHandsManager("Dealer", new Point(225, 0));
     protected AHandsManager b9 = new AHandsManager(b9s[ran.nextInt(b9s.length)], new Point(450, 150));
-    protected AHandsManager aaf709 = new AHandsManager(aaf709s[ran.nextInt(aaf709s.length)], new Point(25, 150));
-    protected AHandsManager[] handsManager = {you, dealer, b9, aaf709};
+    protected AHandsManager n6 = new AHandsManager(n6s[ran.nextInt(n6s.length)], new Point(25, 150));
+    protected AHandsManager[] handsManager = {you, dealer, b9, n6};
     protected TurnIndicator turnSprite = new TurnIndicator();
     protected AHand turn = null;
     protected HashMap<Seat, AHandsManager> seats = new HashMap<Seat, AHandsManager>() {
         {
             put(Seat.YOU, you);
             put(Seat.RIGHT, b9);
-            put(Seat.LEFT, aaf709);
+            put(Seat.LEFT, n6);
             put(Seat.DEALER, dealer);
         }
     };
@@ -364,9 +364,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             // Disable player input
             this.frame.enableTrucking(false);
             this.frame.enablePlay(false);
-        } else {
-            SoundFactory.play(Effect.TURN);
-            
+        } else {           
             // Disable old hand
             if (turn != null)
                 turn.enablePlaying(false);
@@ -389,6 +387,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
             }
             else
                 gerty.play(hid);
+            SoundFactory.play(Effect.TURN);
         }
     }
 

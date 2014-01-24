@@ -23,6 +23,7 @@
 package charlie.server;
 
 import charlie.actor.House;
+import charlie.util.Constant;
 import com.googlecode.actorom.Address;
 import com.googlecode.actorom.Topology;
 import com.googlecode.actorom.remote.ServerTopology;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,20 +53,29 @@ public class GameServer {
         _props.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         _props.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         _props.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
+        _props.setProperty("org.slf4j.simpleLogger.dateTimeFormat","HH:mm:ss");
     }
-    public static  Logger LOG = LoggerFactory.getLogger(GameServer.class);
-    private final static String HOUSE_ACTOR = "HOUSE";
-    private final static Random ran = new Random(0);
-    private final static Integer TOPOLOGY_PORT = 1234;
-    private final static Integer LOGIN_PORT = 9000;
-    private final static String HOST = "127.0.0.1";
-    private final Properties props = new Properties();
-    private final List<Ticket> logins = new ArrayList<>();
+    protected static  Logger LOG = LoggerFactory.getLogger(GameServer.class);
+    protected final static String HOUSE_ACTOR = "HOUSE";
+    protected final static Random ran = new Random(0);
+    protected final static Integer TOPOLOGY_PORT = 1234;
+    protected final static Integer LOGIN_PORT = 9000;
+    protected final static String HOST = "127.0.0.1";
+    protected final Properties props = new Properties();
+    protected final List<Ticket> logins = new ArrayList<>();
+    
+    /**
+     * This method is the main entry point for the server.
+     * @param args Command line arguments (currently not used)
+     */
     public static void main(String[] args) {
         new GameServer().go();
     }
     
-    public void go() {
+    /**
+     * Starts the server processing loop
+     */
+    protected void go() {
         try {
             // Start the actor server
             props.load(new FileInputStream("charlie.props"));
@@ -96,15 +105,15 @@ public class GameServer {
                 process(clientSocket, houseAddr);
 
             }
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | NumberFormatException ex) {
+            LOG.error("exception thrown: "+ex);
         }
     }
 
     /**
      * Processes a login request
      * @param clientSocket
-     * @param house 
+     * @param house House
      */
     private void process(final Socket clientSocket, final Address house) {
         Runnable thread = new Runnable() {
@@ -143,7 +152,7 @@ public class GameServer {
                         os.close();
                     }
                 } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
+                    LOG.error("exception thrown: "+ex);
                 }
             }
         };
@@ -167,7 +176,7 @@ public class GameServer {
      */
     private Ticket validate(Address house, Login login) {
         if (login.getLogname() != null && login.getPassword() != null) {
-            return new Ticket(house,ran.nextLong(),500.0);
+            return new Ticket(house,ran.nextLong(),Constant.PLAYER_BANKROLL);
         }
 
         return null;
