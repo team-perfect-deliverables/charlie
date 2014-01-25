@@ -1,14 +1,14 @@
-##Project Charlie
+##Charlie
 Everyone probably knows about the winning hand, Blackjack.
 Then, there's the less famous, less probable but more profitable,
 *Charlie* which is a hand of five cards that does not break.
 
-Project Charlie is an extensible, actor-based Blackjack system for teaching purposes.
-It is a client-server system
+Charlie is an extensible, actor-based Blackjack system for teaching purposes.
+It is a client-server, multiplayer system
 that runs on multiple hosts and can exploit
 [hyper-threading](http://en.wikipedia.org/wiki/Hyper-threading).
 
-Charlie is built on plug-in modules that it installs at run-time
+Charlie is built on plug-in modules that install at run-time
 rather compile time.
 The big advantage of plugins is that Charlie can be extended without modifying
 its core functionality. The plugins are defined by Java interfaces and
@@ -16,17 +16,17 @@ reflection.
 
 Finally, Charlie uses [actors](http://en.wikipedia.org/wiki/Actor_model)
 as its model of distributed computing.
-Actors are a very elegant in concept and they have been making a big
-comeback in recent years as an alternative to other communications /
+Actors are a very elegant in concept which has been making a big
+comeback in recent years as an alternative to other communication /
 synchronization methods.
-However, the actors are bottom of the Charlie software stack, far below the
-plugins. So plugin developers will almost never the actors or need to know
+Actors are, rightly, bottom of the Charlie software stack, far below the
+plugins. So plugin developers may never encounter the actors or need to know
 much about them.
 
 ###Why Blackjack?
 Games are powerful tools in their own right for teaching.
-Blackjack, in particular, is an example of an excellent game design.
-Namely, Blackjack is easy to play yet difficult to master.
+Blackjack, in particular, is an example of an excellent game design, that is,
+it is easy to play yet difficult to master.
 
 Yet Blackjack has the potential to teach many things, including
 but not limited to game theory, probability and statistical theory,
@@ -36,31 +36,32 @@ While I hope Charlie can teach all these things, the plain truth is
 Blackjack is fun and may prove useful if you're ever stuck in Vegas, or
 wherever your travels may take you.
 
-I will not teach Blackjack. There's tons of information in
+This document does not teach Blackjack. There's tons of information in
 books and on the Internet for that which I will reference.
 My primary focus is to explore how to extend Charlie through its
 plugin system.
 
 ###A brief history of Blackjack
-It will help to start with a brief history of Blackjack to set the stage
+It may help to start with a brief history of Blackjack to set the stage
 for how the plugins work.
 The roots of Blackjack roots go back to Don Quixote and Seville and the 17th
 century.
-However, Serious study of Blackjack began in the 1950s with long-running computer
+However, serious study of Blackjack began in the 1950s with long-running computer
 simulations at IBM to discover the _Basic Strategy_, 
 which gives the rules of "correct" play.
-Issues of how to bet are not covered by the Basic Strategy but instead
-something known as [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion)]
-which was itself set out in the 1950s, though not for Blackjack specifically.
+Issues of how to bet are not covered by the Basic Strategy but
+more _card counting_ something known as [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion)
+which was also set out in the 1950s for investing, not specifically Blackjack.
 By the 1960s, MIT professor, E.O. Thorpe, published,
 [Beat the Dealer](http://goo.gl/BDQ83E), which for a while caused casinos to
 change the Blackjack game design
-to counteract the methods the Basic Strategy.
+to counteract the Basic Strategy.
 However, the casino tactics backfired as the countermeasures
-slowed the game which turned off customers who stopped coming to play.
-It forced casinos to go back to simpler rules and look for other means to thwart
-player opportunities without slowing the game.
-Peter Griffin published [The Theory of Blackjack](http://goo.gl/kHQWjy] in the late 1990s.
+slowed the game and turned-off customers who stopped coming and playing.
+It forced casinos to go back to simpler "21" rules and look for other means to thwart
+player opportunities.
+
+Peter Griffin published [The Theory of Blackjack](http://goo.gl/kHQWjy) in the late 1990s.
 It laid
 out what some might regard as the definitive mathematical treatment of Blackjack from
 the player's perspective.
@@ -127,6 +128,7 @@ is associated with a "real" player on the client.
 
 ###Plugins
 Charlie has six (6) types of plugins:
+
 1. Shoes
 2. B9 bots
 3. N6 bots
