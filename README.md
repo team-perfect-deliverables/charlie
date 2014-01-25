@@ -65,8 +65,8 @@ Peter Griffin published [The Theory of Blackjack](http://goo.gl/kHQWjy) in the l
 It laid
 out what some might regard as the definitive mathematical treatment of Blackjack from
 the player's perspective.
-In 2003, Ben Mezrich, [Bringing Down the House](http://goo.gl/HJK5KN],
-published the exploits of students
+In 2003, Ben Mezrich published [Bringing Down the House](http://goo.gl/HJK5KN),
+which detailed the exploits of students
 and their MIT professor in Las Vegas. The story was dramatized by the popular
 2008 film, [21](http://goo.gl/oEB8sv).
 
@@ -77,7 +77,8 @@ In 2010, I developed a
 except written in [Scala](www.scala-lang.org) rather
 than Java.
 Unlike Charlie, the Scala version was not
-fundamentally distributed and had no plugins, GUI, animations, or sounds.
+distributed and had no plugins, GUI, animations, or sounds. It was really
+just a bare bones application for demonstration purposes.
 
 ###Basic ideas
 Charlie is uses a client-server architecture organized around the model view controller (MVC) design pattern.
@@ -85,13 +86,14 @@ After a "real" player logs in and establishes a connection, an instance of *Hous
 an instance of *Dealer* for the player. The player is bound to this *Dealer* until the player
 logs out.
 
-Charlie games are multi-player except real players do not play one another.  
-Instead, depending on the configuration,
-*Dealer* may allocate bots that simulate real players.
+Charlie games are multi-player. However, players do not play one another.  
+Instead, depending on the plugin configuration,
+*Dealer* may allocate at most bots that simulate real players.
 If no bots have been configured, the game is "heads up," that is, the player
-against *Dealer*.
+against Dealer. Yet Charlie supports multiple dealers concurrently which is
+the multi-player basis.
 
-The Dealer keeps a copy of the hands and implements the play rules, e.g., determining
+The Dealer keeps a copy of player hands and implements the play rules, e.g., determining
 the sequence of players, executing play
 requests, deciding wins, losses, etc.
 The Dealer broadcasts the game state to all players. For instance, when the Dealer
