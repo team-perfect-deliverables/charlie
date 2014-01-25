@@ -88,89 +88,99 @@ logs out.
 
 Charlie is multi-player. However, players do not play one another. Instead,
 depending on the plugin configuration,
-Dealer may allocate at most bots that simulate real players.
+Dealer may allocate up to two bots that simulate real players.
 If no bots have been configured, the game is "heads up," that is, the player
 against Dealer. Yet Charlie supports multiple dealers concurrently which is
 the multi-player basis.
 
-The Dealer keeps a copy of player hands and implements the play rules, e.g., determining
+Dealer keeps a copy of player hands and implements the play rules, e.g., determining
 the sequence of players, executing play
 requests, deciding wins, losses, etc.
 The Dealer broadcasts the game state to all players. For instance, when the Dealer
-deals a card, it is sent to all players, even if the hand is not for a given player.
-This is so that all players can "see" the table and if necessary, count cards.
-The player's job is to render this information. If a player receives Ace+10, this
+deals a card, Dealer sends the card all players.
+Thus, all players can "see" the table.
+The player's job is to process render the cards and wait for its turn.
+For instance, if a player receives Ace+10, this
 is of course a Blackjack.
-However, the player doesn't have to determine this. Dealer
-broadcasts "blackjack" to all players.
+However, the player doesn't have to determine fact. Dealer, after send this
+hand to all players,
+broadcasts "blackjack" for everyone.
 
-A key design feature is hands themselves are not passed around among players
+A key design feature is hands are not passed around among players
 or over the network.
 Instead, Charlie uses _hand ids_.
-A hand id is a unique key for a hand.
-Each player has one or more hands, as far as the dealer is concerned.
-Thus, when Dealer hits a hand, it sends a Card object and a hand id.
+A hand id is a unique key for a hand. Thus, when Dealer transmits a card,
+Thus, when Dealer hits a hand, it sends a *Card* object and a hand id.
 If the corresponding hand does not belong to a given player, the player
 can ignore the card. If however the hand id corresponds to a hand
 a player owns, the player has to respond. The permissible responses are
-hit, stay, double-down, surrender, and in theory, split which is not
-yet fully implemented.
+hit, stay, double-down, and in theory, surrender and split which are not
+implemented.
 
 If, of course, the player busts on a hit or double-down, there is
-no permissible request. Game is over for that player.
-In that case, Dealer tells the player it has broke so the player
-just needs to wait for Dealer before making the next player.
+no permissible request for the player to make of Dealer. The game is over for
+that player. In that case, Dealer tells the player it has broke so the player
+just needs to wait for the end game signal from the Deal before starting
+again.
 
-Dealer only deals with instances of *IPlayer*, a Java interface.
-Thus, Dealer mostly doesn't know or care if IPlayer is a real player or a bot.
-The exception is when placing bets. Dealer starts a new game only when 
-Dealer receives a bet from *RealPlayer* which is an implementation of IPlayer.
-However, RealPlayer could also be a bot. It's just in practice RealPlayer
-is associated with a "real" player on the client.
+Dealer only communicates with instances of *IPlayer*, a Java interface.
+Dealer mostly doesn't know or care if IPlayer is a real player or a bot.
+Dealer starts a new game only when 
+Dealer receives a bet from *RealPlayer* which is an implementation of IPlayer. Although RealPlayer
+interfaces to a "real" player on the client side, Deal is completely unaware
+of the networking hierarchy. As the controller in MVC, Dealer is the controller
+with different views.
 
 ###Plugins
 Charlie has six (6) types of plugins:
 
-1. Shoes
-2. B9 bots
-3. N6 bots
-4. Gerty bots
-5. Side bets
+1. Shoe
+2. B9 bot
+3. N6 bot
+4. Gerty bot
+5. Side bet
 6. Advisor
 
-There is a system-wide properties file: _charlie.props_. It contains plugin
-declarations.
+The properties file, _charlie.props_, declares the plugin
+values. Charlie checks charlie.props and if the plugin is
+not found or there is an exception trying to instantiate the plugin,
+Charlie recovers gracefully and runs without the plugin. The only
+exception the shoe plugins. Charlie requires a shoe and
+the server crashes without one. 
 
-###Shoes
-A _shoe_ contains instances of *Card* objects from which Dealer deals to players.
-A shoe must implement the behaviors give by *IShoe*.
-There is a concrete class, *Shoe*, which implements IShoe.
-Shoe has six randomly shuffled decks for "serious" play and/or training.
+###Shoe plugin
+A shoe contains instances of *Card* objects from which Dealer deals to players.
+A shoe must implement *IShoe*, a Java interface.
+Built into Charlie is a concrete class, *Shoe*, which implements IShoe.
+This class has six decks for "serious" play and/or training.
 In general, however, an IShoe may contain as many or as few cards
-as necessary. Thus, shoes are very useful for debugging purposes.
+as necessary.
+Thus, shoes are very useful for debugging purposes.
 
-There is a property, _charlie.shoe_ in charlie.props. The value must be a fully qualified
-subclass of *Shoe*. Here's an example
+There is a property, _charlie.shoe_ in the properties files, charlie.props. The value
+must be a fully qualified
+instance of IShoe. Here's an example
 
     charlie.shoe charlie.card.Shoe01
 
-It turns out the *Shoe01* is a one-deck shoe which I've found helpful for testing.
+The key is "charlie.shoe" and the value is "charlie.card.Shoe01".
+It turns out the Shoe01 is a one-deck shoe which I've found helpful for testing.
 
-When Dealer starts, it looks for this property and constructs a _charlie.card.Shoe00_.
+When House constructs Dealer, Dealer looks for the shoe property and tries to construct
+a the IShoe. The shoe designer's job is to create the shoe by implementing
+IShoe methods. As safe and simple approach is to extend *Shoe* which implements IShoe.
 You then just need to add cards to *cards* which is a *List<Card>*.
-Dealer then uses this shoe.
-If you use your own shoe, you just have to make sure the class is in the Charlie project
-class path via a jar file or source in the IDE.
+
+You have to make certain the IShoe implementation is in the Charlie project
+class path. You do this by adding a jar or project to the IDE. Either one
+works.
 
 ###Cards
 There are two types of cards: *Card* and *ACard*.
-Card is used
-by the controller (i.e., the server) and view (i.e., the client)
-to implement the play rules.
+The controller (i.e., Dealer) and the view (i.e., *ATable*) use
+Card. Only the view uses ACard. 
 
-Card objects have rank and suit.
-
-The following snippet constructs a three of spades:
+Card objects have rank and suit. The following snippet constructs a three of spades:
 
     Card card = new Card(3, Card.Suit.SPADES)
 
@@ -178,24 +188,25 @@ Here's how to make an Ace of spades:
 
     Card card = new Card(Card.ACE, Card.Suit.SPADES)
 
-Once you have a Card, you add it to the shoe as follows:
+Once you have a Card, assuming you're extending Shoe, in the _init_ method,
+add it to the shoe as follows:
 
     cards.add(card)
 
 Card has various methods to inquire about itself, like its value,
-whether it is a face card (J<, K, Q), an Ace, etc.
+whether it is a face card (J, K, Q), an Ace, etc.
 
 ACard is the "animated" analog of Card.
 It is a subclass of *Sprite*. ACard objects
 move around the table and have front and back faces.
 They are in many way more sophisticated than a Card.
-They key things to know are that an ACard constructs
+The key things to know about ACard are ACard constructs
 itself from a Card, has a home position on the table, and a current position
-on the table. ACard always seeks its home position starting
-from wherever it is on the table. The card motion is along a Euclidena
-straight line.
+on the table. ACard relentlessly seeks its home from its
+current position by following a Euclidean straight line. This
+what gives the impression of "card motion" on the table.
 
-###B9 & N6 bots
+###B9 & N6 bot plugins
 Name after Robot B9 from _Lost in Space (1965)_ and
 Nexus 6 in _Blade Runner (1981)_,
 these bots implement *IBot* which is a sub-interface of IPlayer.
@@ -241,7 +252,7 @@ For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/bl
 BTW, the Dealer does not, at the moment, support splits and that fact cuts down
 on the number of cells on both cases.
 
-###Gerty bots
+###Gerty bot plugins
 Named after the robot Gerty 3000 in _Moon (2009)_,
 these bots implement *IGerty* which is a sub-interface of IPlayer.
 Gerty bots run with a view on the client-side.
@@ -289,7 +300,7 @@ To play a double-down, Gerty does the following:
 Of course, after double-down,  Gerty is done for the game and just waits
 for endGame.
 
-###Side bets
+###Side bet plugins
 A side bet is a bet in addition to the
 the main bet that depends on certain
 card combinations.
@@ -328,7 +339,7 @@ and the side bet rule sets -5 as the side bet.
 IPlayer receives the blackjack message and adds 15 minus 5 or 10 to the bankroll.
 The table invokes _setHid_ on ISideBetView to signal the side bet outcome.
 
-###Advisor
+###Advisor plugins
 This plugin passively monitors the player and when a play discrepancy is
 detected, it issues a warning.
 For instance, suppose we have Ace vs. 10+6. The Basic Strategy says hit.
