@@ -164,7 +164,9 @@ public class GameFrame extends javax.swing.JFrame {
             Object[] options = {
                 play,
                 "Cancel"};
-            String msg = "<html><font color=\"blue\" size=\"6\">This is some text!I suggest " + advice + ".</font>";
+            String msg = "<html>I suggest...<font color=\"blue\" size=\"4\">" +
+                    advice +
+                    ".</font>";
             int n = JOptionPane.showOptionDialog(this,
                     msg,
                     "Advisor",
