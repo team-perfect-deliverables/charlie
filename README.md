@@ -86,9 +86,9 @@ After a "real" player logs in and establishes a connection, an instance of *Hous
 an instance of *Dealer* for the player. The player is bound to this *Dealer* until the player
 logs out.
 
-Charlie games are multi-player. However, players do not play one another.  
-Instead, depending on the plugin configuration,
-*Dealer* may allocate at most bots that simulate real players.
+Charlie is multi-player. However, players do not play one another. Instead,
+depending on the plugin configuration,
+Dealer may allocate at most bots that simulate real players.
 If no bots have been configured, the game is "heads up," that is, the player
 against Dealer. Yet Charlie supports multiple dealers concurrently which is
 the multi-player basis.
