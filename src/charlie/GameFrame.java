@@ -29,7 +29,7 @@ import charlie.card.Card;
 import charlie.card.Hand;
 import charlie.dealer.Seat;
 import charlie.message.view.from.Arrival;
-import charlie.plugin.Play;
+import charlie.util.Play;
 import charlie.plugin.IAdvisor;
 import charlie.server.Login;
 import charlie.server.Ticket;

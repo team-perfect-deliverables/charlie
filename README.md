@@ -206,42 +206,63 @@ on the table. ACard relentlessly seeks its home from its
 current position by following a Euclidean straight line. This
 what gives the impression of "card motion" on the table.
 
-###B9 & N6 bot plugins
-Name after Robot B9 from _Lost in Space (1965)_ and
-Nexus 6 in _Blade Runner (1981)_,
-these bots implement *IBot* which is a sub-interface of IPlayer.
-In other words, they implement IPlayer.
+###IBot plugins
+Named after Robot B9 from [Lost in Space](http://en.wikipedia.org/wiki/Lost_in_Space) and
+Nexus 6 in [Blade Runner] (http://en.wikipedia.org/wiki/Blade_Runner),
+these bots implement *IBot*, a sub-interface of IPlayer.
 As far as Dealer is concerned,
-they are players.
-The only thing is they run on the server, not the client.
-This means they have special access to the server and
-can crash the server.
+B9 and N6 are players, being IPlayer instance, Dealer makes not distinction.
+They run on the server which means they have special access to the server and
+can crash the server if they fail. That's one reason
+to be especially careful with these plugins as I explain below.
 
-You specify these bots in the charlie.props file with the
+You specify B9 and N6 bots in the charlie.props file with the
 keys _charlie.bot.b9_ and _charlie.bot.n6_ respectively.
-The key must declare the fully qualified class names.
+The key must declare the fully qualified concrete class names.
 
-On the table, Dealer plays B9 in the left seat and N6, the right seat.
-RealPlayer is in the middle or heads-up seat.
- 
-Dealer implicitly assumes IPlayer instances are an independent
+The only difference between the
+two bots is Dealer sits B9, if it is exists,
+in the right seat and N6, if it exists, in
+the left seat as shown below:
+
+              DEALER
+        LEFT          RIGHT
+              YOU
+
+The above symbols are in the *Seat* enumerated type.
+LEFT and RIGHT are mapped to B9 and N6,  IBot instances respectively
+while YOU is mapped to RealPlayer, an IPlayer.
+
+Dealer assumes IPlayer instances (which includes
+IBot instances) are an independent
 threads. What does this mean?
-An IBot must create its own thread to invoke Dealer.
+
+This means an IBot must use worker threads to interact with Dealer.
+IBot cannot use the thread that invoked IBot to then
+invoke methods on Dealer to which the IBot has access.
 For instance, IBot defines through IPlayer the behavior, _play_.
-Dealer invokes this method only once on IBot when it is the
-player's turn.
-IBot needs to respond by invoking _hit_, _stay_, etc. on Dealer.
-However, it cannot invoke these methods on Dealer
-in the same thread that's running
-the play method.
-IBot must instead spawn (or wakeup) a worker thread and return to Dealer which is
-waiting passively for a response.
-The worker thread then can invoke methods Dealer.
+Dealer invokes _play_ on IBot only once when it is the IBot's turn.
+On receiving _play_,
+IBot must respond by invoking _hit_, _stay_, or _doubleDown_ on Dealer.
+
+However, the IBot cannot invoke any of these methods on Dealer directly,
+that is, not in the thread that's running
+the _play_ method. The same is true for the _deal_ method
+which Dealer invokes on IPlayer when it deals a card to IPlayer. To
+do so would create a nasty recursion inside Dealer.
+
+To be well-behaved,
+IBot instead spawns or wakes-up a worker thread and returns to Dealer which is
+waiting for a response.
+The worker thread then can invoke _hit_, _stay_, or _doubleDown_ on Dealer.
+Underline, double-underline, bold, put asterisks around that last sentence.
 
 I will just point out that if IBot, in its worker thread,
-invokes _hit_, Dealer responds in turn by invoking _deal_ on IBot.
-Here again, IBot must use a worker thread to respond to the
-new card.
+invokes _hit_, Dealer may respond in turn by invoking _deal_ on IBot.
+Here again, as I mentioned above, IBot must use a worker thread to respond to the
+new card. I say *may* above because hit, may cause the hand to break,
+Blackjack, or Charlie
+in which case Dealer answers with _bust_, _blackjack, or _charlie, not _deal_.
 
 For all practical purposes, B9 and N6 bots are identical from Dealer's point of
 view. The only difference is seating as I mentioned above.
@@ -252,20 +273,36 @@ For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/bl
 BTW, the Dealer does not, at the moment, support splits and that fact cuts down
 on the number of cells on both cases.
 
-###Gerty bot plugins
-Named after the robot Gerty 3000 in _Moon (2009)_,
-these bots implement *IGerty* which is a sub-interface of IPlayer.
-Gerty bots run with a view on the client-side.
-They replace the human player. 
-The Gerty bot has the potential to implement the most sophisticated play and bet strategies
+###Gerty plugins
+Named after the robot Gerty 3000 in [Moon](http://en.wikipedia.org/wiki/Moon_(film)),
+these bots implement *IGerty* which, like IBot, is a sub-interface of IPlayer.
+Unlike IBot, IGerty bots run on the client-side.
+IGerty plays in place of the human player. As with the other plugins, we declare IGerty
+the fully qualified concrete class name in the Charlie properties file, _charlie.props_.
+The key is _charlie.bot.gerty_.
+
+The IGerty bot has the potential to implement the most sophisticated play and bet strategies
 to maximize player returns.
-It might be best, for Gerty, to start with the 420 cell play strategy
+It might be best, for IGerty, to start with the 420 cell play strategy
 and stay with a balanced, level-one system like the [Hi-Lo](http://en.wikipedia.org/wiki/Card_counting) 
 or unbalanced, level-one
 system like [Knock Out](http://www.koblackjack.com/).
 
-When Gerty is playing, it must behave. That is, be one good
-behavior dealing with exception, etc. since otherwise it may
+When IGerty is playing, it must behave. Here are some rules:
+
+1. Do not make plays before or after your turn.
+2. Send one play at a time and wait for a response from Dealer.
+3. Send valid plays for a hand id. For instance, do not send a double-down after the first hit request.
+4. Do not send requests after you stay.
+5. Wait for Dealer to compute the outcome, even if you know it before hand.
+6. Don't subvert the system, e.g., look at the hole card before Dealer reveals it.
+
+For instance, IGerty should not
+make plays before or after its turn. 
+
+
+That is, it must
+handle its exception, etc. since otherwise it may
 crash the client.
 Gerty is also supposed to play like a human.
 For instance, it must take its time making a decision.

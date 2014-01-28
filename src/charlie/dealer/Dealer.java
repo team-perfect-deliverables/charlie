@@ -100,9 +100,8 @@ public class Dealer implements Serializable {
     /**
      * Receives a bet request from a "real" you. Don't invoke this method
      * for a bot. Bots are instantiated directly by this class.
-     * @param you Player
-     * @param hid Hand
-     * @param bet Bet amount
+     * @param you Real player
+     * @param hid Hand id
      */
     public void bet(RealPlayer you,Hid hid) {
         LOG.info("got new bet = "+ hid.getAmt() +
@@ -118,9 +117,10 @@ public class Dealer implements Serializable {
         
         sit(you,hid);
         
-        // AAF709 / Rhoda
+        // Nexus 6 Rachel
         sit("n6",Seat.LEFT);
       
+        // We'll start with this sequence number when playing hands
         handSeqIndex = 0;        
 
         // Create the dealer hand
