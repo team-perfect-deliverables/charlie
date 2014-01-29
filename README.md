@@ -206,7 +206,7 @@ on the table. ACard relentlessly seeks its home from its
 current position by following a Euclidean straight line. This
 what gives the impression of "card motion" on the table.
 
-###IBot plugins
+###IBot plugin
 Named after Robot B9 from [Lost in Space](http://en.wikipedia.org/wiki/Lost_in_Space) and
 Nexus 6 in [Blade Runner] (http://en.wikipedia.org/wiki/Blade_Runner),
 these bots implement *IBot*, a sub-interface of IPlayer.
@@ -273,7 +273,7 @@ For instance, B9 might use the [Wizard of Odds](http://wizardofodds.com/games/bl
 BTW, the Dealer does not, at the moment, support splits and that fact cuts down
 on the number of cells on both cases.
 
-###Gerty plugins
+###Gerty plugin
 Named after the robot Gerty 3000 in [Moon](http://en.wikipedia.org/wiki/Moon_(film)),
 these bots implement *IGerty* which, like IBot, is a sub-interface of IPlayer.
 Unlike IBot, IGerty bots run on the client-side.
@@ -296,20 +296,14 @@ When IGerty is playing, it must behave. Here are some rules:
 4. Do not send requests after you stay.
 5. Wait for Dealer to compute the outcome, even if you know it before hand.
 6. Don't subvert the system, e.g., look at the hole card before Dealer reveals it.
-
-For instance, IGerty should not
-make plays before or after its turn. 
-
-
-That is, it must
-handle its exception, etc. since otherwise it may
-crash the client.
-Gerty is also supposed to play like a human.
-For instance, it must take its time making a decision.
-Otherwise, things will happen too fast and we won't be able to see or know
+7. Play like a person, namely, add delay to decisions, otherwise, things will happen too fast and we won't be able to see or know
 what it really did or why.
+8. Don't place negative bets, it will just confuse Dealer.
+9. Don't exit, e.g., invoke _System.exit_.
+10. Don't try to initiate contact with Dealer directly. Use *Courier* which has already established
+the connection to Dealer to send requests.
 
-Here are the steps to starting a game a bet:
+IGerty initiates a game by placing a bet. Here are the steps to starting:
 
 1. Send the clear message to the table.
 2. Get the wager from the table. If there isn't a wager, then use the money manager, _click_
@@ -317,44 +311,58 @@ to create one. (Note: you'll have to get the chips from the money manager and us
 chip coordinates to select the amount.
 The chips are 100, 25, and 5 from left to right on the table.)
 3. Invoke the *Courier* to send the bet to Dealer. The returned Hid is the hand
-id for the hand.
-4. Wait for _startGame_. At this point Gerty can only observe the game until 
+id for the hand. Courier is the intermediary on the client between IGerty on the client
+and RealPlayer which is itself the interface to Dealer on the server.
+4. Wait for _startGame_. At this point IGerty can only observe the cards until 
 it is its turn.
-This is an opportunity for Gerty to count cards since every card is sent
-to all players bound for the respective hand identified by the hand id.
-6. When Gerty receives _play_, it must respond with hit, double-down, or stay.
-Hits arrive via the _deal_ message.
-7. After Gerty stays, busts, gets a blackjack, or Charlie,
+This is an opportunity for IGerty to count cards here since every card is sent
+to all players for the respective hand identified by the hand id.
+6. When IGerty receives _play_, it must respond with hit, stay, or if its after the
+initial deal, _doubleDown_ (see below).  IGerty sends these requests to Courier who forwards
+then to RealPlayer who forwards requests to Dealer.
+7. After IGerty stays, busts, gets a blackjack, or Charlie,
 it must wait for _endGame_ when the game is over.
 8. Go to step 1.
 
-To play a double-down, Gerty does the following:
+To play a double-down, IGerty does the following:
 
 1. Invoke _dubble_ on the hand id. This doubles the bet in the hand.
 2. Invoke _dubble_ on Courier. This send the play to the Dealer.
 3. Invoke _dubble_ on the table. This doubles the wager on the table.
 
-Of course, after double-down,  Gerty is done for the game and just waits
+Of course, after double-down, IGerty is done for the game and just waits
 for endGame.
 
-###Side bet plugins
+###Side bet plugin
 A side bet is a bet in addition to the
-the main bet that depends on certain
+the main bet. The side bet usually depends on certain
 card combinations.
-Perhaps the most common one is so-called "insurance" which
-is a bet that the dealer, showing an Ace has a 10 in the hole.
+Perhaps the most famous side bet is so-called "insurance" which
+is a bet that the dealer, showing an Ace as a ten in the hole.
 It pays 2:1 which is even money because you have the main bet
 and the insurance premium. So if you win the side bet you also loose
 the main bet.
 The Basic Strategy does not recommend buying insurance.
-The side bets I'm writing about here, however, are of the non-insurance kind.
+
+The side bets I'm thinking about here are of the non-insurance kind, although
+you might think of them as a kind of insurance.
 The [Wizard of Odds](http://wizardofodds.com/games/blackjack/appendix/8/)
 gives a raft of side bets from which to choose.
 
-From a plugin perspective, there are two interfaces *ISideBetRule* and *ISideBetView*.
+From a plugin perspective, there are two properties in _charlie.props_:
+
+1. charlie.sidebet.rule
+2. charlie.sidebet.view
+
+They correspond to the Java interfaces which the properties must specify
+as fully qualified classes:
+
+1. ISideBetRule
+2. ISideBetView
+
 Dealer invokes ISideBetRule when the hand is done and reports the result to
-IPlayer via the outcome and the side bet amount in the hand id.
-The hand id contains the wager.
+IPlayer via the outcome.
+The hand id contains the wager, both the main bet and the side bet.
 For the main bet, the wager is always positive and the outcome,
 win, loose, etc. determines the P&L.
 In the case of Blackjack or Charlie, the odds have already been calculated in
@@ -364,48 +372,37 @@ in hand id is 10.
 
 For the side bet the P&L, that is, the direction positive or negative,
 is already in the side bet.
-For instance suppose the side bet is a seven on the first card.
+For instance, suppose the side bet is a seven on the first card.
 The player makes two bets: 10 for the main bet and 5 for the side bet of seven
-on the first card
+on the first card.
 The [Wizard of Odds](http://wizardofodds.com/games/blackjack/appendix/8/) says
 seven on first card pays 3:1.
 But the player gets a Blackjack. Dealer pays 3:2 on the 10 and sets
 the bet amount in the hand id to 15.
-Dealer invokes the side rule which finds no seven on first card
+Dealer uses the side rule which finds no seven on first card
 and the side bet rule sets -5 as the side bet.
-IPlayer receives the blackjack message and adds 15 minus 5 or 10 to the bankroll.
-The table invokes _setHid_ on ISideBetView to signal the side bet outcome.
+IPlayer receives the blackjack message and adds 15 minus 5 = 10 to the IPlayer bankroll.
+The table invokes _setHid_ on ISideBetView to indicate the side bet loss.
 
-###Advisor plugins
-This plugin passively monitors the player and when a play discrepancy is
+###Advisor plugin
+This plugin monitors the player and when a play discrepancy is
 detected, it issues a warning.
 For instance, suppose we have Ace vs. 10+6. The Basic Strategy says hit.
-However, if the player presses stay, Advisor offers it advice to hit.
+However, if the player presses stay, IAdvisor offers advice to hit. However,
+IAdvisor only needs to give the advice. IAdvisor does not have to deal with the
+user interface or how to render the advice. That's the job of Charlie.
 
-The plugin, as with the others, is in charlie.props:
+The properties files, _charlie.props_, as with the other plugins declares
+the implementation of IAdvisor with the _charlie.advisor_ property. Again,
+you must specify the fully qualified concrete class name.
 
-    charlie.advisor
+IAdvisor receives the player's hand and the dealer's up-card. IAdvisor
+has to analyze these and return a response that are in the *Play* enum:
 
-As with the other plugins, the class must be the fully qualified
-class name.
-
-The allowed responses are in the *Play* enum:
 * HIT
 * STAY
 * DOUBLE_DOWN
 * SPLIT
+* NONE
 
-Note uppercase is required.
-
-By default is no advising even if Advisor has been successfully loaded.
-The player must enable advising.
-
-
-###A quasi-plugin
-There is one other plugin-like interface: *IUi*.
-*ATable* implements IUi as the interface to Courier.
-While I don't expect any other UI, e.g., a command line interface,
-to be very useful, the interface is there nonetheless.
-
-###Future plugins
-
+If IAdvisor cannot be loaded for some reason, the default is no advice.

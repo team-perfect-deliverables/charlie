@@ -160,6 +160,9 @@ public class GameFrame extends javax.swing.JFrame {
 
         Play advice = advisor.advise(myHand,dealerHand.getCard(1));
 
+        if(advice == Play.NONE)
+            return true;
+        
         if (this.adviseCheckBox.isSelected() && advice != play) {
             Object[] options = {
                 play,
