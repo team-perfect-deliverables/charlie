@@ -27,7 +27,7 @@ import charlie.card.Card;
 import charlie.card.Hand;
 
 /**
- * This is the interface to the advisor
+ * This is the interface to the advisor.
  * @author Ron Coleman
  */
 public interface IAdvisor {
