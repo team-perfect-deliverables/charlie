@@ -40,7 +40,6 @@ import com.googlecode.actorom.Topology;
 import com.googlecode.actorom.remote.ClientTopology;
 import com.googlecode.actorom.remote.ServerTopology;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -81,6 +80,7 @@ public class GameFrame extends javax.swing.JFrame {
     protected boolean connected = false;
     protected final String COURIER_ACTOR = "COURIER";
     protected final String ADVISOR_PROPERTY = "charlie.advisor";
+    protected final String SOUND_EFFECTS_PROPERTY = "charlie.sounds.enabled";
     protected Topology serverTopology;
     protected Topology clientTopology;
     protected final List<Hid> hids = new ArrayList<>();
@@ -90,6 +90,7 @@ public class GameFrame extends javax.swing.JFrame {
     protected boolean dubblable;
     protected IAdvisor advisor;
     protected Hand dealerHand;
+    private Properties props;
 
     /**
      * Constructor
@@ -118,15 +119,35 @@ public class GameFrame extends javax.swing.JFrame {
 
         enablePlay(false);
 
-        loadAdvisor();
+        loadConfig();
+    }
+    
+    protected void loadConfig() {
+        try {
+            // Get the properties
+            props = new Properties();
+            
+            props.load(new FileInputStream("charlie.props"));   
+            
+            // Configure sounds
+            String sounds = props.getProperty(SOUND_EFFECTS_PROPERTY);
+            
+            if(sounds != null && sounds.equals("false")) {
+                SoundFactory.enable(false);
+                LOG.info("sounds disabled");
+            }
+            else
+                SoundFactory.enable(true);
+            
+            // Load the advisor
+            loadAdvisor();
+        } catch(IOException e) {
+            LOG.info("failed to load charlie.props: "+e);
+        }
     }
     
     protected void loadAdvisor() {
         try {
-            Properties props = new Properties();
-            
-            props.load(new FileInputStream("charlie.props"));
-            
             String className = props.getProperty(ADVISOR_PROPERTY);
 
             if (className == null)
@@ -139,9 +160,7 @@ public class GameFrame extends javax.swing.JFrame {
             this.advisor = (IAdvisor) clazz.newInstance();
             
             LOG.info("loaded advisor successfully");              
-        } catch (FileNotFoundException ex) {
-            LOG.error(ex.toString());
-        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             LOG.error(ex.toString());
         }
     }
