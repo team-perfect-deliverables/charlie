@@ -54,7 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * This class implements the courier actor between the client and server.
  * @author Ron Coleman
  */
 public class Courier {  
@@ -66,22 +66,44 @@ public class Courier {
     protected Address myAddress;
     protected HoleCard holeCard;
     
+    /**
+     * Constructor
+     * @param ui User interface
+     */
     public Courier(IUi ui) {
         this.ui = ui;
     }
     
+    /**
+     * Sends the stay request to dealer surrogate on server.
+     * @param hid Hand id
+     */
     public void stay(Hid hid) {
         player.send(new Stay(hid));
     }
     
+    /**
+     * Sends the hit request to dealer surrogate actor on server.
+     * @param hid Hand id
+     */
     public void hit(Hid hid) {
         player.send(new Hit(hid));
     }
     
+    /**
+     * Sends the double-down request to dealer surrogate actor on server.
+     * @param hid Hand id
+     */
     public void dubble(Hid hid) {
         player.send(new DoubleDown(hid));
     }    
     
+    /**
+     * Sends the bet request and creates a new hand id.
+     * @param amt Main bet amount
+     * @param sideAmt Side bet amount
+     * @return Hand id
+     */
     public Hid bet(Integer amt, Integer sideAmt) {
         Hid hid = new Hid(Seat.YOU,amt,sideAmt);
         
@@ -90,6 +112,10 @@ public class Courier {
         return hid;
     }
     
+    /**
+     * Receives a game outcome from dealer surrogate actor on server.
+     * @param outcome Game outcome
+     */
     @OnMessage(type = Outcome.class)
     public void onReceive(Outcome outcome) {
         LOG.info("received outcome = "+outcome);
@@ -113,8 +139,8 @@ public class Courier {
     }
     
     /**
-     * Receives a connected message sent by the house
-     * @param msg 
+     * Receives a connected message sent by the house actor.
+     * @param msg Ready message
      */
     @OnMessage(type = Ready.class)
     public void onReceive(Ready msg) {
@@ -134,6 +160,10 @@ public class Courier {
         }
     }
     
+    /**
+     * Receives game starting message from dealer surrogate actor on server.
+     * @param starting Game start which contains hand ids and shoe size
+     */
     @OnMessage(type = GameStart.class)
     public void onReceive(GameStart starting) { 
         LOG.info("receive starting shoe size = "+starting.shoeSize());
@@ -144,6 +174,10 @@ public class Courier {
         ui.starting(starting.getHids(),starting.shoeSize());
     }
 
+    /**
+     * Receives a card deal from the dealer surrogate actor on the server.
+     * @param deal Deal containing card
+     */
     @OnMessage(type = Deal.class)
     public void onReceive(Deal deal) {      
         Hid hid = deal.getHid();
@@ -160,6 +194,10 @@ public class Courier {
         ui.deal(hid, card, values);
     }
     
+    /**
+     * Receives the play turn.
+     * @param turn Turn
+     */
     @OnMessage(type = Play.class)
     public void onReceive(Play turn) {
         LOG.info("got trun = "+turn.getHid());
@@ -167,23 +205,39 @@ public class Courier {
         ui.turn(turn.getHid());
     }
     
+    /**
+     * Receives the game over signal from the dealer surrogate on the server.
+     * @param ending Game over
+     */
     @OnMessage(type = GameOver.class)
     public void onReceive(GameOver ending) {
         LOG.info("received ending shoe size = "+ending.getShoeSize());
         ui.ending(ending.getShoeSize());
     }
     
+    /**
+     * Receives the shuffling signal from the dealer surrogate on the server.
+     * @param shuffle Shuffle
+     */
     @OnMessage(type = Shuffle.class)
     public void onReceive(Shuffle shuffle) {
         LOG.info("received shuffle");
         ui.shuffling();
     }
     
+    /**
+     * Receives a string message typically for testing purposes.
+     * @param s String
+     */
     @OnMessage(type = String.class)
     public void onReceive(String s) {
         System.out.println(s);
     }
     
+    /**
+     * Sets my address.
+     * @param mine My address
+     */
     public void setMyAddress(Address mine) {
         this.myAddress = mine;
     }
