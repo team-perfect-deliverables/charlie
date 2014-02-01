@@ -122,11 +122,13 @@ public class GameFrame extends javax.swing.JFrame {
         loadConfig();
     }
     
+    /**
+     * Loads the configuration.
+     */
     protected void loadConfig() {
         try {
             // Get the properties
             props = new Properties();
-            
             props.load(new FileInputStream("charlie.props"));   
             
             // Configure sounds
@@ -146,6 +148,9 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Loads the advisor.
+     */
     protected void loadAdvisor() {
         try {
             String className = props.getProperty(ADVISOR_PROPERTY);
@@ -207,14 +212,13 @@ public class GameFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Connects local courier to remote courier (on server).
-     *
+     * Connects local courier to IPlayer (on server).
      * @param panel Panel courier perceives.
      * @return True if connected, false if connect attempt fails.
      */
     private boolean connect(ATable panel) {
         try {
-            // Login to the server to get the house address
+            // Login to the server
             Socket client = new Socket(GAME_SERVER, GAME_SERVER_PORT);
             LOG.info("opened socket to game server " + GAME_SERVER + ":" + GAME_SERVER_PORT);
 
@@ -239,7 +243,7 @@ public class GameFrame extends javax.swing.JFrame {
             house = clientTopology.getActor(addr);
             LOG.info("got house actor");
 
-            // Connect the courier to its ghost surrogate
+            // Connect the courier to the dealer's surrogate on the server
             courier = new Courier(panel);
 
             serverTopology = new ServerTopology(MY_HOST, MY_PORT);

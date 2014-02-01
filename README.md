@@ -50,15 +50,15 @@ However, serious study of Blackjack began in the 1950s with long-running compute
 simulations at IBM to discover the _Basic Strategy_, 
 which gives the rules of "correct" play.
 Issues of how to bet are not covered by the Basic Strategy but
-more _card counting_ something known as [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion)
+_card counting_ and [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion)
 which was also set out in the 1950s for investing, not specifically Blackjack.
 By the 1960s, MIT professor, E.O. Thorpe, published,
 [Beat the Dealer](http://goo.gl/BDQ83E), which for a while caused casinos to
 change the Blackjack game design
 to counteract the Basic Strategy.
 However, the casino tactics backfired as the countermeasures
-slowed the game and turned-off customers who stopped coming and playing.
-It forced casinos to go back to simpler "21" rules and look for other means to thwart
+slowed the game and caused customers to stopped coming and playing.
+It forced casinos to go back to the simpler "21" rules and look for other means to thwart
 player opportunities.
 
 Peter Griffin published [The Theory of Blackjack](http://goo.gl/kHQWjy) in the late 1990s.
@@ -78,20 +78,28 @@ except written in [Scala](www.scala-lang.org) rather
 than Java.
 Unlike Charlie, the Scala version was not
 distributed and had no plugins, GUI, animations, or sounds. It was really
-just a bare bones application for demonstration purposes.
+a bare bones application for demonstration purposes.
 
 ###Basic ideas
-Charlie is uses a client-server architecture organized around the model view controller (MVC) design pattern.
+Charlie is uses a client-server architecture organized around the
+[model view controller](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) design pattern. In
+this pattern the dealer behaves like a controller, the client side like a view
+and the house like the model.
 After a "real" player logs in and establishes a connection, an instance of *House* constructs
 an instance of *Dealer* for the player. The player is bound to this *Dealer* until the player
 logs out.
 
-Charlie is multi-player. However, players do not play one another. Instead,
+Charlie is multi-player. However, players do not typically  play one another. Instead,
 depending on the plugin configuration,
 Dealer may allocate up to two bots that simulate real players.
 If no bots have been configured, the game is "heads up," that is, the player
 against Dealer. Yet Charlie supports multiple dealers concurrently which is
 the multi-player basis.
+
+Having said that, there is no reason of principle that the
+bots could not also be "real" players. This is because Dealer
+interacts with instances of *IPlayer*, the implementation of which
+may be a "real" player or a bot player.
 
 Dealer keeps a copy of player hands and implements the play rules, e.g., determining
 the sequence of players, executing play
