@@ -79,7 +79,7 @@ public class GameFrame extends javax.swing.JFrame {
     protected Courier courier;
     protected ATable panel;
     protected boolean connected = false;
-    protected final String COURIER_ACTOR = "CHANNEL";
+    protected final String COURIER_ACTOR = "COURIER";
     protected final String ADVISOR_PROPERTY = "charlie.advisor";
     protected Topology serverTopology;
     protected Topology clientTopology;
