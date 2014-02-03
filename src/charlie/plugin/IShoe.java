@@ -31,7 +31,7 @@ import charlie.card.Card;
  */
 public interface IShoe {
     /**
-     * Initializes the shoe. Allocating the cards and shuffling them happens
+     * Initializes the shoe. Allocating the cards and shuffling them, if needed.
      * here.
      */
     public void init();
