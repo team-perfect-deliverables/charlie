@@ -74,8 +74,9 @@ public class Advisor implements IAdvisor
     @Override
     public Play advise(Hand myHand, Card upCard)
     {
-        //Set default return
-        Play toReturn = Play.STAY;
+        //Set default return to SPLIT for testing
+        //If it says SPLIT, it did not have any advice
+        Play toReturn = Play.SPLIT;
 
         //Get the value of the hand with hard and soft aces
         int softValue = myHand.getValues()[Constant.HAND_SOFT_VALUE];
