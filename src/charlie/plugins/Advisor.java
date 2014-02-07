@@ -89,10 +89,17 @@ public class Advisor implements IAdvisor
         //If our hand has at least one ace, we have to handle it differently.
         if(hasAce)
         {
-            //If we've already hit once, handle the aces by the soft-value of the hand
+            //If we've already hit once, handle the aces by the highest value of the hand
             if(myHand.size() > 2)
             {
-                toReturn = byValue[softValue][upCard.value()];
+                if(softValue <= 21) 
+                {
+                    toReturn = byValue[softValue][upCard.value()];
+                }
+                else
+                {
+                    toReturn = byValue[literalValue][upCard.value()];
+                }
             }
             //If we haven't hit yet, handle it by the value of the non-ace card
             //If you have two aces, one gets treated as a 1
