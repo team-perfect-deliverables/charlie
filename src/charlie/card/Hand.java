@@ -148,7 +148,7 @@ public class Hand implements Serializable {
     
     /**
      * Revalues the hand.
-     * This method uses all cards, including the hole hard. The method is
+     * This method uses all cards, including the hole card. The method is
      * typically invoked when the dealer plays, that is, upon showing the
      * hole card.
      */
