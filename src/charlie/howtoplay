@@ -1,0 +1,46 @@
+Need to consider hand value AND specific hands
+
+No matter the dealer's card:
+
+If hand value <= 8, ALWAYS HIT
+If hand value >= 18 ALWAYS STAY
+If hand value == 17 and you have no aces ALWAYS STAY
+If A-A, ALWAYS HIT, then go on value (This is a guess, see below)
+
+Depending on dealer's card and NO ACES:
+    2  3  4  5  6  7  8  9  10 A
+
+ 9  H  D  D  D  D  H  H  H  H  H
+10  D  D  D  D  D  D  D  D  H  H
+11  D  D  D  D  D  D  D  D  D  H
+12  H  H  S  S  S  H  H  H  H  H
+13  S  S  S  S  S  H  H  H  H  H
+14  (Same as 13)
+15  (Same as 13)
+16  (Same as 13)
+
+With Aces (seems that you should do the below for the first card, then go based on value):
+
+A-A  (Always hit, really fucked up, depends on third card, then on value... I think)
+    -> Third Card
+        -> 9 - STAY (21)
+        -> 8 - STAY (20) - This is a guess. Is is better to have a 20 hand or a 10 hand?
+        -> 7 - STAY (19) - This is a guess. Is is better to have a 19 hand or a  9 hand?
+        -> 6 - STAY (18) - This is a guess. Is is better to have a 18 hand or a  8 hand?
+        -> 5 - STAY (17) - This is a guess. Is is better to have a 17 hand or a  7 hand?
+        -> 4 - HIT  (16) - ""
+        -> 3 - HIT  (15) - ""
+        -> 2 - HIT  (14) - ""
+        -> A - HIT  (13) - ""
+
+A-2
+A-3  (Same as A-2)
+A-4
+A-5  (Same as A-4)
+A-6
+A-7
+A-8
+A-9  (Same as A-8)
+A-10 (Same as A-8)
+
+
