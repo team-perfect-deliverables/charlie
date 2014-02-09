@@ -23,6 +23,7 @@
 package charlie.card;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * This class implements a card which is stored en mass in a shoe.
@@ -108,7 +109,33 @@ public class Card implements Serializable {
         else
             return "?";
     }
-    
+   
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj != null || !(obj instanceof Card))
+        {
+            return false;
+        }
+        else
+        {
+            Card cardObj = (Card) obj;
+            return (cardObj.suit == this.suit) && (cardObj.rank == this.rank);
+        }
+    }
+
+    /*
+     * NetBeans generated method.
+     */
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 59 * hash + this.rank;
+        hash = 59 * hash + Objects.hashCode(this.suit);
+        return hash;
+    }
+     
     /**
      * Converts card including suit and name to string.
      * @return Card as a string
