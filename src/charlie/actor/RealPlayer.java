@@ -122,20 +122,10 @@ public class RealPlayer implements IPlayer {
         else
             LOG.error("received unknown request: "+request+" for hand = "+hand);
     }
-    
-//    @OnMessage(type = Stay.class)
-//    public void onReceive(Stay request) {      
-//        dealer.stay(this, request.getHid());
-//    }
-//    
-//    @OnMessage(type = DoubleDown.class)
-//    public void onReceive(DoubleDown request) {       
-//        dealer.doubleDown(this, request.getHid());
-//    }
 
     /**
      * Sets my address since courier doesn't know where it is.
-     * @param myAddress My address
+     * @param mine My address
      */
     public void setMyAddress(Address mine) {
         this.myAddress = mine;
@@ -152,7 +142,6 @@ public class RealPlayer implements IPlayer {
     /**
      * Sends break notice to courier.
      * @param hid Hand id
-     * @param bet Bet amount lost
      */
     @Override
     public void bust(Hid hid) {
@@ -162,7 +151,6 @@ public class RealPlayer implements IPlayer {
     /**
      * Sends win notice to courier.
      * @param hid Hand id
-     * @param bet Bet amount won
      */
     @Override
     public void win(Hid hid) {
@@ -172,7 +160,6 @@ public class RealPlayer implements IPlayer {
     /**
      * Sends lost notice to courier.
      * @param hid Hand id
-     * @param bet Bet amount lost
      */
     @Override
     public void lose(Hid hid) {
@@ -238,7 +225,6 @@ public class RealPlayer implements IPlayer {
     /**
      * Sends blackjack notice to courier.
      * @param hid Hand id
-     * @param bet Bet amount won
      */
     @Override
     public void blackjack(Hid hid) {
@@ -248,7 +234,6 @@ public class RealPlayer implements IPlayer {
     /**
      * Sends Charlie notice to courier.
      * @param hid Hand id
-     * @param bet Bet amount won
      */
     @Override
     public void charlie(Hid hid) {
