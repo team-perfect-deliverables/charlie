@@ -27,97 +27,121 @@ import java.util.Objects;
 
 /**
  * This class implements a card which is stored en mass in a shoe.
+ *
  * @author Ron Coleman
  */
-public class Card implements Serializable {
-    public enum Suit { SPADES, CLUBS, HEARTS, DIAMONDS };
+public class Card implements Serializable
+{
+
+    public enum Suit
+    {
+
+        SPADES, CLUBS, HEARTS, DIAMONDS
+    };
     public final static int ACE = 1;
     public final static int JACK = 11;
     public final static int QUEEN = 12;
     public final static int KING = 13;
     protected final int rank;
     private final Suit suit;
-    
+
     /**
      * Copy constructor
+     *
      * @param card Card to copy
      */
-    public Card(Card card) {
+    public Card(Card card)
+    {
         this.suit = card.suit;
         this.rank = card.rank;
     }
-    
+
     /**
      * Constructor
+     *
      * @param rank Rank
      * @param suit Suit
      */
-    public Card(Integer rank,Suit suit) {
+    public Card(Integer rank, Suit suit)
+    {
         this.suit = suit;
         this.rank = rank;
     }
-    
+
     /**
      * Gets card value.
+     *
      * @return Integer value
      */
-    public Integer value() {
+    public Integer value()
+    {
         // All face cards, J, Q, K, have value 10
-        if(isFace())
+        if (isFace())
+        {
             return 10;
-        
+        }
+
         // Otherwise, the value is the card rank
         return rank;
     }
-    
+
     /**
      * Tests if the card is an ace.
+     *
      * @return True if card is an ace, false otherwise.
      */
-    public boolean isAce() {
+    public boolean isAce()
+    {
         return rank == 1;
     }
-    
+
     /**
      * Tests if the card has a face, J, Q, K.
+     *
      * @return True if card has a face, false otherwise.
      */
-    public boolean isFace() {
-        return rank >=11 && rank <= 13;
+    public boolean isFace()
+    {
+        return rank >= 11 && rank <= 13;
     }
-    
+
     /**
      * Gets card name
+     *
      * @return Number (e.g., 2, 3, etc.) or face (A, J, Q, K)
      */
-    public String getName() {
-        if(!isFace() && !isAce())
+    public String getName()
+    {
+        if (!isFace() && !isAce())
+        {
             return rank + "";
-        
-        if(rank == ACE)
+        }
+
+        if (rank == ACE)
+        {
             return "A";
-        
-        else if(rank == JACK)
+        } else if (rank == JACK)
+        {
             return "J";
-        
-        else if(rank == QUEEN)
+        } else if (rank == QUEEN)
+        {
             return "Q";
-        
-        else if(rank == KING)
+        } else if (rank == KING)
+        {
             return "K";
-        
-        else
+        } else
+        {
             return "?";
+        }
     }
-   
+
     @Override
     public boolean equals(Object obj)
     {
-        if(obj != null || !(obj instanceof Card))
+        if (obj == null || !(obj instanceof Card))
         {
             return false;
-        }
-        else
+        } else
         {
             Card cardObj = (Card) obj;
             return (cardObj.suit == this.suit) && (cardObj.rank == this.rank);
@@ -132,16 +156,18 @@ public class Card implements Serializable {
     {
         int hash = 7;
         hash = 59 * hash + this.rank;
-        hash = 59 * hash + Objects.hashCode(this.suit);
+        hash = 59 * hash + this.suit.hashCode();
         return hash;
     }
-     
+
     /**
      * Converts card including suit and name to string.
+     *
      * @return Card as a string
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         return suit.toString().charAt(0) + "" + getName();
     }
 }
