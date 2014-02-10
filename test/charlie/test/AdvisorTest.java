@@ -13,7 +13,7 @@ import org.junit.Test;
 public class AdvisorTest
 {
 
-    private final int RUN_NUMBER = 5000000;
+    private final int RUN_NUMBER = 5;
     private Advisor advisor;
 
     @Before
@@ -33,26 +33,28 @@ public class AdvisorTest
             for (int i = 0; i < RUN_NUMBER; i++)
             {
                 hand = new Hand(new Hid(Seat.YOU));
-                hand.hit(RandomCardFactory.getRandomCard());
-                hand.hit(RandomCardFactory.getRandomCard());
-                upCard = RandomCardFactory.getRandomCard();
+                hand.hit(RandomCardGenerator.getRandomCard());
+                hand.hit(RandomCardGenerator.getRandomCard());
+                upCard = RandomCardGenerator.getRandomCard();
                 advisor.advise(hand, upCard);
-                
-                hand.hit(RandomCardFactory.getRandomCard());
-                while(hand.getValue() < 21)
+
+                hand.hit(RandomCardGenerator.getRandomCard());
+                while (hand.getValue() < 21)
                 {
                     advisor.advise(hand, upCard);
-                    hand.hit(upCard);
+                    hand.hit(RandomCardGenerator.getRandomCard());
                 }
+
+                System.out.println("Hand: " + hand);
+                System.out.println("Up Card: " + upCard);
             }
 
         } catch (Exception e)
         {
             System.out.println("Hand: " + hand);
             System.out.println("Up Card: " + upCard);
-            e.printStackTrace();
-            fail("The method threw an exception: \n");
-            
+            fail("The method threw an exception: \n" + e);
+
         }
 
         assertTrue(true);

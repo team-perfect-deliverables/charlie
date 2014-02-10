@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package charlie.plugins;
 
 import charlie.util.Constant;
@@ -12,8 +7,9 @@ import charlie.plugin.IAdvisor;
 import charlie.util.Play;
 
 /**
+ * An advisor plugin for "Charlie" that advises the correct way to play. 
  *
- * @author jacob
+ * @author Jacob Leach
  */
 public class Advisor implements IAdvisor
 {   
@@ -92,6 +88,7 @@ public class Advisor implements IAdvisor
             //If we've already hit once, handle the aces by the highest value of the hand
             if(myHand.size() > 2)
             {
+                System.out.println(softValue + "-" + literalValue);
                 if(softValue <= 21) 
                 {
                     toReturn = byValue[softValue][upCard.value()];
@@ -116,6 +113,4 @@ public class Advisor implements IAdvisor
 
         return toReturn;
     }
-    
-
 }
