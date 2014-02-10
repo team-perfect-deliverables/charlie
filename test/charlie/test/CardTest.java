@@ -30,8 +30,8 @@ public class CardTest
         assertFalse("", b.equals(a));   //Different calling object
         assertFalse("", a.equals(c));   //Same rank, different rank
         assertFalse("", c.equals(a));   //Different calling object
-        assertFalse("", d.equals(a));   //Null object
-        
+        assertFalse("", a.equals(d));   //Null object
+
         assertTrue("", a.equals(a));    //Same object
         assertTrue("", a.equals(e));    //Same rank, suit
     }
