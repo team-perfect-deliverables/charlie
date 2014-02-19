@@ -128,7 +128,7 @@ public class Hand implements Serializable {
     
     /**
      * Hits the hand with a card.
-     * @param card 
+     * @param card Card
      */
     public void hit(Card card) {
         this.cards.add(card);
