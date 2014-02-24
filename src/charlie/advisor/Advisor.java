@@ -17,7 +17,7 @@ public class Advisor implements IAdvisor
     private final Play H = Play.HIT;
     private final Play D = Play.DOUBLE_DOWN;
     private final Play S = Play.STAY;
-    private final Play p = Play.SPLIT;
+    private final Play P = Play.SPLIT;
  
     /*
      * This will be accessed by using the value of the hand as the index for the first array.
@@ -70,8 +70,8 @@ public class Advisor implements IAdvisor
                         };
     
     private final Play[][] byPair = 
-                        {{}                                   //Null array to fix indexing 
-                        {{},                                  //If we have a one, that's an ace
+                        {{},                                   //Null array to fix indexing 
+                        {},                                  //If we have a one, that's an ace
                         {null, P, P, P, P, P, P, H, H, H, H}, //2
                         {null, P, P, P, P, P, P, H, H, H, H}, //3
                         {null, H, H, H, P, P, H, H, H, H, H}, //4
@@ -80,14 +80,13 @@ public class Advisor implements IAdvisor
                         {null, P, P, P, P, P, P, H, H, H, H}, //7
                         {null, P, P, P, P, P, P, P, P, P, P}, //8
                         {null, P, P, P, P, P, S, P, P, S, S}, //9
-                        {null, S, S, S, S, S, S, S, S, S, S}, //10
-                        
+                        {null, S, S, S, S, S, S, S, S, S, S}  //10
+                        };
     @Override
     public Play advise(Hand myHand, Card upCard)
     {
-        //Set default return to SPLIT for testing
-        //If it says SPLIT, it did not have any advice
-        Play toReturn = Play.SPLIT;
+        //Set default return to NONE for testing
+        Play toReturn = Play.NONE;
 
         //Get the value of the hand with hard and soft aces
         int softValue = myHand.getValues()[Constant.HAND_SOFT_VALUE];
@@ -96,34 +95,38 @@ public class Advisor implements IAdvisor
 
         //Check if the hand has any aces
         boolean hasAce = softValue != literalValue;
+
+        //Check if the hand has a pair
+        boolean isPair = myHand.getCard(0).toString().equals(myHand.getCard(1).toString()); 
         
-        //If our hand has at least one ace, we have to handle it differently.
-        if(hasAce)  
+        //If this is our initial two cards
+        if(myHand.size() == 2)
         {
-            //If we've already hit once, handle the aces by the highest value of the hand
-            if(myHand.size() > 2)
-            {
-                if(softValue <= 21) 
-                {
-                    toReturn = byValue[softValue][upCard.value()];
-                }
-                else
-                {
-                    toReturn = byValue[literalValue][upCard.value()];
-                }
-            }
-            //If we haven't hit yet, handle it by the value of the non-ace card
-            //If you have two aces, one gets treated as a 1
-            else
+            if(hasAce)
             {
                 toReturn = byAces[valueWithoutAces][upCard.value()]; 
-            }   
+            }
+            else if(isPair)
+            {
+                toReturn = byPair[myHand.getCard(0).value()][upCard.value()];
+            }
+            else
+            {
+                toReturn = byValue[literalValue][upCard.value()]; 
+            }
         }
-        //There are no aces
-        else 
+        //If we have already hit
+        else
         {
-            toReturn = byValue[literalValue][upCard.value()]; 
-        } 
+            if(softValue <= 21) 
+            {
+                toReturn = byValue[softValue][upCard.value()];
+            }
+            else
+            {
+                toReturn = byValue[literalValue][upCard.value()];
+            }
+        }
 
         return toReturn;
     }
