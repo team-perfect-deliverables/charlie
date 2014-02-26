@@ -10,7 +10,7 @@ import charlie.card.Card;
 import charlie.card.Hand;
 import charlie.card.Hid;
 import charlie.dealer.Seat;
-import charlie.plugins.Advisor;
+import charlie.advisor.Advisor;
 import charlie.util.Play;
 import org.junit.After;
 import org.junit.AfterClass;
