@@ -72,14 +72,14 @@ public class Advisor implements IAdvisor
     private final Play[][] byPair = 
                         {{},                                   //Null array to fix indexing 
                         {},                                  //If we have a one, that's an ace
-                        {null, P, P, P, P, P, P, H, H, H, H}, //2
-                        {null, P, P, P, P, P, P, H, H, H, H}, //3
+                        {null, H, P, P, P, P, P, P, H, H, H}, //2
+                        {null, H, P, P, P, P, P, P, H, H, H}, //3
                         {null, H, H, H, P, P, H, H, H, H, H}, //4
-                        {null, D, D, D, D, D, D, D, D, H, H}, //5
-                        {null, P, P, P, P, P, H, H, H, H, H}, //6
-                        {null, P, P, P, P, P, P, H, H, H, H}, //7
+                        {null, H, D, D, D, D, D, D, D, D, H}, //5
+                        {null, H, P, P, P, P, P, H, H, H, H}, //6
+                        {null, H, P, P, P, P, P, P, H, H, H}, //7
                         {null, P, P, P, P, P, P, P, P, P, P}, //8
-                        {null, P, P, P, P, P, S, P, P, S, S}, //9
+                        {null, S, P, P, P, P, P, S, P, P, S}, //9
                         {null, S, S, S, S, S, S, S, S, S, S}  //10
                         };
     @Override
