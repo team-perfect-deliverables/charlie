@@ -90,8 +90,8 @@ public class Hand implements Serializable {
     }
     
     /**
-     * Tests if hand has a blackjack.
-     * @return True if hand has A+10
+     * Tests if hand is a Charlie.
+     * @return True if hand has 5 cards and the value of them is less than 21.
      */    
     public boolean isCharlie() {
         if(cards.size() == 5 && getValue() <= 21)
@@ -148,7 +148,7 @@ public class Hand implements Serializable {
     
     /**
      * Revalues the hand.
-     * This method uses all cards, including the hole hard. The method is
+     * This method uses all cards, including the hole card. The method is
      * typically invoked when the dealer plays, that is, upon showing the
      * hole card.
      */
