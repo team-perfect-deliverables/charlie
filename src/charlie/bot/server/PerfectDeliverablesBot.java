@@ -38,7 +38,6 @@ public class PerfectDeliverablesBot implements IBot
             public void run()
             {
                 Play toPlay = adviser.advise(_hand, _upCard);
-                System.out.println("**************************************************: " + toPlay);
                 try
                 {
                     Random random = new Random();
@@ -72,7 +71,6 @@ public class PerfectDeliverablesBot implements IBot
         //If it is our hand, play
         if (hid.getSeat() == _seat)
         {
-            System.out.println("HUH--==================================================================");
             doPlay();
         }
     }
@@ -113,7 +111,6 @@ public class PerfectDeliverablesBot implements IBot
             //If my hand is not broke, and it is my turn, play
             if (!_hand.isBroke() && _turn)
             {
-                System.out.println("WHATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTt");
                 doPlay();
             }
         }
