@@ -126,6 +126,12 @@ public class Advisor implements IAdvisor
             {
                 toReturn = byValue[literalValue][upCard.value()];
             }
+            
+            //Can not double down after first card
+            if(toReturn == D)
+            {
+                toReturn = H;
+            }
         }
 
         return toReturn;
