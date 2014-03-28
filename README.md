@@ -50,7 +50,8 @@ which gives the rules of "correct" play.
 Issues of how to bet are not covered by the Basic Strategy but
 [card counting](http://en.wikipedia.org/wiki/Card_counting).
 [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion),
-which was formulated in the 1950s for investing can also be applied to betting and Blackjack.
+was formulated in the 1950s for investing and can also be applied, in addition
+to card counting, as an optimal betting strategy.
 By the 1960s, MIT professor, E.O. Thorpe, published
 [Beat the Dealer](http://goo.gl/BDQ83E), which for a while caused casinos to
 change the Blackjack game design
