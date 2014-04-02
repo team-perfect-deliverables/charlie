@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -712,10 +713,12 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         int x = e.getX();
         int y = e.getY();
 
-        monies.get(Seat.YOU).click(x, y);
+        // Place main bet on left-click
+        if(SwingUtilities.isLeftMouseButton(e))
+            monies.get(Seat.YOU).click(x, y);
         
-        /// Ditto for the side bet system
-        if(sideBetView != null)
+        // Ditto for the side bet system on right-click
+        if(sideBetView != null && SwingUtilities.isRightMouseButton(e))
             sideBetView.click(x, y);
     }
 
