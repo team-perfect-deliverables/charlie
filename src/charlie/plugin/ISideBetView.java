@@ -52,14 +52,14 @@ public interface ISideBetView {
      * If the side bet amount is 0, there was no side bet.
      * @param hid Hand id
      */
-    public void reportOutcome(Hid hid);
+    public void ending(Hid hid);
     
     /**
      * Resets the side bet on the UI. Side bets don't "stick" like
      * regular bets but are cleared after each game. Thus, the player
      * must continually place a side bet if they want to make one.
      */
-    public void reset();
+    public void starting();
     
     /**
      * Gets the side bet amount in dollars

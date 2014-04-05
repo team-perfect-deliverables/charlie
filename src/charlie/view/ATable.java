@@ -161,7 +161,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         }
         
         if(sideBetView != null)
-            sideBetView.reset();     
+            sideBetView.starting();     
         
         holeCard = null;
         
@@ -464,7 +464,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         }
         
         if(sideBetView != null)
-            sideBetView.reportOutcome(hid);
+            sideBetView.ending(hid);
         
         if(gerty != null)
             gerty.bust(hid);
@@ -490,7 +490,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         winnerCount++;
         
         if(sideBetView != null)
-            sideBetView.reportOutcome(hid);
+            sideBetView.ending(hid);
         
         if(gerty != null)
             gerty.win(hid);
@@ -516,7 +516,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         looserCount++;
         
         if(sideBetView != null)
-            sideBetView.reportOutcome(hid);
+            sideBetView.ending(hid);
         
         if(gerty != null)
             gerty.lose(hid);
@@ -542,7 +542,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         ++pushCount;
         
         if(sideBetView != null)
-            sideBetView.reportOutcome(hid);
+            sideBetView.ending(hid);
         
         if(gerty != null)
             gerty.push(hid);
@@ -572,7 +572,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         }
         
         if(sideBetView != null)
-            sideBetView.reportOutcome(hid);
+            sideBetView.ending(hid);
         
         if(gerty != null)
             gerty.blackjack(hid);
@@ -600,7 +600,7 @@ public final class ATable extends JPanel implements Runnable, IUi, MouseListener
         winnerCount++;
         
         if(sideBetView != null)
-            sideBetView.reportOutcome(hid);
+            sideBetView.ending(hid);
         
         if(gerty != null)
             gerty.charlie(hid);

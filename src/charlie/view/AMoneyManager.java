@@ -192,6 +192,14 @@ public class AMoneyManager {
     }    
 
     /**
+     * Gets the bankroll.
+     * @return Bankroll
+     */
+    public double getBankroll() {
+        return bankroll.getAmount();
+    }
+
+    /**
      * Sets the bankroll
      * @param amt Amount
      */
