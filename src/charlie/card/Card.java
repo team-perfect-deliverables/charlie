@@ -108,6 +108,22 @@ public class Card implements Serializable {
         else
             return "?";
     }
+
+    /**
+     * Gets the card rank.
+     * @return Rank
+     */
+    public int getRank() {
+        return rank;
+    }
+
+    /**
+     * Gets the suit.
+     * @return Suit
+     */
+    public Suit getSuit() {
+        return suit;
+    }
     
     /**
      * Converts card including suit and name to string.

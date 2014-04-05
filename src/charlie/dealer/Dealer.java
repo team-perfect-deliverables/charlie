@@ -655,9 +655,7 @@ public class Dealer implements Serializable {
         
         if(className == null) 
             return;
-        
-        LOG.info("attempting to load side bet rule = "+SIDE_BET_RULE_PROPERTY);
-        
+              
         Class<?> clazz;
         try {
             clazz = Class.forName(className);
@@ -667,7 +665,7 @@ public class Dealer implements Serializable {
             LOG.info("successfully loaded side bet rule");
             
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            LOG.error("caught exception: " + ex);
+            LOG.error("side bet rule failed to load: " + ex);
         }       
     }
 }
