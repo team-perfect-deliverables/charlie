@@ -33,7 +33,7 @@ import java.util.List;
 public class Cashier {
     public enum Chip { DOLLAR, FIVE, TWENTY_FIVE, HUNDRED };
     
-    private static HashMap<Chip,Integer> exchange = new HashMap<Chip,Integer>( )
+    private static final HashMap<Chip,Integer> exchange = new HashMap<Chip,Integer>( )
     {{
         put(Chip.DOLLAR,1);
         put(Chip.FIVE,5);

@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import java.util.logging.Level;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import org.slf4j.Logger;

@@ -46,7 +46,7 @@ public interface ISideBetView {
     public void click(int x, int y);
     
     /**
-     * Reports side bet outcome.
+     * Reports side bet outcome at the end of the game for hand with hand id.
      * If the side bet amount is &lt;0, the player lost.
      * If the side bet amount is >&gt;0 the player won.
      * If the side bet amount is 0, there was no side bet.
@@ -55,9 +55,7 @@ public interface ISideBetView {
     public void ending(Hid hid);
     
     /**
-     * Resets the side bet on the UI. Side bets don't "stick" like
-     * regular bets but are cleared after each game. Thus, the player
-     * must continually place a side bet if they want to make one.
+     * Indicates new game starting.
      */
     public void starting();
     
