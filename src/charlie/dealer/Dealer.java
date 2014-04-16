@@ -77,7 +77,7 @@ public class Dealer implements Serializable {
     
     /**
      * Constructor
-     * @param house House actor which launched us.
+     * @param house House actor which launched dealer.
      */
     public Dealer(House house) {
         this.house = house;
@@ -99,7 +99,7 @@ public class Dealer implements Serializable {
     
     /**
      * Receives a bet request from a "real" you. Don't invoke this method
-     * for a bot. Bots are instantiated directly by this class.
+     * for a bot. Bots are spawned by this method.
      * @param you Real player
      * @param hid Hand id
      */
@@ -113,12 +113,12 @@ public class Dealer implements Serializable {
 
         // Insert the player -- IN THIS ORDER
         // B9 Robby
-        sit("b9",Seat.RIGHT);
+        spawnBot("b9",Seat.RIGHT);
         
-        sit(you,hid);
+        sitPlayer(you,hid);
         
         // Nexus 6 Rachel
-        sit("n6",Seat.LEFT);
+        spawnBot("n6",Seat.LEFT);
       
         // We'll start with this sequence number when playing hands
         handSeqIndex = 0;        
@@ -135,7 +135,7 @@ public class Dealer implements Serializable {
      * @param you You player
      * @param yours Your hand id
      */
-    protected void sit(IPlayer you,Hid yours) {
+    protected void sitPlayer(IPlayer you,Hid yours) {
         handSequence.add(yours);
         playerSequence.add(you); 
         players.put(yours, you);
@@ -143,12 +143,12 @@ public class Dealer implements Serializable {
     }
     
     /**
-     * Spawns a full-fledged bot. 
+     * Spawns a a bot at the table. 
      * @param name Bot name
      * @param seat Bot seat at table
      * @return A bot
      */
-    protected IBot sit(String name, Seat seat) {
+    protected IBot spawnBot(String name, Seat seat) {
         if(seat != Seat.LEFT && seat != Seat.RIGHT) {
             LOG.error("can't seat bot at seat = "+seat);
             return null;
@@ -205,15 +205,19 @@ public class Dealer implements Serializable {
     /**
      * Shuffles the shoe, if necessary.
      */
-    protected void shuffle() throws InterruptedException {
+    protected void shuffle()  {
         if (shoe.shuffleNeeded()) {
-            shoe.shuffle();
-
-            for (IPlayer player : playerSequence) {
-                player.shuffling();
+            try {
+                shoe.shuffle();
+                
+                for (IPlayer player : playerSequence) {
+                    player.shuffling();
+                }
+                
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                
             }
-            
-            Thread.sleep(3000);
         }   
     }
     
@@ -284,8 +288,8 @@ public class Dealer implements Serializable {
             }
             else
                 goNextHand();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+            
         }
     }
     
@@ -299,7 +303,6 @@ public class Dealer implements Serializable {
     /**
      * Deals a round of cards to everyone.
      * @param hids Hand ids
-     * @param dealerCard The dealer card, up or hole.
      */
     protected void round(List<Hid> hids) {
         try {
@@ -340,15 +343,15 @@ public class Dealer implements Serializable {
                 }
             }            
         }
-        catch(Exception e) {
-            e.printStackTrace();
+        catch(InterruptedException e) {
+            
         }
     }
     
     /**
      * Hits player hand upon request only AFTER the initial rounds. 
      * @param player Player requesting a hit.
-     * @param hid_ Player's hand id
+     * @param hid Player's hand id
      */
     public void hit(IPlayer player,Hid hid) {
         // Validate the request
@@ -396,7 +399,7 @@ public class Dealer implements Serializable {
     /**
      * Stands down player hand upon request only AFTER the initial rounds. 
      * @param player Player requesting a hit.
-     * @param hid_ Player's hand id
+     * @param hid Player's hand id
      */
     public void stay(IPlayer player, Hid hid) {
         // Validate the request
@@ -413,7 +416,7 @@ public class Dealer implements Serializable {
     /**
      * Double down player hand upon request only AFTER the initial rounds. 
      * @param player Player requesting a hit.
-     * @param hid_ Player's hand id
+     * @param hid Player's hand id
      */    
     public void doubleDown(IPlayer player, Hid hid) {
         // Validate the request
@@ -498,7 +501,7 @@ public class Dealer implements Serializable {
             player.deal(dealerHand.getHid(), null, dealerHand.getValues());
      
         // Dealer only plays if there is someone standing and dealer doesn't
-        // isBlackjack
+        // have Blackjack
         if (handsStanding() && !dealerHand.isBlackjack()) {
             // Draw until we reach (any) 17 or we break
             while (dealerHand.getValue() < 17) {
@@ -535,8 +538,8 @@ public class Dealer implements Serializable {
                 for (IPlayer player: playerSequence)
                     player.lose(hid);
             }
-            // If hand less than dealer and dealer isBroke OR...
-            //    hand greater than dealer and dealer NOT isBroke => hand WON
+            // If hand less than dealer and dealer broke OR...
+            //    hand greater than dealer and dealer NOT broke => hand WON
             else if(hand.getValue() < dealerHand.getValue() && dealerHand.isBroke() ||
                     hand.getValue() > dealerHand.getValue() && !dealerHand.isBroke()) {
                 
@@ -552,8 +555,6 @@ public class Dealer implements Serializable {
                 for (IPlayer player: playerSequence)
                     player.push(hid);
             }
-
-
         }
         
         // Wrap up the game
@@ -628,7 +629,7 @@ public class Dealer implements Serializable {
     
     /**
      * Validates a hand.
-     * @param hid_ Hand
+     * @param hid Hand
      * @return True if had is valid, false otherwise
      */
     protected Hand validate(Hid hid) {
@@ -654,9 +655,7 @@ public class Dealer implements Serializable {
         
         if(className == null) 
             return;
-        
-        LOG.info("attempting to load side bet rule = "+SIDE_BET_RULE_PROPERTY);
-        
+              
         Class<?> clazz;
         try {
             clazz = Class.forName(className);
@@ -666,7 +665,7 @@ public class Dealer implements Serializable {
             LOG.info("successfully loaded side bet rule");
             
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            LOG.error("caught exception: " + ex);
+            LOG.error("side bet rule failed to load: " + ex);
         }       
     }
 }

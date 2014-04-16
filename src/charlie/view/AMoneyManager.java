@@ -93,7 +93,7 @@ public class AMoneyManager {
         for(int i=0; i < amounts.length; i++) {
             Image up = new ImageIcon(Constant.DIR_IMGS+UP_FILES[i]).getImage();
             Image down = new ImageIcon(Constant.DIR_IMGS+DOWN_FILES[i]).getImage();
-            buttons.add(new ChipButton(up,down,HOME_X+xoff,HOME_Y));
+            buttons.add(new ChipButton(amounts[i],up,down,HOME_X+xoff,HOME_Y));
             xoff += (width + 7);
         }
         
@@ -190,6 +190,14 @@ public class AMoneyManager {
     public void decrease(Double amt) {
         bankroll.decrease(amt);
     }    
+
+    /**
+     * Gets the bankroll.
+     * @return Bankroll
+     */
+    public double getBankroll() {
+        return bankroll.getAmount();
+    }
 
     /**
      * Sets the bankroll

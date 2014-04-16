@@ -50,7 +50,6 @@ public class ADealerHand extends AHand {
     /**
      * Hits hand with a card.
      * @param card Card
-     * @return True
      */
     @Override
     public void hit(ACard card) {

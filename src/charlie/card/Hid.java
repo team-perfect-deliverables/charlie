@@ -79,6 +79,10 @@ public class Hid implements Serializable {
         }
     }
     
+    /**
+     * Constructor
+     * @param seat Seat
+     */
     public Hid(Seat seat) {
         this(seat,0.0,0.0);
     }
@@ -140,7 +144,7 @@ public class Hid implements Serializable {
 
     /**
      * Sets the side bet amount.
-     * @param side Side bet amount
+     * @param sideAmt Side bet amount
      */
     public void setSideAmt(double sideAmt) {
         this.sideAmt = sideAmt;
@@ -178,9 +182,6 @@ public class Hid implements Serializable {
             return false;
         }
         final Hid other = (Hid) obj;
-        if (!Objects.equals(this.key, other.key)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.key, other.key);
     }
 }

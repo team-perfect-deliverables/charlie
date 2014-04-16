@@ -24,7 +24,6 @@ package charlie.plugin;
 
 import charlie.actor.Courier;
 import charlie.view.AMoneyManager;
-import charlie.view.ATable;
 import java.awt.Graphics2D;
 
 /**
@@ -32,9 +31,36 @@ import java.awt.Graphics2D;
  * @author Ron Coleman
  */
 public interface IGerty extends IPlayer {
-    public void setTable(ATable table);
+    /**
+     * Tells bot it's time to start the auto-pilot.
+     */
+    public void go( );
+    
+    /**
+     * Tells bot it's time to stop the auto-pilot.
+     */
+    public void halt( );
+    
+    /**
+     * Sets the courier through which bets are placed.
+     * @param courier Courier
+     */
     public void setCourier(Courier courier);
+    
+    /**
+     * Sets the money manager for placing bets.
+     * @param mi 
+     */
     public void setMoneyManager(AMoneyManager mi);
+    
+    /**
+     * Updates the bot.
+     */
     public void update();
+    
+    /**
+     * Renders the bot.
+     * @param g Graphics context.
+     */
     public void render(Graphics2D g);
 }

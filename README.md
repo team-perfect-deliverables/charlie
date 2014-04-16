@@ -3,7 +3,8 @@ Everyone probably knows about the winning hand, Blackjack.
 Then, there's the less famous, less probable but more profitable,
 *Charlie* which is a hand of five cards that does not break.
 
-Charlie is an extensible, actor-based Blackjack system for teaching purposes.
+Charlie is an extensible, actor-based Blackjack system for teaching purposes
+developed mostly by me.
 It is a client-server, multiplayer system
 that runs on multiple hosts and can exploit
 [hyper-threading](http://en.wikipedia.org/wiki/Hyper-threading).
@@ -11,16 +12,15 @@ that runs on multiple hosts and can exploit
 Charlie is built on plug-in modules that install at run-time
 rather compile time.
 The big advantage of plugins is that Charlie can be extended without modifying
-its core functionality. The plugins are defined by Java interfaces and
-reflection.
+its core functionality. The plugins are defined by Java interfaces.
 
 Finally, Charlie uses [actors](http://en.wikipedia.org/wiki/Actor_model)
 as its model of distributed computing.
-Actors are a very elegant in concept which has been making a big
+Actors are a very elegant in concept which has been making a
 comeback in recent years as an alternative to other communication /
 synchronization methods.
-Actors are, rightly, bottom of the Charlie software stack, far below the
-plugins. So plugin developers may never encounter the actors or need to know
+Actors are, rightly, at the bottom of the Charlie software stack, below the
+UI and plugins. So plugin developers may never encounter the actors or need to know
 much about them.
 
 ###Why Blackjack?
@@ -33,7 +33,7 @@ but not limited to game theory, probability and statistical theory,
 and in the case of Charlie, concurrency, threads, synchronization,
 Artificial Intelligence, real-time computing, animation, etc.
 While I hope Charlie can teach all these things, the plain truth is
-Blackjack is fun and may prove useful if you're ever stuck in Vegas, or
+Blackjack is also fun and may prove useful if you're ever stuck in Vegas, or
 wherever your travels may take you.
 
 This document does not teach Blackjack. There's tons of information in
@@ -42,35 +42,35 @@ My primary focus is to explore how to extend Charlie through its
 plugin system.
 
 ###A brief history of Blackjack
-It may help to start with a brief history of Blackjack to set the stage
-for how the plugins work.
 The roots of Blackjack roots go back to Don Quixote and Seville and the 17th
 century.
 However, serious study of Blackjack began in the 1950s with long-running computer
-simulations at IBM to discover the _Basic Strategy_, 
+simulations at IBM to discover what would become known as the [Basic Strategy](http://en.wikipedia.org/wiki/Blackjack), 
 which gives the rules of "correct" play.
 Issues of how to bet are not covered by the Basic Strategy but
-_card counting_ and [Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion)
-which was also set out in the 1950s for investing, not specifically Blackjack.
-By the 1960s, MIT professor, E.O. Thorpe, published,
+[card counting](http://en.wikipedia.org/wiki/Card_counting).
+[Kelly's criterion](http://en.wikipedia.org/wiki/Kelly_criterion),
+was formulated in the 1950s for investing and can also be applied, in addition
+to card counting, as an optimal betting strategy.
+By the 1960s, MIT professor, E.O. Thorpe, published
 [Beat the Dealer](http://goo.gl/BDQ83E), which for a while caused casinos to
 change the Blackjack game design
 to counteract the Basic Strategy.
-However, the casino tactics backfired as the countermeasures
-slowed the game and caused customers to stopped coming and playing.
+However, these tactics backfired as the countermeasures
+slowed the game which turned away customers.
 It forced casinos to go back to the simpler "21" rules and look for other means to thwart
-player opportunities.
+player the Basic Strategy and card counting.
 
 Peter Griffin published [The Theory of Blackjack](http://goo.gl/kHQWjy) in the late 1990s.
 It laid
 out what some might regard as the definitive mathematical treatment of Blackjack from
 the player's perspective.
 In 2003, Ben Mezrich published [Bringing Down the House](http://goo.gl/HJK5KN),
-which detailed the exploits of students
-and their MIT professor in Las Vegas. The story was dramatized by the popular
+which detailed the Las Vegas exploits of students
+and their MIT professor. The story was dramatized by the popular
 2008 film, [21](http://goo.gl/oEB8sv).
 
-In my own case, I studied Blackjack in-depth, asking whether a machine could learn to play
+In my own case, I have studied Blackjack in-depth, asking whether a machine could learn to play
 and bet. The published papers are [here](http://foxweb.marist.edu/users/ron.coleman/).
 In 2010, I developed a 
 [system](https://code.google.com/p/scaly/) related to Charlie

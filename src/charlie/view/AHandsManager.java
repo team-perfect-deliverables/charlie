@@ -4,37 +4,38 @@
  */
 package charlie.view;
 
-import charlie.card.Card;
-import charlie.util.Constant;
 import charlie.util.Point;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import javax.swing.ImageIcon;
+
 
 /**
- *
- * @author roncoleman125
+ * Manages one or more hands (in case of splits).
+ * @author Ron Coleman
  */
 public class AHandsManager { 
-    private List<AHand> hands = new ArrayList<>();
-    private int handInset = ACard.cardWidth;
+    private final List<AHand> hands = new ArrayList<>();
+    private final int handInset = ACard.cardWidth;
     
     private final Point center;
     
     private final String name;
-    
-    public void clear() {
-        hands.clear();
-    }
-    
+
+    /**
+     * Constructor
+     * @param name Name of the hand.
+     * @param center Center point
+     */
     public AHandsManager(String name, Point center) {
         this.name = name;
         this.center = center;
     }
     
+    /**
+     * Returns true if the hand is ready
+     * @return True if ready, false othrwise
+     */
     public boolean isReady() {
         for(int i=0; i < hands.size(); i++) {
             AHand ahand = hands.get(i);
@@ -46,6 +47,9 @@ public class AHandsManager {
         return true; 
     }
     
+    /**
+     * Updates all my hands.
+     */
     public void update() {
         for(int i=0; i < hands.size(); i++) {
             AHand ahand = hands.get(i);
@@ -53,6 +57,10 @@ public class AHandsManager {
         }
     }
     
+    /**
+     * Renders all my hands.
+     * @param g Graphics context
+     */
     public void render(Graphics2D g) {
         for(int i=0; i < hands.size(); i++) {
             AHand ahand = hands.get(i);
@@ -62,6 +70,11 @@ public class AHandsManager {
 //            hand.render(g);
     }
     
+    /**
+     * Adds a hand
+     * @param hand Hand
+     * @return True if the hand was successfully added.
+     */
     public boolean add(AHand hand) {
         // Add this new hand
         boolean tf = hands.add(hand);
@@ -97,9 +110,12 @@ public class AHandsManager {
 //        return card;
 //    }
     
+    /**
+     * Spreads the hands.
+     */
     protected void spread() { 
         // Select the offset relative to the current unsplit hand.
-        // Note: to keep the cards even laid out along the player's center
+        // Note: to keep the cards evenly laid out along the player's center
         // the offset size depends on the rank of hands.
         int offset = hands.size() % 2 == 0 ? ACard.cardWidth : ACard.cardWidth / 2;
         
@@ -116,6 +132,16 @@ public class AHandsManager {
         }
     }
     
+    /**
+     * Wipes the hands we're managing.
+     */
+    public void clear() {
+        hands.clear();
+    }
+    
+    /**
+     * Settles all the cards.
+     */
     public void settle() {
         for(AHand hand: hands)
             hand.settle();
