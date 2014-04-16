@@ -23,6 +23,7 @@
 package charlie.plugin;
 
 import charlie.card.Hid;
+import charlie.view.AMoneyManager;
 import charlie.view.sprite.Chip;
 import java.awt.Graphics2D;
 
@@ -32,6 +33,12 @@ import java.awt.Graphics2D;
  */
 public interface ISideBetView {
     /**
+     * Sets the money manager.
+     * @param moneyManager 
+     */
+    public void setMoneyManager(AMoneyManager moneyManager);
+    
+    /**
      * Handles clicks in this region of the UI.
      * @param x X coordinate
      * @param y Y coordinate
@@ -39,28 +46,18 @@ public interface ISideBetView {
     public void click(int x, int y);
     
     /**
-     * Sets the hand id for the side bet.
-     * The view uses this to determine the outcome.
+     * Reports side bet outcome at the end of the game for hand with hand id.
      * If the side bet amount is &lt;0, the player lost.
      * If the side bet amount is >&gt;0 the player won.
      * If the side bet amount is 0, there was no side bet.
      * @param hid Hand id
      */
-    public void setHid(Hid hid);
+    public void ending(Hid hid);
     
     /**
-     * Resets the side bet on the UI. Side bets don't "stick" like
-     * regular bets but are cleared after each game. Thus, the player
-     * must continually place a side bet if they want to make one.
+     * Indicates new game starting.
      */
-    public void reset();
-    
-    /**
-     * Sets side bet amount unit amount. Players can make
-     * side bets in units of this chip only.
-     * @param chip Chip
-     */
-    public void setUnit(Chip chip);
+    public void starting();
     
     /**
      * Gets the side bet amount in dollars

@@ -38,15 +38,18 @@ public class ChipButton {
     private int width;
     private int height;
     protected boolean ready = true;
+    protected int amt = 0;
     
     /**
      * Constructor
+     * @param amt Dollar value of chip
      * @param up Up image
      * @param down Down image
      * @param x X coordinate
      * @param y Y coordinate
      */
-    public ChipButton(Image up, Image down,int x, int y) { 
+    public ChipButton(int amt, Image up, Image down,int x, int y) { 
+        this.amt = amt;
         this.up = up;
         this.down = down;
         this.x = x;
@@ -94,6 +97,14 @@ public class ChipButton {
      */
     public boolean isReady() {
         return ready;
+    }
+
+    /**
+     * Gets the dollar value of the button.
+     * @return Amount
+     */
+    public int getAmt() {
+        return amt;
     }
     
     /**

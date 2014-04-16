@@ -65,6 +65,14 @@ public class ABankroll {
     }    
 
     /**
+     * Gets the bankroll.
+     * @return Bankroll amount
+     */
+    public Double getAmount() {
+        return amount;
+    }
+
+    /**
      * Sets the bankroll.
      * @param amount Amount
      */
